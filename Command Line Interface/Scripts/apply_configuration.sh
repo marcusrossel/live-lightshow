@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# This script updates a given `.ino`-file to contain only the threshold-declarations corresponding
-# to a given configuration file.
+# This script updates a given file to contain only the threshold-declarations corresponding to a
+# given configuration file.
 #
 # Arguments:
 # * <configuration file>
-# * <.ino file> optional, for testing purposes
+# * <program file> optional, for testing purposes
 #
 # Return status:
 # 0: success
@@ -37,13 +37,13 @@ function declare_constants {
    # Binds command line arguments.
    readonly configuration_file=$1
 
-   # Sets the location of the <.ino file> as the first command line argument, or to the one
-   # specified by <utility file: file locations> if none was passed.
+   # Sets the location of the <program file> as the first command line argument, or to the one
+   # specified by <reference file: file locations> if none was passed.
    if [ -n "$2" ]; then
       readonly ino_file=$2
    else
-      local -r program_folder="$dot/../../`location_of_ --repo-program-directory`"
-      readonly ino_file="$program_folder/`ls -1 "$program_folder" | egrep '\.ino$'`"
+      local -r program_directory="$dot/../../`location_of_ --repo-program-directory`"
+      readonly program_file="$program_directory/`ls -1 "$program_directory" | egrep '\.pde$'`"
    fi
 }
 

@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # This script prints the configuration corresponding to the threshold-declarations in a given
-# `.ino`-file.
+# program-file.
 #
-# A "threshold-declaration" has consists of a header and a body, as specified by <utility file:
+# A "threshold-declaration" has consists of a header and a body, as specified by <reference file:
 # regular expressions>.
 # The printed configuration consists of a sequence of configuration entries, as specified by
-# <utility file: regular expressions>, where now two entries have the same microphone-identifier.
+# <reference file: regular expressions>, where now two entries have the same microphone-identifier.
 #
 # Arguments:
-# * <.ino file> optional, for testing purposes
+# * <program file> optional, defaults to ...
 #
 # Return status:
 # 0: success
@@ -36,13 +36,13 @@ dot="$_dot"
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   # Sets the location of the <.ino file> as the first command line argument, or to the one
-   # specified by <utility file: file locations> if none was passed.
+   # Sets the location of the <program file> as the first command line argument, or to the one
+   # specified by <reference file: file locations> if none was passed.
    if [ -n "$1" ]; then
-      readonly ino_file=$1
+      readonly program_file=$1
    else
-      local -r program_folder="$dot/../../`location_of_ --repo-program-directory`"
-      readonly ino_file="$program_folder/`ls -1 "$program_folder" | egrep '\.ino$'`"
+      local -r program_directory="$dot/../../`location_of_ --repo-program-directory`"
+      readonly program_file="$program_directory/Lightshow/Lightshow.pde"
    fi
 }
 
@@ -52,7 +52,7 @@ function declare_constants {
 
 # Prints a line numbered list of threshold-declaration components corresponding to a given flag
 # within a given file. If the file contains a "threshold declarations end"-tag, as specified by
-# <utility file: regular expressions>, the search is only performed upto the line of the tag.
+# <reference file: regular expressions>, the search is only performed upto the line of the tag.
 #
 # Arguments:
 # * <component flag>, possible values: "--header-candidate", "--header", "--body"
@@ -197,7 +197,7 @@ function assert_declaration_body_validity_ {
 
 # Prints the list of microphone-identifiers contained in the threshold-declaration headers of a
 # given file. Warnings are printed to stderr for any lines containing header-candidates that are not
-# valid headers, as specified by <utility file: regular expressions>.
+# valid headers, as specified by <reference file: regular expressions>.
 #
 # Arguments:
 # * <file>
@@ -258,30 +258,30 @@ function threshold_values_in_ {
 
 #-Main------------------------------------------#
 
-assert_correct_argument_count_ 0 1 '<.ino file: optional>' || exit 1 #RS=1
+assert_correct_argument_count_ 0 1 '<program file: optional>' || exit 1 #RS=1
 declare_constants "$@"
 
 # Makes sure the given file is valid, or returns on failure.
-assert_path_validity_ "$ino_file" --ino || exit 2 #RS=2
+assert_path_validity_ "$program_file" || exit 2 #RS=2
 
-# Gets the lists of microphone-identifiers contained in <.ino file>'s threshold-declarations. If any
-# threshold-declaration headers have the same microphone-identifier, an error is printed and a
+# Gets the lists of microphone-identifiers contained in <program file>'s threshold-declarations. If
+# any threshold-declaration headers have the same microphone-identifier, an error is printed and a
 # return on failure occurs.
-microphone_identifiers=`microphone_identifiers_in_ "$ino_file"` || exit 3 #RS=3
+microphone_identifiers=`microphone_identifiers_in_ "$program_file"` || exit 3 #RS=3
 
 # Returns early if no declarations and therefore no microphone-identifiers were found.
 [ -n "$microphone_identifiers" ] || exit 0
 
-# Gets the list of threshold-values contained in <.ino file>'s threshold-declarations in the same
+# Gets the list of threshold-values contained in <program file>'s threshold-declarations in the same
 # order as the microphone-identifiers. If any threshold-declaration bodies are malformed, an error
 # is printed and a return on failure occurs.
-threshold_values=`threshold_values_in_ "$ino_file"` || exit 4 #RS=4
+threshold_values=`threshold_values_in_ "$program_file"` || exit 4 #RS=4
 
 # Merges the threshold configuration items into joined lines.
 readonly threshold_configuration=`
    paste -d ':' <(echo "$microphone_identifiers") <(echo "$threshold_values")
 `
 
-# Prints the (formatted) threshold-configuration generated from the <.ino file>.
+# Prints the (formatted) threshold-configuration generated from the <program file>.
 sed -e 's/:/: /' <<< "$threshold_configuration"
 exit 0

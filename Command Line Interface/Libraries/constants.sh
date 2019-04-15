@@ -24,6 +24,23 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 #-Functions-------------------------------------#
 
+# Prints a string identifying the current operating system.
+#
+# Return status:
+# 0: success
+# 1: unknown operating system
+function _os_ {
+   case "$OSTYPE" in
+      linux-gnu) echo 'linux' ;;
+      darwin*)   echo 'macOS' ;;
+      cygwin*)   echo 'win64' ;;
+      msys*)     echo 'win64' ;;
+      win32*)    echo 'win32' ;;
+      *)         return 1     ;;
+   esac
+
+   return 0
+}
 
 # Prints all of the lines of <file> immediately following the line containing only <string> upto the
 # next empty line or EOF. It is expected for there to be exactly one line containing only <string>.
@@ -107,7 +124,7 @@ function _expand_line_continuations {
 }
 
 # Prints the error message associated with a given flag.
-# All messages are taken from a given file defaulting to <utility file: error messages>.
+# All messages are taken from a given file defaulting to <reference file: error messages>.
 #
 # Arguments:
 # * <error message file> passed automatically by the alias
@@ -129,12 +146,12 @@ function _message_for_ {
          message_identifier='configure_thresholds.sh: Malformed Configuration:' ;;
       --ct-duplicate-identifiers)
          message_identifier='configure_thresholds.sh: Duplicate Identifier:' ;;
-      --ct-no-arduino)
-         message_identifier='configure_thresholds.sh: No Arduino:' ;;
-      --ct-multiple-arduinos)
-         message_identifier='configure_thresholds.sh: Multiple Arduinos:' ;;
-      --lcli-usage)
-         message_identifier='lightshow-cli: Usage:' ;;
+      --at-no-arduino)
+         message_identifier='arduino_trait.sh: No Arduino:' ;;
+      --at-multiple-arduinos)
+         message_identifier='arduino_trait.sh: Multiple Arduinos:' ;;
+      --lightshow-usage)
+         message_identifier='lightshow: Usage:' ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
          return 1 ;;
@@ -148,7 +165,7 @@ function _message_for_ {
    # Performs manual line continuation.
    local -r expanded_message=`_expand_line_continuations "$message"`
 
-   # Substitutes color variables declared in <utility file: error messages> for actual values and
+   # Substitutes color variables declared in <reference file: error messages> for actual values and
    # prints the result.
    echo "$expanded_message" | sed \
       -e 's/RED>/\\033[0;31m/g' \
@@ -160,7 +177,7 @@ function _message_for_ {
 }
 
 # Prints the constant string associated with the item of a given flag.
-# All constants are taken from a given file defaulting to <utility file: item names>.
+# All constants are taken from a given file defaulting to <reference file: item names>.
 #
 # Arguments:
 # * <item name file> passed automatically by the alias
@@ -198,7 +215,7 @@ function _name_of_ {
 # the repository.
 # Paths outside of the repository are given as absolute, with tilde expansion performed beforehand.
 #
-# All paths are taken from a given file defaulting to <utility file: file paths>.
+# All paths are taken from a given file defaulting to <reference file: file paths>.
 #
 # Arguments:
 # * <file locations file> passed automatically by the alias
@@ -208,6 +225,7 @@ function _name_of_ {
 # 0: success
 # 1: <flag> is invalid
 # 2: <file locations file> does not contain <flag>'s identifier-string
+# 3: running on an unknown OS
 alias location_of_="_location_of_ '$dot/Reference Files/file_locations' "
 function _location_of_ {
    # The string used to search the location-file for certain paths.
@@ -216,15 +234,42 @@ function _location_of_ {
    # Sets the search string according to the given flag, or prints an error and returns on failure
    # if an unknown flag was passed.
    case "$2" in
-      --repo-cli-directory)               location_identifier='Repo CLI-directory:'              ;;
-      --repo-program-directory)           location_identifier='Repo Program-directory:'          ;;
-      --cli-uninstaller)                  location_identifier='CLI Uninstaller:'                 ;;
-      --cli-scripts-directory)            location_identifier='CLI Scripts-directory:'           ;;
-      --cli-libraries-directory)          location_identifier='CLI Libraries-directory:'         ;;
-      --cli-command-destination)          location_identifier='CLI-command destination:'         ;;
-      --cli-supporting-files-destination) location_identifier='CLI-supporting files destination:';;
-      --arduino-cli-source)               location_identifier='Arduino-CLI source:'              ;;
-      --arduino-cli-destination)          location_identifier='Arduino-CLI destination:'         ;;
+      --repo-cli-directory)
+         location_identifier='Repo CLI-directory:' ;;
+      --repo-program-directory)
+         location_identifier='Repo Program-directory:' ;;
+      --firmata-program)
+         location_identifier='StandardFirmata Program:' ;;
+      --lightshow-program)
+         location_identifier='Lightshow Program:' ;;
+      --cli-uninstaller)
+         location_identifier='CLI Uninstaller:' ;;
+      --cli-scripts-directory)
+         location_identifier='CLI Scripts-directory:' ;;
+      --cli-libraries-directory)
+         location_identifier='CLI Libraries-directory:' ;;
+      --cli-program-config-file)
+         location_identifier='CLI program configuration file:' ;;
+      --cli-command-destination)
+         location_identifier='CLI-command destination:' ;;
+      --cli-supporting-files-destination)
+         [ `_os_` = 'macOS' ] \
+         && location_identifier='Arduino-CLI - macOS:' \
+         || location_identifier="Arduino-CLI - linux:" ;;
+      --arduino-cli-destination)
+         location_identifier='Arduino-CLI destination:' ;;
+      --arduino-cli-source)
+         [ `_os_` = 'win32' ] \
+         && location_identifier='Arduino-CLI - win64:' \
+         || location_identifier="Arduino-CLI - `_os_`:" ;;
+      --arduino-standard-firmata)
+         location_identifier='Arduino StandardFirmata:' ;;
+      --processing)
+         location_identifier="Processing - `_os_`:" ;;
+      --arduino-processing-library)
+         location_identifier='Arduino Processing library' ;;
+      --ddf-minim-library)
+         location_identifier='ddf Mimim library:' ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
          return 1 ;;
@@ -243,7 +288,7 @@ function _location_of_ {
 }
 
 # Prints the regular expression pattern used to match a type of item identified by a given flag.
-# All patterns are taken from a given file defaulting to <utility file: regular expressions>.
+# All patterns are taken from a given file defaulting to <reference file: regular expressions>.
 #
 # Arguments:
 # * <regular expression file> passed automatically by the alias

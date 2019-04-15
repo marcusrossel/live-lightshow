@@ -35,10 +35,11 @@ dot="$_dot"
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
    # Sets the location of the folder holding the program file(s) as the first command line
-   # argument, or to the one specified by <utility file: file locations> if none was passed.
+   # argument, or to the one specified by <reference file: file locations> if none was passed.
    if [ -n "$1" ]; then
       readonly program_folder=${1%/}
    else
+      # TODO: --repo-program-directory does not exist anymore
       readonly program_folder="$dot/../../`location_of_ --repo-program-directory`"
    fi
 

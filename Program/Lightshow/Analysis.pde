@@ -1,22 +1,8 @@
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.Random;
-import processing.serial.*;
-import ddf.minim.*;
-import ddf.minim.analysis.*;
-import cc.arduino.*;
-
-
-//-------------------------------------------------------------------//
-// CLASSES
-//-------------------------------------------------------------------//
-
-
-// TODO: Give each descriptor band Trägheit  
+// # TODO: Give each descriptor band Trägheit
 
 class LoudnessHistory {
 
-  LoudnessHistory(Float duration) { 
+  LoudnessHistory(Float duration) {
     this.duration = duration;
   }
 
@@ -28,7 +14,7 @@ class LoudnessHistory {
     Integer now = millis();
 
     // Gets the index of the oldest time stamp not older than `duration`.
-    Integer index = 0; 
+    Integer index = 0;
     for (; now - timeStamps.get(index) > duration * 1000; index++);
 
     return loudnesses.subList(index, loudnesses.size() - 1);
@@ -52,13 +38,13 @@ class LoudnessHistory {
   }
 
   Float average() {
-    if (loudnesses.isEmpty()) { 
+    if (loudnesses.isEmpty()) {
       return 0f;
     }
 
     Float sum = 0f;
     List<Float> currentHistory = relevantHistory();
-    for (Float value : currentHistory) { 
+    for (Float value : currentHistory) {
       sum += value;
     }
     return sum / currentHistory.size();
@@ -66,7 +52,7 @@ class LoudnessHistory {
 }
 
 
-class BandDescriptor {  
+class BandDescriptor {
 
   BandDescriptor(Float lowerBound, Float upperBound, ArrayList<Integer> outputPins, Float loudnessRecalibrationDuration) {
     this.lowerBound = lowerBound;
@@ -81,7 +67,7 @@ class BandDescriptor {
   Float upperBound = 0f;
 
   Float loudnessOfLastFrame = 0f;
-  Boolean lastFrameDidTrigger = false; 
+  Boolean lastFrameDidTrigger = false;
 
   Float maxLoudness = 0f;
   Float recentMaxLoudness = 0f;
@@ -89,7 +75,7 @@ class BandDescriptor {
   Float minimalTriggerThreshold = 0.3; // relative to maxLoudness
   Float triggerTreshold = 0.7; // relative to recentMaxLoudness
   Integer timeOfLastTrigger = 0; // relative to program-start; in milliseconds
-  LoudnessHistory loudnessHistory = new LoudnessHistory(1f); 
+  LoudnessHistory loudnessHistory = new LoudnessHistory(1f);
 
   // https://github.com/audiojs/a-weighting
   private Float aWeightedFrequency(Float frequency) {
@@ -139,16 +125,16 @@ class BandDescriptor {
     if (millis() - timeOfLastTrigger > loudnessRecalibrationDuration * 1000) {
       recentMaxLoudness = loudnessOfLastFrame;
     } else {
-      // TODO: This should also be affected by the overall loudness, so not all bands will always be relevant for a given song-segment 
+      // TODO: This should also be affected by the overall loudness, so not all bands will always be relevant for a given song-segment
       recentMaxLoudness = max(recentMaxLoudness, loudnessOfLastFrame);
     }
 
-    // Causes a flickering of triggers on sustained notes. 
+    // Causes a flickering of triggers on sustained notes.
     if (loudnessHistory.average() > triggerTreshold * recentMaxLoudness) {
       triggerTreshold = 0.75;
     } else {
       triggerTreshold = 0.7;
-    } 
+    }
 
     // Sets the overall max loudness if appropriate.
     maxLoudness = max(maxLoudness, loudnessOfLastFrame);
@@ -158,14 +144,14 @@ class BandDescriptor {
     lastFrameDidTrigger = (loudnessOfLastFrame > triggerLoudness);
 
     // Resets the `timeOfLastTrigger` if appropriate.
-    if (lastFrameDidTrigger) { 
+    if (lastFrameDidTrigger) {
       timeOfLastTrigger = millis();
     }
 
     // Updates the pins' states.
-    for (Integer pin : outputPins) { 
+    for (Integer pin : outputPins) {
       arduino.digitalWrite(pin, lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
-    }  
+    }
 
     // Records the loudness of this frame.
     loudnessHistory.push(loudnessOfLastFrame);
@@ -175,7 +161,7 @@ class BandDescriptor {
 class Visualizer {
 
   Visualizer(ArrayList<BandDescriptor> bandDescriptors) {
-    class BandDescriptorComparator implements Comparator<BandDescriptor> { 
+    class BandDescriptorComparator implements Comparator<BandDescriptor> {
       @Override
         public int compare(BandDescriptor lhs, BandDescriptor rhs) {
         return lhs.lowerBound.compareTo(rhs.lowerBound);
@@ -220,7 +206,7 @@ class Visualizer {
   Float maxBound;
   Float minBound;
 
-  // Records the highest and lowest amplitudes the visualizer has ever displayed. 
+  // Records the highest and lowest amplitudes the visualizer has ever displayed.
   Float maxAmplitude = 0f;
   Float minAmplitude = 0f;
 
@@ -242,7 +228,7 @@ class Visualizer {
       minAmplitude = min(minAmplitude, amplitude);
 
       float sampleOffset = map(sample, 0, sampleCount - 1, 0, width);
-      float amplitudeOffset = map(amplitude, minAmplitude, maxAmplitude, height, 0); 
+      float amplitudeOffset = map(amplitude, minAmplitude, maxAmplitude, height, 0);
 
       line(sampleOffset, height / 2, sampleOffset, amplitudeOffset);
     }
@@ -253,7 +239,7 @@ class Visualizer {
     Float dividend = 1.2588966 * 148840000 * pow(frequency2, 2);
     Float root = sqrt(frequency2 + 11599.29) * (frequency2 + 544496.41);
     Float divisor = ((frequency2 + 424.36) * root * (frequency2 + 148840000));
-    return dividend / divisor; 
+    return dividend / divisor;
   }
 
   void visualizeSpectrumForFrame(FFT frame, Boolean withAWeighting) {
@@ -294,7 +280,7 @@ class Visualizer {
       stroke(bandColor[0], bandColor[1], bandColor[2]);
       line(bandOffset, height, bandOffset, intensityOffset);
     }
-  } 
+  }
 
   // Draws the band descriptors' loudness of last frame, rectent max loudness, trigger threshold, and minimal trigger loudness.
   void visualizeDescriptorParameters() {
@@ -332,94 +318,4 @@ class Visualizer {
       line(boundOffsetBeginning, mttOffset, boundOffsetEnd, mttOffset);
     }
   }
-}
-
-
-//-------------------------------------------------------------------//
-// GLOBAL OBJECTS
-//-------------------------------------------------------------------//
-
-
-Arduino arduino;
-Minim minim;
-// AudioPlayer song;
-AudioInput input;
-FFT fft;
-ArrayList<BandDescriptor> bandDescriptors;
-Visualizer visualizer;
-
-
-//-------------------------------------------------------------------//
-// SETUP
-//-------------------------------------------------------------------//
-
-
-void setup() {
-  // Sets the window size.
-  size(1280, 720, P3D);
-
-  // Initializes the non-native objects.
-  minim = new Minim(this);
-  input = minim.getLineIn();
-  // song = minim.loadFile("test_song5.mp3", 2048);
-  fft = new FFT(input.bufferSize(), input.sampleRate());
-  String arduinoPath = "";
-
-  if (args != null && args.length == 1) {
-    arduinoPath = args[0];
-  } else {
-    System.err.println("Error: Expected <arduino device path> as parameter");
-    exit();
-  }
-
-  arduino = new Arduino(this, arduinoPath, 57600);
-
-  // Initializes the band descriptors.
-  bandDescriptors = new ArrayList<BandDescriptor>(Arrays.asList(
-    new BandDescriptor(30f, 300f, new ArrayList<Integer>(Arrays.asList(2, 3, 4)), 2f), 
-    new BandDescriptor(300f, 4000f, new ArrayList<Integer>(Arrays.asList(5, 6, 7)), 4f), 
-    new BandDescriptor(4000f, 16000f, new ArrayList<Integer>(Arrays.asList(8, 9, 10)), 5f)
-   ));
-
-  // Initializes the visualizer.
-  visualizer = new Visualizer(bandDescriptors);
-
-  // Initializes the Arduino's pins.
-  for (BandDescriptor bandDescriptor : bandDescriptors) {
-    for (Integer pin : bandDescriptor.outputPins) {
-      arduino.pinMode(pin, Arduino.OUTPUT);
-    }
-  }
-
-  // Starts playing the song. 
-  // song.play();
-}
-
-
-//-------------------------------------------------------------------//
-// TEARDOWN
-//-------------------------------------------------------------------//
-
-
-void stop() {
-  input.close();
-  minim.stop();
-  super.stop();
-}
-
-
-//-------------------------------------------------------------------//
-// MAIN
-//-------------------------------------------------------------------//
-
-void draw() {
-  background(0);
-
-  fft.forward(input.mix);
-  for (BandDescriptor descriptor : bandDescriptors) { 
-    descriptor.processCurrentFrame(fft);
-  }
-  visualizer.visualizeWaveformForFrame(input.mix);
-  visualizer.visualizeDescriptorParameters();
-  visualizer.visualizeSpectrumForFrame(fft, true);
 }

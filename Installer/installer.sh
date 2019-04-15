@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# This script installs all of the components needed for the Arduino Light Show CLI to run.
+# This script installs all of the components needed for the Live Lightshow to run.
 # This includes:
+# * the Processing programming environment (if not preinstalled)
 # * the Arduino-CLI (if not preinstalled)
-# * an Arduino Light Show CLI script in some "$PATH"-directory
-# * supporting files for the Arduino Light Show CLI script
-# The exact directories and names of all of these files are specified by <utility file:
+# * ddf's Minim library
+# * the Arduino StandardFirmata program
+# * the Arduino Processing library
+# * a Live Lightshow CLI script
+# * supporting files for the Live Lightshow CLI script
+#
+# The exact directories and names of all of these files are specified by <reference file:
 # file locations>.
 # A connection to the internet is required as this script may download files.
 #
@@ -19,8 +24,7 @@
 # 2: the user does not want to reinstall
 # 3: the CLI-script has a malformed or no "CLI supporing files folder"-declaration
 # 4: the installation of the Arduino-CLI failed
-
-# TODO: Add a different "supporting files" destination for (Windows Subsystem for) Linux.
+# 5: the installation of the Processing failed
 
 
 #-Constants-------------------------------------#
@@ -28,14 +32,14 @@
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   # A hardcoded URL to the Arduino Light Show repository.
-   readonly repository_url='https://github.com/WalkingPizza/arduino-light-show/archive/master.zip'
+   # A hardcoded URL to the Live Lightshow repository.
+   readonly repository_url='https://github.com/marcusrossel/live-lightshow/archive/master.zip'
    # A hardcoded path to the CLI-utilities, needed for bootstrapping the installation.
    readonly cli_utilities='Command Line Interface/Libraries/utilities.sh'
    # A hardcoded path to the CLI-constants, needed for bootstrapping the installation.
    readonly cli_constants='Command Line Interface/Libraries/constants.sh'
    # The name of the folder as which the repository above will be unarchived.
-   readonly repository_folder='arduino-light-show-master'
+   readonly repository_folder='live-lightshow-master'
    # A unique temporary working directory used as sandbox for the installation process.
    readonly working_directory=`mktemp -d`
 
@@ -48,8 +52,7 @@ function declare_constants {
 
 # Sets up a certain environment for the further steps in the installation process.
 # After running this function the current working directory is "$working_directory", which contains
-# a folder "$repository_folder" which contains all of the contents ot the Arduino Light Show
-# repository.
+# a folder "$repository_folder" which contains all of the contents ot the Live Lightshow repository.
 #
 # Return status:
 # 0: success
@@ -58,7 +61,7 @@ function setup_installation_environment_ {
    # Moves into the installation process' "sandbox".
    cd "$working_directory"
 
-   echo 'Downloading Arduino Light Show CLI:'
+   echo 'Downloading Live Lightshow CLI:'
 
    # Tries to download the repository into the "$repository_folder.zip" archive. If that is not
    # possible an error is printed and a return on failure occurs.
@@ -67,7 +70,7 @@ function setup_installation_environment_ {
       return 1
    fi
 
-   echo 'Unpacking Arduino Light Show CLI...'
+   echo 'Unpacking Live Lightshow CLI...'
 
    # Unzips the archive into the "$repository_folder" and removes the archive.
    unzip "$repository_folder.zip" &>/dev/null
@@ -91,8 +94,8 @@ function setup_cli_supporting_files_folder_ {
    # to reinstall a return on failure occurs.
    if [ -d "$cli_supporing_files_destination" ]; then
       # Prompts the user and asks them for their decision.
-      echo 'It seems you have run this installation before.' >&2
-      echo -e '\033[0;32mDo you want to reinstall? [y or n]\033[0m' >&2
+      echo 'It seems you have run this installation before.'
+      echo -e '\033[0;32mDo you want to reinstall? [y or n]\033[0m'
       succeed_on_approval_ || return 1
 
       # This is only executed if the user chose to reinstall.
@@ -106,7 +109,7 @@ function setup_cli_supporting_files_folder_ {
    return 0
 }
 
-# Installs the Ardunio-CLI as specified by <utility file: file locations>.
+# Installs the Ardunio-CLI as specified by <reference file: file locations>.
 #
 # Return status:
 # 0: success
@@ -114,39 +117,38 @@ function setup_cli_supporting_files_folder_ {
 # 2: the downloaded file has an unexpected format
 # 3: the installation of the Arduino-CLI failed
 function install_arduino_cli_ {
-   # Declares local constants.
-   local -r archive='arduino_cli.zip'
-   local -r unzipped_folder='arduino_cli'
+   # The folder into which the CLI will be unzipped.
+   local -r cli_folder='arduino_cli'
 
    echo 'Downloading Arduino CLI:'
 
-   # Tries to download the Ardunio-CLI archive into the "$archive" folder. If that doesn't work an
-   # error is printed and a return on failure occurs.
-   if ! curl --progress-bar -o $archive "`location_of_ --arduino-cli-source`"; then
+   # Tries to download the Ardunio-CLI archive into the "$cli_folder.zip" folder. If that doesn't
+   # work an error is printed and a return on failure occurs.
+   if ! curl --progress-bar -o $cli_folder.zip "`location_of_ --arduino-cli-source`"; then
       echo 'Error: failed to download Arduino CLI' >&2
       return 1
    fi
 
    echo 'Installing Arduino CLI...'
 
-   # Unzips the archive into the "$unzipped_folder" and removes the archive.
-   silently- unzip $archive -d $unzipped_folder
-   rm $archive
+   # Unzips the archive and removes it.
+   silently- unzip $cli_folder.zip -d $cli_folder
+   rm $cli_folder.zip
 
    # Checks if the archive contains exactly one file (expected to be the Arduino-CLI script). If it
    # doesn't an error is printed and a return on failure occurs.
-   local -r unzipped_files=`ls -1 $unzipped_folder`
+   local -r unzipped_files=`ls -1 $cli_folder`
    if ! [ `wc -l <<< "$unzipped_files"` -eq 1 ]; then
       echo 'Error: Arduino CLI installer changed' >&2
       return 2
    fi
 
-   # Moves all files in the "$unzipped_folder" (so only the Arduino-CLI script) to its final
-   # destination and renames it as specified by <utility file: file locations>. Any temporary
+   # Moves all files in the "$cli_folder" (so only the Arduino-CLI script) to its final
+   # destination and renames it as specified by <reference file: file locations>. Any temporary
    # folders are removed as well.
    local -r arduino_cli_destination=`location_of_ --arduino-cli-destination`
-   mv $unzipped_folder/* "$arduino_cli_destination"
-   rm -r $unzipped_folder
+   mv $cli_folder/* "$arduino_cli_destination"
+   rm -r $cli_folder
 
    # Makes sure that the Ardunio-CLI is now properly installed. If not an error is printed and a
    # return on failure occurs.
@@ -173,13 +175,13 @@ function install_arduino_cli_ {
 # 1: the CLI-script does not contain the required tag
 # 2: the CLI-script contains a malformed CLI supporting files folder declaration
 function complete_cli_script_ {
-   # Gets the path of the CLI-script, relative to the repository as specified by <utility file:
+   # Gets the path of the CLI-script, relative to the repository as specified by <reference file:
    # file locations>.
    local -r repo_path="`location_of_ --repo-cli-directory`/`name_of_ --cli-command`"
-   # Gets the path to the CLI-script as specified by <utility file: file locations>.
+   # Gets the path to the CLI-script as specified by <reference file: file locations>.
    local -r cli_script="$repository_folder/$repo_path"
    # Gets the regular expression used to search for the "CLI supporting files folder"-tag as
-   # specified by <utility file: regular expressions>.
+   # specified by <reference file: regular expressions>.
    local -r tag_pattern=`regex_for_ --cli-supporting-files-folder-tag`
    # Gets the line in the CLI-script containing the "CLI supporting files folder"-tag.
    local -r tag_line=`egrep -n "$tag_pattern" "$cli_script"`
@@ -195,7 +197,7 @@ function complete_cli_script_ {
    local -r folder_line_number=$[`cut -d : -f 1 <<< "$tag_line"` + 1]
 
    # Gets the folder in which the CLI's supporting files are supposed to be installed as specified
-   # by <utility file: file locations>.
+   # by <reference file: file locations>.
    local -r cli_supporing_files_destination=`location_of_ --cli-supporting-files-destination`
 
    # Constructs a string containing the line, with everything after the equals-sign replaced by the
@@ -221,19 +223,19 @@ function complete_cli_script_ {
 }
 
 # Sets a flag in the uninstaller-script, indicating the Arduino-CLI should also be removed when
-# uninstalling the Arduino Light Show CLI.
+# uninstalling the Live Lightshow CLI.
 #
 # Return status:
 # 0: success
 # 1: the uninstaller does not contain the required tag
 function set_uninstall_ardunio_cli_flag_ {
    # Gets the path of the uninstaller-script, relative to the repository as specified by
-   # <utility file: file locations>.
+   # <reference file: file locations>.
    local -r repo_path="`location_of_ --repo-cli-directory`/`location_of_ --cli-uninstaller`"
-   # Gets the path to the uninstaller-script as specified by <utility file: file locations>.
+   # Gets the path to the uninstaller-script as specified by <reference file: file locations>.
    local -r uninstaller_script="$repository_folder/$repo_path"
    # Gets the regular expression used to search for the "uninstall Arduino CLI flag"-tag as
-   # specified by <utility file: regular expressions>.
+   # specified by <reference file: regular expressions>.
    local -r tag_pattern=`regex_for_ --uninstall-arduino-cli-flag-tag`
    # Gets the line in the uninstaller-script containing the "uninstall Arduino CLI flag"-tag.
    local -r tag_line=`egrep -n "$tag_pattern" "$uninstaller_script"`
@@ -253,21 +255,108 @@ function set_uninstall_ardunio_cli_flag_ {
    return 0
 }
 
+function install_processing_with_libraries_ {
+   processing_url=`location_of_ --processing`
+   processing_folder='processing'
+
+   echo 'Downloading Processing:'
+
+   # Tries to download the repository into the "$processing_folder.zip" archive. If that is not
+   # possible an error is printed and a return on failure occurs.
+   if ! curl -Lk --progress-bar -o $processing_folder.zip "$processing_url"; then
+      echo "Error: failed to download app at \"$url\"" >&2
+      return 1
+   fi
+
+   echo 'Unpacking Processing...'
+
+   # Unzips the archive and removes it.
+   unzip $processing_folder.zip -d $processing_folder &>/dev/null
+   rm $processing_folder.zip
+
+   # Checks if the archive contains exactly one file (expected to be the Processing app). If it
+   # doesn't an error is printed and a return on failure occurs.
+   local -r unzipped_files=`ls -1 $processing_folder`
+   if ! [ `wc -l <<< "$unzipped_files"` -eq 1 ]; then
+      echo 'Error: Processing installer changed' >&2
+      return 2
+   fi
+
+   echo 'Installing Processing...'
+
+   # Moves all files in the "$processing_folder" (so only the Processing app) to its final
+   # destination and renames it as specified by <reference file: file locations>. Any temporary
+   # folders are removed as well.
+   local -r processing_destination=`location_of_ --cli-supporting-files-destination`
+   mv $processing_folder/* "$processing_destination"
+   rm -r $processing_folder
+
+   # Gets the Sketchbook-Path from the user.
+   echo -e "${print_yellow}Please supply Processing's Sketchbook-Path."
+   echo "You can find it in Processing's preferences."
+   echo -e "${print_green}Do you want to proceed? [y or n]${print_normal}"
+   succeed_on_approval_ || return 3
+   echo -e "> "
+   open "$processing_destination"
+   read sketchbook_path
+
+   # Makes sure Processing's `processing-java` command is accessible. If not an error is printed
+   # and a return on failure occurs.
+   if ! silently- command -v processing-java; then
+      echo 'Error: Processing installation failed' >&2
+      return 4
+   fi
+
+   arduino_processing_library_folder='arduino_processing_library'
+   arduino_processing_library_url=`location_of_ --arduino-processing-library`
+
+   echo 'Downloading Arduino Processing Library:'
+
+   # Tries to download the repository into the "$arduino_processing_library_folder.zip" archive. If
+   # that is not possible an error is printed and a return on failure occurs.
+   if ! curl -Lk --progress-bar -o $arduino_processing_library_folder.zip \
+                                  "$arduino_processing_library_url"
+   then
+      echo "Error: failed to download library at \"$arduino_processing_library_url\"" >&2
+      return 5
+   fi
+
+   echo 'Unpacking Arduino Processing Library...'
+
+   # Unzips the archive and removes it.
+   unzip $arduino_processing_library_folder.zip -d $arduino_processing_library_folder &>/dev/null
+   rm $arduino_processing_library_folder.zip
+
+   # Checks if the archive contains exactly one directory (expected to be the library). If it
+   # doesn't an error is printed and a return on failure occurs.
+   local -r unzipped_files=`ls -1 $arduino_processing_library_folder`
+   if ! [ `wc -l <<< "$unzipped_files"` -eq 1 ]; then
+      echo 'Error: Arduino Processing Library changed' >&2
+      return 6
+   fi
+
+   echo 'Installing Arduino Processing Library...'
+
+   # TODO: Here
+
+   echo 'Installed Processing.'
+   return 0
+}
+
 # Installs the Ardunio Light Show CLI by copying the CLI script as well as the CLI's supporting
-# files to their destinations as specified by <utility file: file locations>.
+# files to their destinations as specified by <reference file: file locations>.
 function install_lightshow_cli {
    # Gets the folder in which the CLI's supporting files are supposed to be installed.
    local -r cli_supporing_files_destination=`location_of_ --cli-supporting-files-destination`
    # Gets the repository-internal relative path to the repository's CLI-folder.
    local -r repository_cli_directory=`location_of_ --repo-cli-directory`
 
-   echo 'Installing Arduino Light Show CLI...'
+   echo 'Installing Live Lightshow CLI...'
 
    # Moves all of the directories that need to be moved to the CLI's supporting files folder.
    while read directory; do mv "$directory" "$cli_supporing_files_destination"; done << END
 $repository_folder/$repository_cli_directory/$(location_of_ --cli-scripts-directory)
 $repository_folder/$repository_cli_directory/$(location_of_ --cli-uninstaller)
-$repository_folder/$(location_of_ --repo-program-directory)
 END
 
    # Moves the cli-command to its destination.
@@ -279,7 +368,7 @@ END
    cp -r "$repository_folder/$repository_cli_directory/`location_of_ --cli-libraries-directory`" \
       "$cli_supporing_files_destination"
 
-   echo 'Installed Arduino Light Show CLI.'
+   echo 'Installed Live Lightshow CLI.'
    return 0
 }
 
@@ -307,6 +396,7 @@ if ! silently- command -v arduino-cli; then
    set_uninstall_ardunio_cli_flag_
 fi
 
+install_processing_with_libraries_ || exit 5 #RS=5
 install_lightshow_cli
 
 echo 'Installation complete.'

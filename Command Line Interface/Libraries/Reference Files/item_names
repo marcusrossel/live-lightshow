@@ -7,7 +7,7 @@
 
 
 CLI-command:
-lightshow-cli
+lightshow
 
 Arduino-UNO FQBN:
 arduino:avr:uno

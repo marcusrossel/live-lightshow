@@ -35,7 +35,7 @@ MESSAGE-END
 
 
 
-configure_thresholds.sh: No Arduino:
+arduino_trait.sh: No Arduino:
 RED>No Arduino connected to this computer could be found.NORMAL>
 
 Please try reconnecting the device.
@@ -43,7 +43,7 @@ MESSAGE-END
 
 
 
-configure_thresholds.sh: Multiple Arduinos:
+arduino_trait.sh: Multiple Arduinos:
 RED>Multiple Arduinos connected to this computer were found.NORMAL>
 
 Please disconnect all but one device.
@@ -51,14 +51,10 @@ MESSAGE-END
 
 
 
-lightshow-cli: Usage:
+lightshow: Usage:
 RED>Invalid argument.NORMAL>
 
-The Arduino Light Show CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
-◦ YELLOW>uninstall NORMAL>
-◦ YELLOW>arduino-trait NORMAL><trait flag> NORMAL>
-◦ YELLOW>get-configuration NORMAL>
-◦ YELLOW>apply-configuration NORMAL><configuration file>
-◦ YELLOW>push-program NORMAL>
-◦ YELLOW>configure-thresholds NORMAL>
+The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
+◦ YELLOW>initialize NORMAL>
+◦ YELLOW>start NORMAL>
 MESSAGE-END

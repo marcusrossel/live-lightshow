@@ -1,18 +1,17 @@
 #!/bin/bash
 
-# This script returns certain values associated with a connected Arduino, based on a given flag.
+# This script returns certain values associated with a connected Arduino, based on given flags.
+# If multiple flags are given, the results are printed in the same order.
 #
 # Arguments:
-# <trait flag>, possible values: "--fqbn", "--port"
+# <trait flag 1>, possible values: "--fqbn", "--port"
+# <trait flag 2> optional, possible values: "--fqbn", "--port"
 #
 # Return status:
 # 0: success
 # 1: invalid number of command line arguments
-# 2: <trait flag> was invalid
-# 3: no Arduino could be found
-# 4: multiple Arduinos were found
-
-# TODO: This is slow, so allow multiple flags at once.
+# 2: <trait flag 1> or <trait flag 2> was invalid
+# 3: the user chose to quit
 
 
 #-Preliminaries---------------------------------#
@@ -30,37 +29,50 @@ dot="$_dot"
 #-Main------------------------------------------#
 
 
-assert_correct_argument_count_ 1 '<trait flag>' || exit 1 #RS=1
-# Prints an error and returns on failure if the <trait flag> is invalid.
-if ! [ "$1" = '--fqbn' -o "$1" = '--port' ]; then
-   echo "Error: \`${BASH_SOURCE[0]}\` received invalid flag \"$1\"" >&2
-   exit 2 #RS=2
-fi
+assert_correct_argument_count_ 1 2 '<trait flag 1>' '<trait flag 2>' || exit 1 #RS=1
 
-# Gets a list of the boards connected to the Arduino. The format is:
-# <FQBN 1>   <Port 1>	<ID 1>   <Board Name 1>
-# <FQBN 2>   <Port 2>	<ID 2>   <Board Name 2>
-# ...        ...        ...      ...
-readonly board_list=`silently- --stderr arduino-cli board list | tail -n +2`
+# Checks the given flag(s) for validity.
+for flag in "$@"; do
+   # Prints an error and returns on failure if the flag is invalid.
+   if ! [ "$1" = '--fqbn' -o "$1" = '--port' ]; then
+      echo "Error: \`${BASH_SOURCE[0]}\` received invalid flag \"$flag\"" >&2
+      exit 2 #RS=2
+   fi
+done
 
-# Prints an error message and returns on failure if no, of multiple Arduinos were found.
-if [ -z "$board_list" ]; then
-   echo 'Error: could not find any connected Arduino' >&2
-   exit 3 #RS=3
-elif [ "`wc -l <<< "$board_list"`" -gt 1 ]; then
-   echo 'Error: multiple Arduinos were found' >&2
-   exit 4 #RS=4
-fi
+# Loops until there is exactly on Arduino connected or the user quits.
+while true; do
+   # Gets a list of the boards connected to the Arduino. The format is:
+   # <FQBN 1>   <Port 1>	<ID 1>   <Board Name 1>
+   # <FQBN 2>   <Port 2>	<ID 2>   <Board Name 2>
+   # ...        ...        ...      ...
+   board_list=`silently- --stderr arduino-cli board list | tail -n +2`
+
+   # Prints an error message and returns on failure if no, of multiple Arduinos were found.
+   # Otherwise the while-loop is exited.
+   if [ -z "$board_list" ]; then
+      error_message=`message_for_ --at-no-arduino`
+   elif [ "`wc -l <<< "$board_list"`" -gt 1 ]; then
+      error_message=`message_for_ --at-multiple-arduinos`
+   else
+      break
+   fi
+
+   # Prints an error message and prompts the user to un-/replug the Arduino or exit.
+   clear >&2
+   echo -e "$error_message" >&2
+   echo -e "\n${print_green}Do you want to try again? [y or n]$print_normal" >&2
+   succeed_on_approval_ || exit 3 #RS=3
+done
 
 # Gets the FQBN and port of the connected Arduino.
 read -a components <<< "$board_list"
 
-# Prints the component corresponding to the given <trait flag>, or prints an error and returns on
-# failure if the given <trait flag> was invalid.
-case "$1" in
-   --fqbn) echo "${components[0]}" ;;
-   --port) echo "${components[1]}" ;;
-   *) echo 'Internal error'; exit 5 ;; # This point should be unreachable.
-esac
+# Prints the components corresponding to the given <trait flags>, sequentially.
+for flag in "$@"; do
+   # If the flag is not '--fqbn' it can only be '--port', as they have previously all been checked
+   # for validity.
+   [ "$flag" = '--fqbn' ] && echo "${components[0]}" || echo "${components[1]}"
+done
 
 exit 0

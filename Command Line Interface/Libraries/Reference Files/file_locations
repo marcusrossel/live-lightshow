@@ -5,12 +5,16 @@
 # unique identifier, followed by one or more file paths, each on a new line. Location declarations
 # must be seperated by empty lines.
 # Furthermore, location declarations can be placed in certain groups:
-# * CLI-directory relative:
+# * CLI-Directory relative:
 #   These paths are all relative to the Command Line Interface directory in the repository.
+# * Program-Directory relative:
+#   These paths are all relative to the Program directory in the repository.
 # * Repository relative:
 #   These paths are all relative to the repository in which the CLI-directory lives.
 # * Absolute:
 #   These paths are relative to the current file system and may contain a leading tilde.
+# * URL:
+#   These paths are all URLs, which therefore require a utility like curl or wget to access.
 
 
 #-CLI-Directory-Relative------------------------#
@@ -24,6 +28,19 @@ Scripts
 
 CLI Libraries-directory:
 Libraries
+
+CLI program configuration file:
+configuration
+
+
+#-Program-Directory-Relative--------------------#
+
+
+Lightshow Program:
+Lightshow
+
+StandardFirmata Program:
+StandardFirmata
 
 
 #-Repository-Relative---------------------------#
@@ -42,11 +59,42 @@ Program
 CLI-command destination:
 /usr/local/bin
 
-CLI-supporting files destination:
-~/Library/Application Scripts/Arduino Light Show CLI
+CLI-supporting files destination - linux:
+# TODO: Find a location
 
-Arduino-CLI source:
-https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-osx.zip
+CLI-supporting files destination - macOS:
+~/Library/Application Scripts/Live Lightshow CLI
 
 Arduino-CLI destination:
 /usr/local/bin/arduino-cli
+
+
+#-URL-------------------------------------------#
+
+
+Arduino-CLI - linux:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-linux64.tar.bz2
+
+Arduino-CLI - macOS:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-osx.zip
+
+Arduino-CLI - win64:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-windows.zip
+
+Processing - linux:
+http://download.processing.org/processing-3.5.3-linux64.tgz
+
+Processing - macOS:
+http://download.processing.org/processing-3.5.3-macosx.zip
+
+Processing - win64:
+http://download.processing.org/processing-3.5.3-windows64.zip
+
+Processing - win32:
+http://download.processing.org/processing-3.5.3-windows32.zip
+
+Arduino Processing library:
+https://github.com/firmata/processing/releases/download/latest/processing-arduino.zip
+
+ddf Mimim library:
+http://code.compartmental.net/minim/distro/minim-2.2.2.zip
