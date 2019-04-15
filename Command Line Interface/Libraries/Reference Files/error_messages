@@ -1,0 +1,64 @@
+# This file acts as the configuration and reference document for particular error messages. It
+# can be used by CLI-scripts to outsource long text segments from the source code itself.
+#
+# Error messages are declared within "message declarations". A message declaration consists of a
+# unique identifier, followed by the corresponding error message and ends with a line containing
+# only the keyword "MESSAGE-END". Message declarations should be seperated by multiple empty lines
+# for clarity.
+#
+# Line continuation is possible, by placing a \ at the very end of a line.
+# Colorization can be achieved by using the predefined variables:
+# RED>, YELLOW>, GREEN>, NORMAL>
+
+
+
+configure_thresholds.sh: Malformed Configuration:
+RED>The specified configuration contains malformed entries.NORMAL>
+
+Entries must have the form:
+YELLOW><microphone-identifier>: <threshold-value>NORMAL>
+The characters YELLOW>"NORMAL> and YELLOW>:NORMAL> may not be used in \
+YELLOW><microphone-identifier>NORMAL>s.
+The YELLOW><threshold-value>NORMAL> must be an integer not starting with a YELLOW>0NORMAL> \
+(unless it is exactly YELLOW>0NORMAL>).
+MESSAGE-END
+
+
+
+configure_thresholds.sh: Duplicate Identifier:
+RED>The specified configuration contains duplicate microphone-identifiers.NORMAL>
+
+Entries must have the form:
+YELLOW><microphone-identifier>: <threshold-value>NORMAL>
+No two YELLOW><microphone-identifier>NORMAL>s may be identical.
+MESSAGE-END
+
+
+
+configure_thresholds.sh: No Arduino:
+RED>No Arduino connected to this computer could be found.NORMAL>
+
+Please try reconnecting the device.
+MESSAGE-END
+
+
+
+configure_thresholds.sh: Multiple Arduinos:
+RED>Multiple Arduinos connected to this computer were found.NORMAL>
+
+Please disconnect all but one device.
+MESSAGE-END
+
+
+
+lightshow-cli: Usage:
+RED>Invalid argument.NORMAL>
+
+The Arduino Light Show CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
+◦ YELLOW>uninstall NORMAL>
+◦ YELLOW>arduino-trait NORMAL><trait flag> NORMAL>
+◦ YELLOW>get-configuration NORMAL>
+◦ YELLOW>apply-configuration NORMAL><configuration file>
+◦ YELLOW>push-program NORMAL>
+◦ YELLOW>configure-thresholds NORMAL>
+MESSAGE-END

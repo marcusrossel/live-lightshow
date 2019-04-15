@@ -1,0 +1,52 @@
+# This file acts as the configuration and reference document for particular file paths. It can be
+# used by CLI-scripts to determine where certain files are or should be located.
+#
+# Files paths are declared within "location declarations". A location declaration consists of a
+# unique identifier, followed by one or more file paths, each on a new line. Location declarations
+# must be seperated by empty lines.
+# Furthermore, location declarations can be placed in certain groups:
+# * CLI-directory relative:
+#   These paths are all relative to the Command Line Interface directory in the repository.
+# * Repository relative:
+#   These paths are all relative to the repository in which the CLI-directory lives.
+# * Absolute:
+#   These paths are relative to the current file system and may contain a leading tilde.
+
+
+#-CLI-Directory-Relative------------------------#
+
+
+CLI Uninstaller:
+Installation/uninstaller.sh
+
+CLI Scripts-directory:
+Scripts
+
+CLI Libraries-directory:
+Libraries
+
+
+#-Repository-Relative---------------------------#
+
+
+Repo CLI-directory:
+Command Line Interface
+
+Repo Program-directory:
+Program
+
+
+#-Absolute--------------------------------------#
+
+
+CLI-command destination:
+/usr/local/bin
+
+CLI-supporting files destination:
+~/Library/Application Scripts/Arduino Light Show CLI
+
+Arduino-CLI source:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-osx.zip
+
+Arduino-CLI destination:
+/usr/local/bin/arduino-cli

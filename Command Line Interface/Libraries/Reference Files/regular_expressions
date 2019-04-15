@@ -1,0 +1,28 @@
+# This file acts as the configuration and reference document for particular regular expressions. It
+# can be used by CLI-scripts to enable consistent search for certain patterns.
+#
+# Regular expression patterns are declared within "pattern declarations". A pattern declaration
+# consists of a unique identifier, followed by the corresponding pattern-string. Pattern
+# declarations must be seperated by empty lines.
+
+
+Threshold declaration header candidate:
+^\s*//\s*#threshold\s+
+
+Threshold declaration header:
+^\s*//\s*#threshold\s+"[^:"]+"\s*$
+
+Threshold declaration body:
+^\s*const\s+int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*(0|([1-9][0-9]*))\s*;\s*$
+
+Threshold declarations end tag:
+^\s*//\s*#threshold-declarations-end\s*$
+
+Threshold configuration entry:
+^[^:\"]+:\s+(0|([1-9][0-9]*))\s*$
+
+Uninstall Arduino-CLI flag tag:
+^\s*#\s*UNINSTALL-ARDUINO-CLI-FLAG\s*$
+
+CLI supporting files folder tag:
+^\s*#\s*CLI-SUPPORTING-FILES-FOLDER\s*$
