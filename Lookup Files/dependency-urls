@@ -1,0 +1,67 @@
+# This file contains the URLs of all of the dependencies of this project.
+# They are grouped by operating system. Within each operating system group, they are listed in the
+# order:
+# * Ardunio-CLI
+# * Processing
+# * Arduino Processing-Library
+# * ddf's Minim Library
+
+# This file acts as the configuration and reference document for the URLs of all project
+# dependencies. It is used to determine where certain files should be downloaded from.
+#
+# Dependancy URLs are declared within "URL declarations". A URL declaration consists of a unique
+# identifier, followed by one or more URLs, each on a new line. URL declarations must be seperated
+# by empty lines. Furthermore, URL declarations are grouped by operating system.
+
+
+#-OS-Independant--------------------------------#
+
+
+Arduino Processing library:
+https://github.com/firmata/processing/releases/download/latest/processing-arduino.zip
+
+ddf's Minim library:
+http://code.compartmental.net/minim/distro/minim-2.2.2.zip
+
+StandardFirmata raw:
+https://raw.githubusercontent.com/firmata/arduino/master/examples/StandardFirmata/StandardFirmata.ino
+
+
+#-Linux-----------------------------------------#
+
+
+Arduino-CLI linux:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-linux64.tar.bz2
+
+Processing linux:
+http://download.processing.org/processing-3.5.3-linux64.tgz
+
+
+#-macOS-----------------------------------------#
+
+
+Arduino-CLI macOS:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-osx.zip
+
+Processing macOS:
+http://download.processing.org/processing-3.5.3-macosx.zip
+
+
+#-Win64-----------------------------------------#
+
+
+Arduino-CLI win64:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-windows.zip
+
+Processing win64:
+http://download.processing.org/processing-3.5.3-windows64.zip
+
+
+#-Win32-----------------------------------------#
+
+
+Arduino-CLI win32:
+https://downloads.arduino.cc/arduino-cli/arduino-cli-latest-windows.zip
+
+Processing win32:
+http://download.processing.org/processing-3.5.3-windows32.zip

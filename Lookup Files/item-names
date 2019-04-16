@@ -1,13 +1,28 @@
 # This file acts as the configuration and reference document for particular string constants. It
-# can be used by CLI-scripts to enable consistent use of string constants.
+# is used to ensure consistent use of string constants.
 #
 # String constants are declared within "name declarations". A name declaration consists of a
 # unique identifier, followed by the corresponding string. Name declarations must be seperated by
 # empty lines.
 
 
-CLI-command:
-lightshow
+Arduino_CLI:
+arduino-cli
+
+Processing:
+Processing
+
+Processing library directory:
+libraries
+
+Arduino Processing library:
+arduino
+
+ddf's Minim library:
+minim
+
+Lightshow program:
+Lightshow.pde
 
 Arduino-UNO FQBN:
 arduino:avr:uno

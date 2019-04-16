@@ -1,0 +1,53 @@
+# This file acts as the configuration and reference document for particular file paths. It is used
+# to determine where certain files are, or should be located.
+#
+# Files paths are declared within "path declarations". A path declaration consists of a unique
+# identifier, followed by a file path. Path declarations must be seperated by empty lines.
+# Furthermore, path declarations can be placed in certain groups:
+#
+# * Repository-Relative: These paths are relative to the repository the file lives in.
+# * Absolute: These paths are relative to the file system, and may use ~ for the home directory.
+
+
+#-Repository-Relative---------------------------#
+
+
+CLI-command source:
+Command Line Interface/lightshow
+
+Program configuration file:
+Command Line Interface/configuration
+
+Lightshow program directory:
+Program/Lightshow
+
+StandardFirmata program directory:
+Program/StandardFirmata
+
+Delete with installation:
+LICENSE
+README.md
+TODOS.md
+.gitignore
+
+
+#-Absolute--------------------------------------#
+
+
+CLI-command destination:
+/usr/local/bin
+
+Arduino-CLI destination:
+/usr/local/bin
+
+Application directory linux:
+# TODO: Find a location.
+
+Application directory macOS:
+# TODO: Find a location.
+
+Application directory win64:
+# TODO: Find a location.
+
+Application directory win32:
+# TODO: Find a location.

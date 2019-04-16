@@ -12,11 +12,18 @@
 ### `configure_thresholds.sh`:
 * line 42:       --repo-program-directory does not exist anymore
 ---
-### `file_locations`:
-* line 63: Find a location
+### `file-paths`:
+* line 44: Find a location.
+* line 47: Find a location.
+* line 50: Find a location.
+* line 53: Find a location.
 ---
 ### `installer.sh`:
-* line 340:    Here
+* line 146:    Implement.
+* line 71:    Implement.
+---
+### `regular-expressions`:
+* line 25: Update the declarations below.
 ---
 ### `run_tests.sh`:
 * line 6: Add test suites for `push_program.sh` and library-functions.
@@ -27,5 +34,5 @@
 ### `test_CT.sh`:
 * line 3: Add more tests.
 ---
-### `test_utilities.sh`:
+### `utilities.sh`:
 * line 127: Iron out the race conditions by having some kind of detection of input being read/expected.

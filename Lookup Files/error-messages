@@ -1,5 +1,5 @@
-# This file acts as the configuration and reference document for particular error messages. It
-# can be used by CLI-scripts to outsource long text segments from the source code itself.
+# This file acts as the configuration and reference document for particular error messages. It is
+# used to outsource long text segments from source code.
 #
 # Error messages are declared within "message declarations". A message declaration consists of a
 # unique identifier, followed by the corresponding error message and ends with a line containing
