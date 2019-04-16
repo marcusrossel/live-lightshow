@@ -9,7 +9,7 @@
 
 
 # Sets up an include guard.
-[ -z "$CLI_UTILITIES_INCLUDED" ] && readonly CLI_UTILITIES_INCLUDED=true || return
+[ -z "$UTILITIES_SH" ] && readonly UTILITIES_SH=true || return
 
 # Turns on alias-expansion explicitly as users of this script will probably be non-interactive
 # shells.
@@ -28,8 +28,39 @@ readonly print_green='\033[0;32m'
 readonly print_yellow='\033[0;33m'
 readonly print_normal='\033[0m'
 
+# Declares OS-name variables.
+readonly linux_OS='linux'
+readonly macOS_OS='macOS'
+readonly win10_OS='win10'
+
 
 #-Functions-------------------------------------#
+
+
+# Prints a string identifying the current operating system.
+#
+# Possible return values are: $linux_OS, $macOS_OS, $win10_OS
+#
+# Return status:
+# 0: success
+# 1: unknown operating system
+function current_OS_ {
+   case "$OSTYPE" in
+      linux-gnu)
+         # The Windows subsystem for Linux also returns 'linux-gnu', so we have to check again.
+         if egrep -i 'Microsoft' /proc/sys/kernel/osrelease &>/dev/null; then
+            echo "$win10_OS"
+         else
+            echo "$linux_OS"
+         fi ;;
+      darwin*)
+         echo "$macOS_OS" ;;
+      *)
+         return 1 ;;
+   esac
+
+   return 0
+}
 
 
 # Checks the given number of command line arguments is equal to a given expected range of them.

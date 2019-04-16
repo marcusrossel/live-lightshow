@@ -100,7 +100,7 @@ function declaration_line_numbers_in {
       # are printed (as the line following a header is considered its body).
       if egrep -q "`regex_for_ --header`" <<< "$line"; then
          echo $line_counter
-         echo $[line_counter + 1]
+         echo $((line_counter + 1))
 
       # Checks if the current line is the "threshold declarations end"-tag, in which case no further
       # lines need to be read.
@@ -134,7 +134,7 @@ function threshold_declarations_for_configuration {
 
       # Prints a treshold-declaration header and body using the components above. The identifier of
       # the printed integer-constant is affected by the declaration counter.
-      echo "// #threshold \"$microphone_id\""
+      echo "// #trait \"$microphone_id\""
       echo "const int threshold_declaration_${declaration_counter}_value =$threshold_value;"
       echo
 
@@ -155,7 +155,7 @@ declare_constants "$@"
 # Makes sure the given files are valid and wellformed, or returns on failure.
 assert_path_validity_ "$ino_file" --ino || exit 2 #RS=2
 assert_path_validity_ "$configuration_file" || exit 2 #RS=2
-assert_configuration_validity_ "$configuration_file" || exit $[$?+2] #RS+2=4
+assert_configuration_validity_ "$configuration_file" || exit $(($?+2)) #RS+2=4
 
 # Gets the line numbers of all of the lines containing threshold-declarations.
 readonly declaration_line_numbers=`declaration_line_numbers_in "$ino_file"`

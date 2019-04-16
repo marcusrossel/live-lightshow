@@ -3,7 +3,7 @@
 # This script provides the main interface for interacting with the command line utilities used for
 # configuring the behaviour of the Live Lightshow.
 #
-# Arguments: *see <reference file: error messages: "lightshow: Usage:">*
+# Arguments: *see <lookup file: error messages: "lightshow: Usage:">*
 #
 # Return status:
 # 1 on incorrect usage, otherwise $? of the given subcommand
@@ -12,12 +12,12 @@
 #-Preliminaries---------------------------------#
 
 
-# CLI-SUPPORTING-FILES-FOLDER
-readonly cli_supporting_files_folder="."
+# APP-DIRECTORY
+readonly app_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/.."
 
 # Imports CLI utilities.
-. "$cli_supporting_files_folder/Libraries/utilities.sh"
-. "$cli_supporting_files_folder/Libraries/constants.sh"
+. "$app_directory/Command Line Interface/Scripts/utilities.sh"
+. "$app_directory/Lookup Files/lookup.sh"
 
 
 #-Constants-------------------------------------#
@@ -40,8 +40,8 @@ shift
 # Runs the script corresponding to the given subcommand, or prints and error message and returns on
 # failure if the given subcommand was invalid.
 case "$subcommand" in
-   initialize) "$cli_supporting_files_folder/Scripts/push_program.sh" ;;
-   start) "$cli_supporting_files_folder/Scripts/start_lightshow.sh" ;;
+   initialize) "$app_directory/Command Line Interface/Scripts/push_program.sh" ;;
+   start) "$app_directory/Command Line Interface/start_lightshow.sh" ;;
    *)
-      echo -e "`message_for_ --lightshow-usage`"; exit 1 ;;
+      echo -e "$(message_for_ lightshow-usage)"; exit 1 ;;
 esac

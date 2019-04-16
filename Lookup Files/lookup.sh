@@ -23,19 +23,26 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # Prints a string identifying the current operating system.
 #
-# Prossible return values are: "linux", "macOS", "win64", "win32"
+# Possible return values are: "linux", "macOS", "win10"
 #
 # Return status:
 # 0: success
 # 1: unknown operating system
+#
+# TODO: Consolidate this with `Scripts/utilities.sh::current_OS_`.
 function _os_ {
    case "$OSTYPE" in
-      linux-gnu) echo 'linux' ;;
-      darwin*)   echo 'macOS' ;;
-      cygwin*)   echo 'win64' ;;
-      msys*)     echo 'win64' ;;
-      win32*)    echo 'win32' ;;
-      *)         return 1     ;;
+      linux-gnu)
+         # The Windows subsystem for Linux also returns 'linux-gnu', so we have to check again.
+         if egrep -i 'Microsoft' /proc/sys/kernel/osrelease &>/dev/null; then
+            echo 'win10'
+         else
+            echo 'linux'
+         fi ;;
+      darwin*)
+         echo 'macOS' ;;
+      *)
+         return 1 ;;
    esac
 
    return 0
@@ -85,12 +92,13 @@ function _lines_after_unique_ {
 
    # Makes sure that there was exactly one match line, or prints an error and returns on failure.
    if [ -z "$match_line" -o `wc -l <<< "$match_line"` -gt 1 ]; then
-      echo "Error: \`${FUNCNAME[0]}\` did not match exactly one line" >&2
+      echo "Error: \`${FUNCNAME[0]}\` did not match exactly one line with \"$1\"" >&2
       return 3
    fi
 
    # Gets the line number immediately following the line of <string>'s match in <file>.
-   local -r list_start=$[`cut -d : -f 1 <<< "$match_line"` + 1]
+   local -r match_line_number=$(cut -d : -f 1 <<< "$match_line")
+   local -r list_start=$((match_line_number + 1))
 
    # Prints all of the lines in <file> starting from "$list_start", until the delimiter line is
    # reached. If a custom delimiter is read, this is remembered by setting a flag.
@@ -159,7 +167,7 @@ function _url_for_ {
 
    # Prints the lines following the search string in the lookup file, or returns on failure if that
    # operation fails.
-   _lines_after_unique_ "$name_identifier" "$1" || return 2
+   _lines_after_unique_ "$url_identifier" "$1" || return 2
 
    return 0
 }
@@ -184,7 +192,7 @@ function _message_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      ct-malformed-configuratation)
+      ct-malformed-configuration)
          message_identifier='configure_thresholds.sh: Malformed Configuration:' ;;
       ct-duplicate-identifiers)
          message_identifier='configure_thresholds.sh: Duplicate Identifier:' ;;
@@ -238,13 +246,14 @@ function _name_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      arduino-cli)              name_identifier='Arduino-CLI:'                  ;;
-      processing)               name_identifier='Processing:'                   ;;
-      processing-lib-directory) name_identifier='Processing library directory:' ;;
-      arduino-processing-lib)   name_identifier='Arduino Processing library:'   ;;
-      ddfs-minim-lib)           name_identifier="ddf's Minim library:"          ;;
-      lightshow-program)        name_identifier='Lightshow program:'            ;;
-      arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'             ;;
+      arduino-cli)              name_identifier='Arduino-CLI:'                   ;;
+      processing)               name_identifier='Processing:'                    ;;
+      processing-executable)    name_identifier="Processing executable $(_os_):" ;;
+      processing-lib-directory) name_identifier='Processing library directory:'  ;;
+      arduino-processing-lib)   name_identifier='Arduino Processing library:'    ;;
+      ddfs-minim-lib)           name_identifier="ddf's Minim library:"           ;;
+      lightshow-program)        name_identifier='Lightshow program:'             ;;
+      arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'              ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
@@ -279,16 +288,16 @@ function _path_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      delete-with-install)     path_identifier='Delete with installation:' ;;
-      cli-command-source)      path_identifier='CLI-command source:' ;;
-      program-config-file)     path_identifier='Program configuration file:' ;;
+      delete-with-install)     path_identifier='Delete with installation:'          ;;
+      cli-command-source)      path_identifier='CLI-command source:'                ;;
+      program-config-file)     path_identifier='Program configuration file:'        ;;
       firmata-directory)       path_identifier='StandardFirmata program directory:' ;;
-      lightshow-directory)     path_identifier='Lightshow program directory:' ;;
-      cli-command-destination) path_identifier='CLI-command destination:' ;;
-      arduino-cli-destination) path_identifier='Arduino-CLI destination:' ;;
-      app-directory)           path_identifier="Application directory $(_os_):"
+      lightshow-directory)     path_identifier='Lightshow program directory:'       ;;
+      cli-command-destination) path_identifier='CLI-command destination:'           ;;
+      arduino-cli-destination) path_identifier='Arduino-CLI destination:'           ;;
+      app-directory)           path_identifier="Application directory $(_os_):"     ;;
       *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
+         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
    esac
 
@@ -331,7 +340,7 @@ function _regex_for_ {
       configuration-entry)             regex_identifier='Configuration entry:'                ;;
       app-directory-tag)               regex_identifier='Application directory tag:'          ;;
       *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
+         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
    esac
 

@@ -113,7 +113,7 @@ if ! "$dot/threshold_configuration.sh" "$program_file" >"$configuration_file" 2>
    exit 2 #RS=2
 fi
 
-carry_out_configuration_editing_ || exit $[$?+1] #RS+2=3
+carry_out_configuration_editing_ || exit $(($?+1)) #RS+2=3
 
 # Tries to get the threshold-configuration of the program file, while saving any error messages. If
 # that fails, an error message is printed and a return on failure occurs.

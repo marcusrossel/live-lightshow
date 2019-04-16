@@ -58,7 +58,7 @@ function declare_constants_ {
 
 
 assert_correct_argument_count_ 0 || exit 1 #RS=1
-declare_constants_ "$@" || exit $[$?+1] #RS+1=2
+declare_constants_ "$@" || exit $(($?+1)) #RS+1=2
 
 # Gets confirmation from the user that uninstallation should be performed. If approval is not given
 # an exit on status 1 occurs.

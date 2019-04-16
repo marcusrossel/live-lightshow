@@ -44,10 +44,7 @@ Application directory linux:
 # TODO: Find a location.
 
 Application directory macOS:
-# TODO: Find a location.
+~/Library/Application Support/Live Lightshow
 
-Application directory win64:
-# TODO: Find a location.
-
-Application directory win32:
+Application directory win10:
 # TODO: Find a location.

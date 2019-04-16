@@ -7,32 +7,47 @@
 ---
 ### `apply_configuration.sh`:
 * line 17: Increases the space after the threshold-declarations each time. Fix that.
+* line 17: Increases the space after the threshold-declarations each time. Fix that.
 * line 180: Remove any uses of "threshold_declaration_[n >= number of declarations]_value".
+* line 180: Remove any uses of "threshold_declaration_[n >= number of declarations]_value".
+---
+### `arduino_trait.sh`:
+* line 15: This is slow, so allow multiple flags at once.
 ---
 ### `configure_thresholds.sh`:
 * line 42:       --repo-program-directory does not exist anymore
 ---
 ### `file-paths`:
 * line 44: Find a location.
-* line 47: Find a location.
 * line 50: Find a location.
-* line 53: Find a location.
+---
+### `install.sh`:
+* line 163:    Remove the downloads foldre as well.
+* line 193:    sleep 3 Hacky.
+* line 230: Check if all of the commands are working and the tests pass.
+* line 66:    Make this properly global.
+* line 97:       sleep 3 Hacky.
 ---
 ### `installer.sh`:
-* line 146:    Implement.
-* line 71:    Implement.
+* line 23: Add a different "supporting files" destination for (Windows Subsystem for) Linux.
 ---
-### `regular-expressions`:
-* line 25: Update the declarations below.
+### `lookup.sh`:
+* line 32: Consolidate this with `Scripts/utilities.sh::current_OS_`.
 ---
 ### `run_tests.sh`:
+* line 6: Add test suites for `push_program.sh` and library-functions.
 * line 6: Add test suites for `push_program.sh` and library-functions.
 ---
 ### `test_AT.sh`:
 * line 3: Add more tests.
+* line 3: Add more tests.
 ---
 ### `test_CT.sh`:
 * line 3: Add more tests.
+* line 3: Add more tests.
+---
+### `test_utilities.sh`:
+* line 127: Iron out the race conditions by having some kind of detection of input being read/expected.
 ---
 ### `utilities.sh`:
 * line 127: Iron out the race conditions by having some kind of detection of input being read/expected.

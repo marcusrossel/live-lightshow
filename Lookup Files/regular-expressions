@@ -21,11 +21,5 @@ Trait declarations end tag:
 Configuration entry:
 ^[^:\"]+:\s+(0|([1-9][0-9]*))\s*$
 
-
-# TODO: Update the declarations below.
-
-Uninstall Arduino-CLI flag tag:
-^\s*#\s*UNINSTALL-ARDUINO-CLI-FLAG\s*$
-
-CLI supporting files folder tag:
-^\s*#\s*CLI-SUPPORTING-FILES-FOLDER\s*$
+Application directory tag:
+^\s*#\s*APP-DIRECTORY\s*$

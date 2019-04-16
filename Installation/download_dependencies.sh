@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script downloads the all of the dependencies needed for this project to run and places them
-# in a given directory.
+# in a given directory (which can not exist before).
 #
 # Arguments
 # <downloads' directory>
@@ -72,12 +72,12 @@ function download_single_item_archive_ {
    fi
 
    # Unzips and removes the archive.
-   unzip "$item_folder.zip" -d "$item_folder" &>/dev/null
+   silently- unzip "$item_folder.zip" -d "$item_folder"
    rm "$item_folder.zip"
 
    # Makes sure the downloaded archive has the expected format, or prints and error message and
    # returns on failure.
-   if [ $(wc -l <<< $(ls "$arduino_cli_folder")) -ne 1 ]; then
+   if [ $(wc -l <<< $(ls "$item_folder")) -ne 1 ]; then
       echo "Error: Downloaded archive has unexpected format" >&2
       return 2
    fi
@@ -85,7 +85,7 @@ function download_single_item_archive_ {
    # Renames the item, moves it to the working directory and deletes its folder.
    local -r item_name=$(name_for_ "$name_identifier")
    mv "$item_folder"/* "$working_directory/$item_name"
-   rm "$item_folder"
+   rm -r "$item_folder"
 }
 
 # Downloads the standard firmata raw program, captures it in a file and places it in an
@@ -96,7 +96,7 @@ function download_single_item_archive_ {
 # 1: could not download from URL associated with <dependency url identifier>
 function download_standard_firmata_ {
    local -r raw_file_url=$(url_for_ standard-firmata-raw)
-   local -r program_directory=$(basename "$(path_for_ standard-firmata-directory)")
+   local -r program_directory=$(basename "$(path_for_ firmata-directory)")
    local -r file_name="$program_directory.ino"
 
 
@@ -120,17 +120,17 @@ declare_constants "$@"
 
 # Moves to the working directory and makes sure everythin is cleaned up upon exiting.
 cd "$working_directory"
-trap "rm -r '$working_directory'; cd '$previous_working_directory'" EXIT
+trap "silently- rm -r '$working_directory'; cd '$previous_working_directory'" EXIT
 
 # Downloads all of the dependencies that are single item archives.
-for dependency in (arduino-cli processing arduino-processing-lib ddfs-minim-lib); do
-   download_single_item_archive_ $dependency || exit $[$?+1]
+for dependency in arduino-cli processing arduino-processing-lib ddfs-minim-lib; do
+   download_single_item_archive_ $dependency || exit $(($?+1))
 done;
 
 # Downloads the StandardFirmata program and places it in an appropriate folder.
-download_standard_firmata_ || exit $[$?+1]
+download_standard_firmata_ || exit $(($?+1))
 
-# Moves all of the downloaded items to the <downloads' directory>.
-mv * "$downloads_destination"
+# Moves all of the downloaded items to the <downloads' directory> (while creating that folder).
+mv "$working_directory" "$downloads_destination"
 
 exit 0
