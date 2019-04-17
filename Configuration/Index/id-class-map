@@ -1,0 +1,5 @@
+default-server: BandDescriptor
+only highs: HighAnalysis
+average max: Maximizer
+something_new: TestServer
+ll: hey

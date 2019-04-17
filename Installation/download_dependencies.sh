@@ -18,9 +18,9 @@
 
 # Gets the directory of this script.
 _dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports lookup and CLI utilities.
-. "$_dot/../Lookup Files/lookup.sh"
-. "$_dot/../Command Line Interface/Scripts/utilities.sh"
+# Imports lookup and utilities.
+. "$_dot/../Scripts/Utilities/lookup.sh"
+. "$_dot/../Scripts/Utilities/utilities.sh"
 # (Re)sets the dot-variable after imports.
 dot="$_dot"
 

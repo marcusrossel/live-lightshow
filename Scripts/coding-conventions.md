@@ -1,3 +1,4 @@
+# TODO: Rewrite these.
 # Coding Conventions
 
 This file contains descriptions of certain coding conventions used in the Command Line Interface's

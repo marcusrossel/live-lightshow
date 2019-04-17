@@ -1,11 +1,3 @@
-# This file contains the URLs of all of the dependencies of this project.
-# They are grouped by operating system. Within each operating system group, they are listed in the
-# order:
-# * Ardunio-CLI
-# * Processing
-# * Arduino Processing-Library
-# * ddf's Minim Library
-
 # This file acts as the configuration and reference document for the URLs of all project
 # dependencies. It is used to determine where certain files should be downloaded from.
 #
@@ -27,7 +19,7 @@ StandardFirmata raw:
 https://raw.githubusercontent.com/firmata/arduino/master/examples/StandardFirmata/StandardFirmata.ino
 
 
-#-Linux-----------------------------------------#
+#-linux-----------------------------------------#
 
 
 Arduino-CLI linux:

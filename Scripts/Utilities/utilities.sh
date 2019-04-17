@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# This script serves as a library of functions to be used by other scripts in the CLI. It can be
-# "imported" via sourcing.
+# This script serves as a library of functions to be used by other scripts. It can be "imported" via
+# sourcing.
 # It should be noted that this script activates alias expansion.
 
 
@@ -142,54 +142,14 @@ function commands_for_trap_with_signal_ {
    trap -p "$1" &>/dev/null || return 1
 
    # Gets a string containing the commands currently associated with the trap with <trap signal>.
-   local -r raw_commands=`trap -p "$1"`
+   local -r raw_commands=$(trap -p "$1")
    # Removes the `trap -p`-prefix from the string.
-   local -r prefixless_commands=`sed -e "1s/^[^']*'//g" <<< "$raw_commands"`
+   local -r prefixless_commands=$(sed -e "1s/^[^']*'//g" <<< "$raw_commands")
    # Removes the `trap -p`-suffix from the prefixless string.
-   local -r commands=`sed -e "\$ s/'[^']*\$//g" <<< "$prefixless_commands"`
+   local -r commands=$(sed -e "\$ s/'[^']*\$//g" <<< "$prefixless_commands")
 
    # Prints the commands and returns successfully.
    echo "$commands"
-   return 0
-}
-
-# Returns on failure if a given <string> is not a path to an existing readable file.
-# If the <flag> is passed as last argument, the file is is also checked for the ".ino"-extension.
-#
-# Arguments:
-# * <script name> passed automatically by the alias
-# * <string>
-# * <flag> optional, possible values: "--ino"
-#
-# Return status:
-# 0: success
-# 1: the given string is not a path to an existing readable file
-# 2: the given <flag> is invalid
-# 3: the <flag> was passed and the given path is not a `.ino`-file
-alias assert_path_validity_='_assert_path_validity_ "${BASH_SOURCE##*/}" '
-function _assert_path_validity_ {
-   # Makes sure the given string is a path to an existing readable file, or prints an error and
-   # returns on failure.
-   if ! [ -f "$2" -a -r "$2" ]; then
-      echo "Error: \"$2\" is not an existing readable file" >&2
-      return 1
-   fi
-
-   # Checks if a <flag> was passed.
-   if [ -n "$3" ]; then
-      # Makes sure the flag is valid or prints an error and returns on failure.
-      if [ "$3" != '--ino' ]; then
-         echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$3\"" >&2
-         return 2
-      fi
-
-      # Makes sure the given <string> ends in ".ino", or prints an error and returns on failure.
-      if [ "${2: -4}" != '.ino' ]; then
-         echo "Error: \"$2\" is not a \`.ino\`-file" >&2
-         return 3
-      fi
-   fi
-
    return 0
 }
 

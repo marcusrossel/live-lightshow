@@ -16,9 +16,9 @@
 
 # Gets the directory of this script.
 _dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports lookup and CLI utilities.
-. "$_dot/../Lookup Files/lookup.sh"
-. "$_dot/../Command Line Interface/Scripts/utilities.sh"
+# Imports lookup and utilities.
+. "$_dot/../Scripts/Utilities/lookup.sh"
+. "$_dot/../Scripts/Utilities/utilities.sh"
 # (Re)sets the dot-variable after imports.
 dot="$_dot"
 
@@ -160,7 +160,7 @@ function tag_cli_command_ {
 # application directory, and moving the CLI-command to its destination.
 function install_application {
    # Removes all of the redundant items from the repository.
-   # TODO: Remove the downloads foldre as well.
+   # TODO: Remove the downloads folder as well.
    local -r redundant_items=$(path_for_ delete-with-install)
    while read item; do rm -r "$dot/../$item"; done <<< "$redundant_items"
 

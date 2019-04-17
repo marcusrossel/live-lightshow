@@ -1,0 +1,7 @@
+# Specify which types of servers you want to be represented by your unique server names.
+# Changing the server names will result in error.
+# Possible server types are: *list server identifiers*
+
+user chosen id1: default-server
+user chosen id2: default-server
+user chosen id3: default-server

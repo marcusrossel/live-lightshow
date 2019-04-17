@@ -41,7 +41,8 @@ shift
 # failure if the given subcommand was invalid.
 case "$subcommand" in
    initialize) "$app_directory/Command Line Interface/Scripts/push_program.sh" ;;
-   start) "$app_directory/Command Line Interface/start_lightshow.sh" ;;
+   start) "$app_directory/Command Line Interface/Scripts/start_lightshow.sh" ;;
+   directory) echo "$app_directory";
    *)
       echo -e "$(message_for_ lightshow-usage)"; exit 1 ;;
 esac

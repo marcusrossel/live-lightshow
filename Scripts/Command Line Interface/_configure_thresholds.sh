@@ -22,9 +22,9 @@
 
 # Gets the directory of this script.
 _dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports CLI utilities.
-. "$_dot/../Libraries/utilities.sh"
-. "$_dot/../Libraries/constants.sh"
+# Imports lookup and utilities.
+. "$_dot/../../Utility Scripts/lookup.sh"
+. "$_dot/../../Utility Scripts/utilities.sh"
 # (Re)sets the dot-variable after imports.
 dot="$_dot"
 
@@ -100,7 +100,7 @@ function carry_out_configuration_editing_ {
 #-Main------------------------------------------#
 
 
-assert_correct_argument_count_ 0 1 '<program folder: optional>' || exit 1 #RS=1
+assert_correct_argument_count_ 0 1 '<program folder: optional>' || exit 1
 declare_constants "$@"
 
 # Makes sure the temporary files are removed on exiting.
@@ -110,10 +110,10 @@ trap "rm '$configuration_file' '$error_pool'" EXIT
 # that fails, an error message is printed and a return on failure occurs.
 if ! "$dot/threshold_configuration.sh" "$program_file" >"$configuration_file" 2>"$error_pool"; then
    echo 'Internal error:'; cat "$error_pool"
-   exit 2 #RS=2
+   exit 2
 fi
 
-carry_out_configuration_editing_ || exit $(($?+1)) #RS+2=3
+carry_out_configuration_editing_ || exit $(($?+1))
 
 # Tries to get the threshold-configuration of the program file, while saving any error messages. If
 # that fails, an error message is printed and a return on failure occurs.
@@ -122,7 +122,7 @@ case $? in
    # Returns successfully if the operation succeeded.
    0) exit 0;;
    # Occurs if the user chose to quit the program.
-   3) exit 3 ;; #RS=3
+   3) exit 3 ;;
    # Prints an error message and returns on failure if any other error occured.
-   *) echo 'Internal error:'; cat "$error_pool"; exit 2 ;; #RS=2
+   *) echo 'Internal error:'; cat "$error_pool"; exit 2 ;;
 esac

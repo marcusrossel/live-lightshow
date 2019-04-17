@@ -12,23 +12,35 @@
 #-Repository-Relative---------------------------#
 
 
-CLI-command source:
-Command Line Interface/lightshow
-
-Program configuration file:
-Command Line Interface/configuration
-
-Lightshow program directory:
-Program/Lightshow
-
-StandardFirmata program directory:
-Program/StandardFirmata
-
 Delete with installation:
 LICENSE
 README.md
 TODOS.md
 .gitignore
+
+CLI-command source:
+Scripts/Command Line Interface/lightshow
+
+Lightshow program directory:
+Program/Lightshow
+
+Servers directory:
+Program/Lightshow
+
+StandardFirmata program directory:
+Program/StandardFirmata
+
+Server ID-class map:
+Configuration/Index/id-class-map
+
+Server instance-ID map:
+Configuration/Index/instance-ID-map
+
+Server instance-runtime map:
+Configuration/Index/instance-runtime-map
+
+Runtime configuration directory:
+Configuration/Runtime
 
 
 #-Absolute--------------------------------------#

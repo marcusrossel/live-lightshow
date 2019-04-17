@@ -9,12 +9,12 @@
 
 
 # Sets up an include guard.
-[ -z "$CLI_TESTING_UTILITIES_INCLUDED" ] && readonly CLI_TESTING_UTILITIES_INCLUDED=true || return
+[ -z "$TESTING_UTILITIES_SH" ] && readonly TESTING_UTILITIES_SH=true || return
 
 # Gets the directory of this script.
 _dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports the CLI-utilities.
-. "$_dot/../Libraries/utilities.sh"
+# Imports the utility script.
+. "$_dot/utilities.sh"
 # (Re)sets the dot-variable after imports.
 dot="$_dot"
 
@@ -133,7 +133,7 @@ function _interactively- {
    trap - EXIT
 
    # Creates the directory in which the named pipes will live.
-   local -r pipe_directory=`mktemp -d`
+   local -r pipe_directory=$(mktemp -d)
 
    # Adds the removal of the pipe directory to the EXIT trap.
    trap "rm -r \"$pipe_directory\"" EXIT
@@ -152,17 +152,17 @@ function _interactively- {
 
    # Adds the killing of <command>'s process as cleanup step to the EXIT trap.
    local -r process_cleanup="ps -p $command_pid &>/dev/null && kill -TERM $command_pid"
-   trap "$process_cleanup; `commands_for_trap_with_signal_ EXIT`" EXIT
+   trap "$process_cleanup; $(commands_for_trap_with_signal_ EXIT)" EXIT
 
    # Checks if there is any input on stdin, and gets all of the interactive commands by reading it,
    # if there is any.
    # The method of doing this is dependant on the Bash version running.
    if [ "${BASH_VERSINFO[0]}" -gt 3 ]; then
-      read -t 0 && local -r interactive_commands=`cat`
+      read -t 0 && local -r interactive_commands=$(cat)
    else
       if read -t 1; then
          local -r newline=$'\n'
-         local -r interactive_commands="$REPLY$newline`cat`"
+         local -r interactive_commands="$REPLY$newline$(cat)"
       fi
    fi
 

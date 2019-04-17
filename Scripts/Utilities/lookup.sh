@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # This script serves as a library of functions for conveniently accessing this project's lookup
-# files. The files are expected to be in the same directory as this script.
+# files. It can be "imported" via sourcing.
+# The files are expected to be in the same directory as this script.
+# It should be noted that this script activates alias expansion.
 
 
 #-Preliminaries---------------------------------#
@@ -15,38 +17,15 @@
 shopt -s expand_aliases
 
 # Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+_dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+# Imports the utility script.
+. "$_dot/utilities.sh"
+# (Re)sets the dot-variable after imports.
+dot="$_dot"
 
 
 #-Private-Functions-----------------------------#
 
-
-# Prints a string identifying the current operating system.
-#
-# Possible return values are: "linux", "macOS", "win10"
-#
-# Return status:
-# 0: success
-# 1: unknown operating system
-#
-# TODO: Consolidate this with `Scripts/utilities.sh::current_OS_`.
-function _os_ {
-   case "$OSTYPE" in
-      linux-gnu)
-         # The Windows subsystem for Linux also returns 'linux-gnu', so we have to check again.
-         if egrep -i 'Microsoft' /proc/sys/kernel/osrelease &>/dev/null; then
-            echo 'win10'
-         else
-            echo 'linux'
-         fi ;;
-      darwin*)
-         echo 'macOS' ;;
-      *)
-         return 1 ;;
-   esac
-
-   return 0
-}
 
 # Prints all of the lines of <file> immediately following the line containing only <string> upto a
 # certain delimiter.
@@ -88,10 +67,10 @@ function _lines_after_unique_ {
    fi
 
    # Gets all of the lines in <file> exactly matching <string>.
-   local -r match_line=`egrep -n "^$1\$" "$2"`
+   local -r match_line=$(egrep -n "^$1\$" "$2")
 
    # Makes sure that there was exactly one match line, or prints an error and returns on failure.
-   if [ -z "$match_line" -o `wc -l <<< "$match_line"` -gt 1 ]; then
+   if [ -z "$match_line" -o $(wc -l <<< "$match_line") -gt 1 ]; then
       echo "Error: \`${FUNCNAME[0]}\` did not match exactly one line with \"$1\"" >&2
       return 3
    fi
@@ -147,7 +126,7 @@ function _expand_line_continuations {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <item name file> does not contain <identifier>'s identifier-string
-alias url_for_="_url_for_ '$dot/dependency-urls' "
+alias url_for_="_url_for_ '$dot/../../Lookup Files/dependency-urls' "
 function _url_for_ {
    # The string used to search the lookup file for a certain pattern.
    local url_identifier
@@ -156,10 +135,10 @@ function _url_for_ {
    # failure if an unknown identifier was passed.
    case "$2" in
       arduino-processing-lib) url_identifier='Arduino Processing library:' ;;
-      standard-firmata-raw)   url_identifier='StandardFirmata raw:' ;;
-      ddfs-minim-lib)         url_identifier="ddf's Minim library:" ;;
-      arduino-cli)            url_identifier="Arduino-CLI $(_os_):" ;;
-      processing)             url_identifier="Processing $(_os_):" ;;
+      standard-firmata-raw)   url_identifier='StandardFirmata raw:'        ;;
+      ddfs-minim-lib)         url_identifier="ddf's Minim library:"        ;;
+      arduino-cli)            url_identifier="Arduino-CLI $(current_OS_):" ;;
+      processing)             url_identifier="Processing $(current_OS_):"  ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
@@ -184,7 +163,7 @@ function _url_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <error message file> does not contain <identifier>'s identifier-string
-alias message_for_="_message_for_ '$dot/error-messages' "
+alias message_for_="_message_for_ '$dot/../../Lookup Files/error-messages' "
 function _message_for_ {
    # The string used to search the lookup file for a certain pattern.
    local message_identifier
@@ -209,11 +188,11 @@ function _message_for_ {
 
    # Gets the lines following the search string in the lookup file upto the line containing only
    # "MESSAGE-END", or returns on failure if that operation fails.
-   if ! local -r message=`_lines_after_unique_ "$message_identifier" "$1" --until 'MESSAGE-END'`
+   if ! local -r message=$(_lines_after_unique_ "$message_identifier" "$1" --until 'MESSAGE-END')
    then return 2; fi
 
    # Performs manual line continuation.
-   local -r expanded_message=`_expand_line_continuations "$message"`
+   local -r expanded_message=$(_expand_line_continuations "$message")
 
    # Substitutes color variables declared in <lookup file: error messages> for actual values and
    # prints the result.
@@ -238,7 +217,7 @@ function _message_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <item name file> does not contain <identifier>'s identifier-string
-alias name_for_="_name_for_ '$dot/item-names' "
+alias name_for_="_name_for_ '$dot/../../Lookup Files/item-names' "
 function _name_for_ {
    # The string used to search the lookup file for a certain pattern.
    local name_identifier
@@ -246,14 +225,14 @@ function _name_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      arduino-cli)              name_identifier='Arduino-CLI:'                   ;;
-      processing)               name_identifier='Processing:'                    ;;
-      processing-executable)    name_identifier="Processing executable $(_os_):" ;;
-      processing-lib-directory) name_identifier='Processing library directory:'  ;;
-      arduino-processing-lib)   name_identifier='Arduino Processing library:'    ;;
-      ddfs-minim-lib)           name_identifier="ddf's Minim library:"           ;;
-      lightshow-program)        name_identifier='Lightshow program:'             ;;
-      arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'              ;;
+      arduino-cli)              name_identifier='Arduino-CLI:'                          ;;
+      processing)               name_identifier='Processing:'                           ;;
+      processing-executable)    name_identifier="Processing executable $(current_OS_):" ;;
+      processing-lib-directory) name_identifier='Processing library directory:'         ;;
+      arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
+      ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
+      lightshow-program)        name_identifier='Lightshow program:'                    ;;
+      arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
@@ -280,7 +259,7 @@ function _name_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <file locations file> does not contain <identifier>'s identifier-string
-alias path_for_="_path_for_ '$dot/file-paths' "
+alias path_for_="_path_for_ '$dot/../../Lookup Files/file-paths' "
 function _path_for_ {
    # The string used to search the lookup file for certain paths.
    local path_identifier
@@ -288,14 +267,18 @@ function _path_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      delete-with-install)     path_identifier='Delete with installation:'          ;;
-      cli-command-source)      path_identifier='CLI-command source:'                ;;
-      program-config-file)     path_identifier='Program configuration file:'        ;;
-      firmata-directory)       path_identifier='StandardFirmata program directory:' ;;
-      lightshow-directory)     path_identifier='Lightshow program directory:'       ;;
-      cli-command-destination) path_identifier='CLI-command destination:'           ;;
-      arduino-cli-destination) path_identifier='Arduino-CLI destination:'           ;;
-      app-directory)           path_identifier="Application directory $(_os_):"     ;;
+      delete-with-install)             path_identifier='Delete with installation:'               ;;
+      cli-command-source)              path_identifier='CLI-command source:'                     ;;
+      lightshow-directory)             path_identifier='Lightshow program directory:'            ;;
+      servers-directory)               path_identifier='Servers directory:'                      ;;
+      firmata-directory)               path_identifier='StandardFirmata program directory:'      ;;
+      server-id-class-map)             path_identifier='Server ID-class map:'                    ;;
+      server-instance-id-map)          path_identifier='Server instance-ID map:'                 ;;
+      server-instance-runtime-map)     path_identifier='Server instance-runtime map:'            ;;
+      runtime-configuration-directory) path_identifier='Runtime configuration directory:'        ;;
+      cli-command-destination)         path_identifier='CLI-command destination:'                ;;
+      arduino-cli-destination)         path_identifier='Arduino-CLI destination:'                ;;
+      app-directory)                   path_identifier="Application directory $(current_OS_):"   ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
@@ -303,7 +286,7 @@ function _path_for_ {
 
    # Gets the lines matched in the location-file for the given identifier, or returns on failure if
    # that operation fails.
-   local -r raw_paths=`_lines_after_unique_ "$path_identifier" "$1"` || return 2
+   local -r raw_paths=$(_lines_after_unique_ "$path_identifier" "$1") || return 2
 
    # Performs explicit tilde expansion and prints the resulting paths.
    while read path; do
@@ -325,7 +308,7 @@ function _path_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <regular expression file> does not contain <identifier>'s identifier-string
-alias regex_for_="_regex_for_ '$dot/regular-expressions' "
+alias regex_for_="_regex_for_ '$dot/../../Lookup Files/regular-expressions' "
 function _regex_for_ {
    # The string used to search the lookup file for a certain pattern.
    local regex_identifier
@@ -333,12 +316,12 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      trait-header-candidate)          regex_identifier='Trait declaration header candidate:' ;;
-      trait-header)                    regex_identifier='Trait declaration header:'           ;;
-      trait-body)                      regex_identifier='Trait declaration body:'             ;;
-      traits-end-tag)                  regex_identifier='Trait declarations end tag:'         ;;
-      configuration-entry)             regex_identifier='Configuration entry:'                ;;
-      app-directory-tag)               regex_identifier='Application directory tag:'          ;;
+      server-header)             regex_identifier='Server declaration header:'            ;;
+      server-body)               regex_identifier='Server declaration body:'              ;;
+      trait-candidate)           regex_identifier='Trait declaration candidate:'          ;;
+      trait)                     regex_identifier='Trait declaration:'                    ;;
+      trait-configuration-entry) regex_identifier='Configuration entry:'                  ;;
+      app-directory-tag)         regex_identifier='Application directory tag:'            ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;

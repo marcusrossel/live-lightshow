@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# This script updates a given file to contain only the threshold-declarations corresponding to a
-# given configuration file.
+# This script updates a given file to contain only the trait-declarations corresponding to a given
+# configuration file.
 #
 # Arguments:
 # * <configuration file>
@@ -10,11 +10,17 @@
 # Return status:
 # 0: success
 # 1: invalid number of command line arguments
-# 2: a given file was not readable or has the wrong file type
-# 3: an entry in <configuration file> is malformed
-# 4: <configuration file> contains duplicate microphone-identifiers
+# 2: an entry in <configuration file> is malformed
+# 3: <configuration file> contains duplicate trait-identifiers
 
-# TODO: Increases the space after the threshold-declarations each time. Fix that.
+# TODO: Increases the space after the trait-declarations each time. Fix that.
+# TODO: Figure out how to handle the trait-declaration-body-variables not being renamable.
+# >> Perhaps have a compiletime-configuration file that also stores the variable names, from which
+# >> then is generated the runtime-configuration file. And both are then passed to apply
+# >> configuration, which can then (a) use the correct variable names and (b) check during runtime
+# >> whether a given trait-identifier is even valid.
+# >> The java Configuration class uses its hardcoded values, if a trait it missing in the runtime-
+# >> configuration file.
 
 
 #-Preliminaries---------------------------------#
@@ -22,9 +28,9 @@
 
 # Gets the directory of this script.
 _dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports CLI utilities.
-. "$_dot/../Libraries/utilities.sh"
-. "$_dot/../Libraries/constants.sh"
+# Imports lookup and utilities.
+. "$_dot/../../Utility Scripts/lookup.sh"
+. "$_dot/../../Utility Scripts/utilities.sh"
 # (Re)sets the dot-variable after imports.
 dot="$_dot"
 
@@ -34,16 +40,16 @@ dot="$_dot"
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   # Binds command line arguments.
+   # Binds a command line argument.
    readonly configuration_file=$1
 
-   # Sets the location of the <program file> as the first command line argument, or to the one
-   # specified by <reference file: file locations> if none was passed.
+   # Sets the location of the <program file> as the second command line argument, or to the one
+   # specified by <lookup file: item names> if none was passed.
    if [ -n "$2" ]; then
       readonly ino_file=$2
    else
-      local -r program_directory="$dot/../../`location_of_ --repo-program-directory`"
-      readonly program_file="$program_directory/`ls -1 "$program_directory" | egrep '\.pde$'`"
+      local -r program_directory="$dot/../../$(path_for_ lightshow-directory)"
+      readonly program_file="$program_directory/$(name_for_ lightshow-program)"
    fi
 }
 
@@ -51,8 +57,8 @@ function declare_constants {
 #-Functions-------------------------------------#
 
 
-# Makes sure a given configuration file contains only valid entries and no duplicate identifier. If
-# not an error is printed and a return on failure occurs.
+# Makes sure a given configuration file contains only valid entries and no duplicate identifiers. If
+# not, an error is printed and a return on failure occurs.
 #
 # Arguments:
 # * <configuration file>
@@ -60,33 +66,33 @@ function declare_constants {
 # Return status:
 # 0: success
 # 1: found a malformed configuration entry
-# 2: found duplicate microphone identifiers
+# 2: found duplicate trait identifiers
 function assert_configuration_validity_ {
    # Asserts the validity of the <configuration file>'s entries. If any are invalid, an error is
    # printed and a return on failure occurs.
-   if egrep -vq "`regex_for_ --configuration-entry`" "$1"; then
+   if egrep -vq "$(regex_for_ configuration-entry)" "$1"; then
       echo "Error: \`${BASH_SOURCE##*/}\` received configuration containing malformed entry" >&2
       return 1
    fi
 
-   # Gets a list of the <configuration file>'s duplicate microphone identifiers.
-   local -r duplicate_microphone_ids=`cut -d : -f 1 "$1" | sort | uniq -d`
+   # Gets a list of the <configuration file>'s duplicate trait identifiers.
+   local -r duplicate_trait_IDs=$(cut -d : -f 1 "$1" | sort | uniq -d)
 
    # Returns successfully if no duplicates were found.
-   [ -z "$duplicate_microphone_ids" ] && return 0
+   [ -z "$duplicate_trait_IDs" ] && return 0
 
    # Prints and error message for each duplicate.
    while read -r duplicate; do
       # Gets the lines of the duplicates in a comma-seperated list.
-      local -e line_number_list=`egrep -n "^$duplicate:" "$1" | cut -d : -f 1 | paste -s -d , -`
-      echo "Error: \`$1\` lines $line_number_list: duplicate microphone-identifiers" >&2
-   done <<< "$duplicate_microphone_ids"
+      local -e line_number_list=$(egrep -n "^$duplicate:" "$1" | cut -d : -f 1 | paste -s -d , -)
+      echo "Error: \`$1\` lines $line_number_list: duplicate trait-identifiers" >&2
+   done <<< "$duplicate_trait_IDs"
 
    return 2
 }
 
-# Prints the line numbers of all of the lines containing threshold-declaration headers or bodies in
-# a given file.
+# Prints the line numbers of all of the lines containing trait-declaration headers or bodies in a
+# given file.
 #
 # Arguments:
 # * <file>
@@ -98,30 +104,29 @@ function declaration_line_numbers_in {
    while read -r line; do
       # Checks if the current line is a header, in which case its line number and the following one
       # are printed (as the line following a header is considered its body).
-      if egrep -q "`regex_for_ --header`" <<< "$line"; then
-         echo $line_counter
-         echo $((line_counter + 1))
+      if egrep -q "$(regex_for_ trait-header)" <<< "$line"; then
+         echo -n "$line_counter\n$((line_counter + 1))"
 
-      # Checks if the current line is the "threshold declarations end"-tag, in which case no further
-      # lines need to be read.
-      elif egrep -q "`regex_for_ --end-tag`" <<< "$line"; then
+      # Checks if the current line is the trait declarations end tag, in which case no further lines
+      # need to be read.
+   elif egrep -q "$(regex_for_ traits-end-tag)" <<< "$line"; then
          echo $line_counter
          break
       fi
 
       # Increments the line counter, no matter what was read.
-      (( line_counter++ ))
+      ((line_counter++))
    done < "$1"
 
    return 0
 }
 
-# Prints all of the threshold-declarations equivalent to the entries in a given configuration file.
+# Prints all of the trait-declarations equivalent to the entries in a given configuration file.
 #
 # Arguments:
 # * <configuration file>
-function threshold_declarations_for_configuration {
-   # Keeps a counter of the number of threshold declarations as identifier for each.
+function trait_declarations_for_configuration {
+   # Keeps a counter of the number of trait declarations, as identifier for each.
    local declaration_counter=0
 
    while read -r configuration_entry; do
@@ -149,13 +154,11 @@ function threshold_declarations_for_configuration {
 #-Main------------------------------------------#
 
 
-assert_correct_argument_count_ 1 2 '<configuration file> <.ino file: optional>' || exit 1 #RS=1
+assert_correct_argument_count_ 1 2 '<configuration file> <.ino file: optional>' || exit 1
 declare_constants "$@"
 
-# Makes sure the given files are valid and wellformed, or returns on failure.
-assert_path_validity_ "$ino_file" --ino || exit 2 #RS=2
-assert_path_validity_ "$configuration_file" || exit 2 #RS=2
-assert_configuration_validity_ "$configuration_file" || exit $(($?+2)) #RS+2=4
+# Makes sure the configuration file is wellformed, or returns on failure.
+assert_configuration_validity_ "$configuration_file" || exit $(($?+2))
 
 # Gets the line numbers of all of the lines containing threshold-declarations.
 readonly declaration_line_numbers=`declaration_line_numbers_in "$ino_file"`
