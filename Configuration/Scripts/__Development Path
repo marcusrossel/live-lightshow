@@ -1,0 +1,30 @@
+#-RUNTIME---------------------------------------#
+
+
+
+get_runtime_index.sh
+# This script prints the runtime-index corresponding to a configuration specified by the user.
+#
+# Return status:
+# 0: success
+# 1: invalid number of command line arguments
+
+
+
+user_configuration_template.sh
+# This script generates a template which can be displayed to the user when retrieving their desired
+# instance-ID to server-type(server ID) mapping.
+#
+# Return status:
+# 0: success
+# 1: invalid number of command line arguments
+
+
+
+setup_runtime_configuration_files.sh
+# This script sets up the runtime configuration file folder as to reflect the current runtime index.
+# This entails the deletion of old configuration files as well as the generation of new ones.
+#
+# Return status:
+# 0: success
+# 1: invalid number of command line arguments

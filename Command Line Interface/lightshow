@@ -12,12 +12,13 @@
 #-Preliminaries---------------------------------#
 
 
+# This will be overwritten upon installation.
 # APP-DIRECTORY
 readonly app_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/.."
 
-# Imports CLI utilities.
-. "$app_directory/Command Line Interface/Scripts/utilities.sh"
-. "$app_directory/Lookup Files/lookup.sh"
+# Imports scripting and lookup utilities.
+. "$app_directory/Utilities/scripting.sh"
+. "$app_directory/Utilities/lookup.sh"
 
 
 #-Constants-------------------------------------#
@@ -40,9 +41,9 @@ shift
 # Runs the script corresponding to the given subcommand, or prints and error message and returns on
 # failure if the given subcommand was invalid.
 case "$subcommand" in
-   initialize) "$app_directory/Command Line Interface/Scripts/push_program.sh" ;;
-   start) "$app_directory/Command Line Interface/Scripts/start_lightshow.sh" ;;
-   directory) echo "$app_directory";
+   initialize) "$app_directory/Command Line Interface/push_program.sh" ;;
+   start) "$app_directory/Command Line Interface/start_lightshow.sh" ;;
+   directory) echo "$app_directory" ;;
    *)
       echo -e "$(message_for_ lightshow-usage)"; exit 1 ;;
 esac

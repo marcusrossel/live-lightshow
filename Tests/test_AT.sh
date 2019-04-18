@@ -7,12 +7,10 @@
 
 
 # Gets the directory of this script.
-_dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports testing and CLI utilities.
-. "$_dot/utilities.sh"
-. "$_dot/../Libraries/utilities.sh"
-# (Re)sets the dot-variable after imports.
-dot="$_dot"
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+# Imports scripting and testing utilities.
+. "$dot/scripting.sh"
+. "$dot/testing.sh"
 
 
 #-Constants-------------------------------------#

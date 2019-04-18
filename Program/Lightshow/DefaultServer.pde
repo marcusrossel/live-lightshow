@@ -67,21 +67,21 @@ final class LoudnessHistory {
 // #server "default"
 final class DefaultServer implements Server {
 
-  private Configuration configuration;  
+  private Configuration configuration;
 
   public DefaultServer(Configuration configuration) {
     this.configuration = configuration;
-  }  
-  
+  }
+
   // #trait "Lower Frequency Bound": 0
   private Float lowerBound() { return configuration.valueForTrait("Lower Frequency Bound"); }
-  
+
   // #trait "Upper Frequency Bound": 0
   private Float upperBound() { return configuration.valueForTrait("Upper Frequency Bound"); }
-  
+
   // #trait "Loudness Recalibration Duration": 0
   private Float loudnessRecalibrationDuration() { return configuration.valueForTrait("Loudness Recalibration Duration"); }
-  
+
   // # TODO: Figure out how to deal with non-Float traits.
   // #trait "Output Pins": [Integer]
   private List<Integer> outputPins() { return new ArrayList<Integer>(); }

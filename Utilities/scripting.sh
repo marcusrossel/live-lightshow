@@ -9,12 +9,14 @@
 
 
 # Sets up an include guard.
-[ -z "$UTILITIES_SH" ] && readonly UTILITIES_SH=true || return
+[ -z "$SCRIPTING_SH" ] && readonly SCRIPTING_SH=true || return
 
 # Turns on alias-expansion explicitly as users of this script will probably be non-interactive
 # shells.
 shopt -s expand_aliases
 
+# Saves the previous value of the $dot-variable.
+previous_dot="$dot"
 # Gets the directory of this script.
 dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
@@ -62,6 +64,61 @@ function current_OS_ {
    return 0
 }
 
+# Prints the line at a given line number in a given string or file.
+#
+# Arguments:
+# * <line number>
+# * <search object type flag>, possible values: "--in-file", "--in-string"
+# * <string/file>
+#
+# Return status:
+# 0: success
+# 1: received invalid <search object type flag>
+function line_at_number_ {
+   case "$2" in
+      --in-file)   tail -n "+$1" "$3"     | head -n 1 ;;
+      --in-string) tail -n "+$1" <<< "$3" | head -n 1 ;;
+      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
+         return 1 ;;
+   esac
+
+   return 0
+}
+
+# Prints the line numbers of all of the lines in a given list of lines equal to a given string or
+# file. If none is found a return on failure occurs.
+#
+# Arguments:
+# * <string>
+# * <search object type flag>, possible values: "--in-file", "--in-string"
+# * <lines>
+#
+# Returns:
+# 0: success
+# 1: reaceived invalid <search object type flag>
+# 2: no line found equal to <string>
+function line_numbers_of_string_ {
+   case "$2" in
+      --in-file)   local -r search_space=$(cat "$1") ;;
+      --in-string) local -r search_space=$1 ;;
+      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
+         return 1 ;;
+   esac
+
+   local return_status=2
+   local line_counter=1
+
+   while read line; do
+      if [ "$line" == "$1" ]; then
+         echo $line_counter
+         return_status=1
+      fi
+
+      ((line_counter++))
+   done <<< "$search_space"
+
+   return $return_status
+}
 
 # Checks the given number of command line arguments is equal to a given expected range of them.
 # If not, prints an error message containing the given correct usage pattern and returns on failure.
@@ -171,3 +228,10 @@ function succeed_on_approval_ {
       esac
    done
 }
+
+
+#-Cleanup---------------------------------------#
+
+
+# Resets the $dot-variable to its previous value.
+dot="$previous_dot"

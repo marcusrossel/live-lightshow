@@ -2,7 +2,6 @@
 
 # This script serves as a library of functions for conveniently accessing this project's lookup
 # files. It can be "imported" via sourcing.
-# The files are expected to be in the same directory as this script.
 # It should be noted that this script activates alias expansion.
 
 
@@ -12,16 +11,16 @@
 # Sets up an include guard.
 [ -z "$LOOKUP_SH" ] && readonly LOOKUP_SH=true || return
 
-# Turns on alias-expansion explicitly, as users of this script will probably be non-interactive
+# Turns on alias-expansion explicitly as users of this script will probably be non-interactive
 # shells.
 shopt -s expand_aliases
 
+# Saves the previous value of the $dot-variable.
+previous_dot="$dot"
 # Gets the directory of this script.
-_dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports the utility script.
-. "$_dot/utilities.sh"
-# (Re)sets the dot-variable after imports.
-dot="$_dot"
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+# Imports scripting utilities.
+. "$dot/scripting.sh"
 
 
 #-Private-Functions-----------------------------#
@@ -126,7 +125,7 @@ function _expand_line_continuations {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <item name file> does not contain <identifier>'s identifier-string
-alias url_for_="_url_for_ '$dot/../../Lookup Files/dependency-urls' "
+alias url_for_="_url_for_ '$dot/../Lookup Files/dependency-urls' "
 function _url_for_ {
    # The string used to search the lookup file for a certain pattern.
    local url_identifier
@@ -163,7 +162,7 @@ function _url_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <error message file> does not contain <identifier>'s identifier-string
-alias message_for_="_message_for_ '$dot/../../Lookup Files/error-messages' "
+alias message_for_="_message_for_ '$dot/../Lookup Files/error-messages' "
 function _message_for_ {
    # The string used to search the lookup file for a certain pattern.
    local message_identifier
@@ -217,7 +216,7 @@ function _message_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <item name file> does not contain <identifier>'s identifier-string
-alias name_for_="_name_for_ '$dot/../../Lookup Files/item-names' "
+alias name_for_="_name_for_ '$dot/../Lookup Files/item-names' "
 function _name_for_ {
    # The string used to search the lookup file for a certain pattern.
    local name_identifier
@@ -259,7 +258,7 @@ function _name_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <file locations file> does not contain <identifier>'s identifier-string
-alias path_for_="_path_for_ '$dot/../../Lookup Files/file-paths' "
+alias path_for_="_path_for_ '$dot/../Lookup Files/file-paths' "
 function _path_for_ {
    # The string used to search the lookup file for certain paths.
    local path_identifier
@@ -267,18 +266,18 @@ function _path_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      delete-with-install)             path_identifier='Delete with installation:'               ;;
-      cli-command-source)              path_identifier='CLI-command source:'                     ;;
-      lightshow-directory)             path_identifier='Lightshow program directory:'            ;;
-      servers-directory)               path_identifier='Servers directory:'                      ;;
-      firmata-directory)               path_identifier='StandardFirmata program directory:'      ;;
-      server-id-class-map)             path_identifier='Server ID-class map:'                    ;;
-      server-instance-id-map)          path_identifier='Server instance-ID map:'                 ;;
-      server-instance-runtime-map)     path_identifier='Server instance-runtime map:'            ;;
-      runtime-configuration-directory) path_identifier='Runtime configuration directory:'        ;;
-      cli-command-destination)         path_identifier='CLI-command destination:'                ;;
-      arduino-cli-destination)         path_identifier='Arduino-CLI destination:'                ;;
-      app-directory)                   path_identifier="Application directory $(current_OS_):"   ;;
+      delete-with-install)             path_identifier='Delete with installation:'             ;;
+      cli-command-source)              path_identifier='CLI-command source:'                   ;;
+      lightshow-directory)             path_identifier='Lightshow program directory:'          ;;
+      servers-directory)               path_identifier='Servers directory:'                    ;;
+      firmata-directory)               path_identifier='StandardFirmata program directory:'    ;;
+      static-index)                    path_identifier='Static index:'                         ;;
+      runtime-index)                   path_identifier='Runtime index:'                        ;;
+      static-configuration-directory)  path_identifier='Static configuration directory:'       ;;
+      runtime-configuration-directory) path_identifier='Runtime configuration directory:'      ;;
+      cli-command-destination)         path_identifier='CLI-command destination:'              ;;
+      arduino-cli-destination)         path_identifier='Arduino-CLI destination:'              ;;
+      app-directory)                   path_identifier="Application directory $(current_OS_):" ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
@@ -308,7 +307,7 @@ function _path_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <regular expression file> does not contain <identifier>'s identifier-string
-alias regex_for_="_regex_for_ '$dot/../../Lookup Files/regular-expressions' "
+alias regex_for_="_regex_for_ '$dot/../Lookup Files/regular-expressions' "
 function _regex_for_ {
    # The string used to search the lookup file for a certain pattern.
    local regex_identifier
@@ -318,9 +317,9 @@ function _regex_for_ {
    case "$2" in
       server-header)             regex_identifier='Server declaration header:'            ;;
       server-body)               regex_identifier='Server declaration body:'              ;;
-      trait-candidate)           regex_identifier='Trait declaration candidate:'          ;;
       trait)                     regex_identifier='Trait declaration:'                    ;;
       trait-configuration-entry) regex_identifier='Configuration entry:'                  ;;
+      number)                    regex_identifier='Number:'                               ;;
       app-directory-tag)         regex_identifier='Application directory tag:'            ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
@@ -333,3 +332,10 @@ function _regex_for_ {
 
    return 0
 }
+
+
+#-Cleanup---------------------------------------#
+
+
+# Resets the $dot-variable to its previous value.
+dot="$previous_dot"

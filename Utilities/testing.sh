@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script serves as a library of functions to be used by the CLI's test-scripts. It can be
+# This script serves as a library of functions to be used for writing test-scripts. It can be
 # "imported" via sourcing.
 # It should be noted that this script activates alias expansion.
 
@@ -9,18 +9,18 @@
 
 
 # Sets up an include guard.
-[ -z "$TESTING_UTILITIES_SH" ] && readonly TESTING_UTILITIES_SH=true || return
-
-# Gets the directory of this script.
-_dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports the utility script.
-. "$_dot/utilities.sh"
-# (Re)sets the dot-variable after imports.
-dot="$_dot"
+[ -z "$TESTING_SH" ] && readonly TESTING_SH=true || return
 
 # Turns on alias-expansion explicitly as users of this script will probably be non-interactive
 # shells.
 shopt -s expand_aliases
+
+# Saves the previous value of the $dot-variable.
+previous_dot="$dot"
+# Gets the directory of this script.
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+# Imports scripting utilities.
+. "$dot/scripting.sh"
 
 
 #-Functions-------------------------------------#
@@ -182,3 +182,10 @@ function _interactively- {
    wait $command_pid
    return $?
 }
+
+
+#-Cleanup---------------------------------------#
+
+
+# Resets the $dot-variable to its previous value.
+dot="$previous_dot"

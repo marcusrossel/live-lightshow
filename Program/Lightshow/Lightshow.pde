@@ -80,7 +80,7 @@ void setup() {
   for (Integer instance = 0; serverClassScanner.hasNextLine(); instance++) {
     String serverClassName = serverClassScanner.nextLine();
     try {
-      Class serverClass = Class.forName("serverClassName");
+      Class serverClass = Class.forName(serverClassName);
       Constructor serverConstructor = serverClass.getConstructor(Configuration.class);
       Server server = (Server) serverConstructor.newInstance(configurations.get(instance));
       servers.add(server);

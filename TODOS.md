@@ -28,6 +28,12 @@
 ### `_configure_thresholds.sh`:
 * line 42: --repo-program-directory does not exist anymore
 ---
+### `_id_class_map.sh`:
+* line 278: Figure out a strategy for this (add an infinite upper bound to the function).
+---
+### `_trait_value_map_for_type.sh`:
+* line 301: Have the functions below use the trait search space.
+---
 ### `apply_configuration.sh`:
 * line 16: Increases the space after the trait-declarations each time. Fix that.
 * line 17: Figure out how to handle the trait-declaration-body-variables not being renamable.
@@ -40,18 +46,15 @@
 * line 56: Find a location.
 * line 62: Find a location.
 ---
-### `id_class_map.sh`:
-* line 278: Figure out a strategy for this (add an infinite upper bound to the function).
----
 ### `install.sh`:
-* line 163: Remove the downloads folder as well.
-* line 193: Hacky.
-* line 230: Check if all of the commands are working and the tests pass.
-* line 66: Make this properly global.
-* line 97: Hacky.
+* line 161: Remove the downloads folder as well.
+* line 191: Hacky.
+* line 228: Check if all of the commands are working and the tests pass.
+* line 64: Make this properly global.
+* line 95: Hacky.
 ---
 ### `run_tests.sh`:
-* line 6: Add test suites for `push_program.sh` and library-functions.
+* line 6: Increase test-coverage.
 ---
 ### `start_lightshow.sh`:
 * line 115: Implement.
@@ -63,9 +66,8 @@
 ### `test_CT.sh`:
 * line 3: Add more tests.
 ---
-### `testing_utilities.sh`:
+### `testing.sh`:
 * line 127: Iron out the race conditions by having some kind of detection of input being read/expected.
 ---
-### `trait_value_map_for_type.sh`:
-* line 290: Implement.
-* line 315: Have the functions below use the trait search space.
+### `user-configuration`:
+* line 1: This file is temporary, and once valid it converted into the runtim index.

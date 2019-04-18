@@ -287,20 +287,6 @@ function file_declaring_server_type_ {
    return 1
 }
 
-# TODO: Implement.
-# >> Get the line number of the server identifier declaration. = A
-# >> Get the line numbers of all of the server-declarations.
-# >> Get the line number that is closest to and smaller than A. = B
-# >> Get the line number that is closest to and bigger than A. = C
-# >> Get the line numbers of all of the server-declarations.
-# >> Get the line number that is closest to and bigger than B. = D
-# >> If D > C, the trait decls end tag is missing for the server.
-# >> Otherwise the search space is B...D
-function trait_search_space_for_file_ {
-
-
-}
-
 
 #-Main------------------------------------------#
 
