@@ -1,0 +1,31 @@
+# This file acts as the configuration and reference document for particular string constants. It
+# is used to ensure consistent use of string constants.
+#
+# String constants are declared within "name declarations". A name declaration consists of a
+# unique identifier, followed by the corresponding string. Name declarations must be seperated by
+# empty lines.
+
+
+Arduino-CLI:
+arduino-cli
+
+Processing:
+Processing.app
+
+Processing executable macOS:
+Contents/MacOS/Processing
+
+Processing library directory:
+libraries
+
+Arduino Processing library:
+arduino
+
+ddf's Minim library:
+minim
+
+Lightshow program:
+Lightshow.pde
+
+Arduino-UNO FQBN:
+arduino:avr:uno

@@ -1,47 +1,43 @@
 #!/bin/bash
 
 # This script provides the main interface for interacting with the command line utilities used for
-# configuring the behaviour of the Live Lightshow.
+# starting and configuring the Live Lightshow.
 #
-# Arguments: *see <reference file: error messages: "lightshow: Usage:">*
+# Arguments:
+# <subcommand> possible values: *see below*
 #
 # Return status:
-# 1 on incorrect usage, otherwise $? of the given subcommand
+# 1: <subcommand> was invalid
+# otherwise: $? of the given subcommand
 
 
 #-Preliminaries---------------------------------#
 
 
-# CLI-SUPPORTING-FILES-FOLDER
-readonly cli_supporting_files_folder="."
+# This will be overwritten upon installation.
+# APP-DIRECTORY
+readonly app_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/.."
 
-# Imports CLI utilities.
-. "$cli_supporting_files_folder/Libraries/utilities.sh"
-. "$cli_supporting_files_folder/Libraries/constants.sh"
-
-
-#-Constants-------------------------------------#
-
-
-# The function wrapping all constant-declarations for this script.
-function declare_constants {
-   # Binds the subcommand passed as first argument.
-   readonly subcommand=$1
-}
+# Imports lookup utilities.
+. "$app_directory/Utilities/lookup.sh"
 
 
 #-Main------------------------------------------#
 
 
-declare_constants "$@"
-# Shifts the given arguments to be passable to the subcommand.
-shift
-
-# Runs the script corresponding to the given subcommand, or prints and error message and returns on
+# Runs the script corresponding to the given subcommand, or prints an error message and returns on
 # failure if the given subcommand was invalid.
-case "$subcommand" in
-   initialize) "$cli_supporting_files_folder/Scripts/push_program.sh" ;;
-   start) "$cli_supporting_files_folder/Scripts/start_lightshow.sh" ;;
+case "$1" in
+   initialize)
+      "$app_directory/Command Line Interface/push_program.sh" || exit $?
+      "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
+   start)
+      "$app_directory/Command Line Interface/start_lightshow.sh" ;;
+   reindex)
+      "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
+   directory)
+      echo "$app_directory" ;;
    *)
-      echo -e "`message_for_ --lightshow-usage`"; exit 1 ;;
+      echo -e "$(text_for_ lightshow-usage)"
+      exit 1 ;;
 esac

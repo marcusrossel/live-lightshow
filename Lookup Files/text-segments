@@ -1,0 +1,56 @@
+# This file acts as the configuration and reference document for particular test segments. It is
+# used to outsource long text segments from source code.
+#
+# Error messages are declared within "segment declarations". A segment declaration consists of a
+# unique identifier, followed by the corresponding text segment and ends with a line containing
+# only the keyword "SEGMENT-END". Segment declarations should be seperated by multiple empty lines
+# for clarity.
+#
+# Line continuation is possible, by placing a \ at the very end of a line.
+# Colorization can be achieved by using the predefined variables:
+# RED>, YELLOW>, GREEN>, NORMAL>
+
+
+
+arduino_trait.sh: No Arduino:
+RED>No Arduino connected to this computer could be found.NORMAL>
+
+Please try reconnecting the device.
+SEGMENT-END
+
+
+
+arduino_trait.sh: Multiple Arduinos:
+RED>Multiple Arduinos connected to this computer were found.NORMAL>
+
+Please disconnect all but one device.
+SEGMENT-END
+
+
+
+user_configuration_template.sh: Template:
+# Declare which types of servers you want to use for the lightshow.
+# You can have multiple instances of the same server type.
+#
+# Each declaration should have the form:
+# <unique identifier>: <server type>
+#
+# So for example one declaration could be:
+# Example Identifier: example-server-type
+#
+# The <unique identifier>s may not contain the characters " and : and may not appear more than once.
+# Lines starting with # are ignored.
+# Possible <server type>s are:
+SEGMENT-END
+
+
+
+lightshow: Usage:
+RED>Invalid argument.NORMAL>
+
+The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
+◦ YELLOW>initialize NORMAL>
+◦ YELLOW>start NORMAL>
+◦ YELLOW>reindex NORMAL>
+◦ YELLOW>directory NORMAL>
+SEGMENT-END

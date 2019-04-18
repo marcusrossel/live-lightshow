@@ -1,4 +1,8 @@
+// # TODO: Check these imports.
+// # TODO: Add documentation.
 import java.util.*;
+import java.nio.file.Paths;
+import java.lang.reflect.Constructor;
 import java.util.stream.Collectors;
 import java.util.Random;
 import processing.serial.*;
@@ -6,115 +10,74 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import cc.arduino.*;
 
-//-------------------------------------------------------------------//
-// CLASSES
-//-------------------------------------------------------------------//
-
-
-// The configuration contains an initial condition.
-// This is read via threshold_configuration.sh and put into the config file, before the lightshow runs (when calling `lightshow start`).
-// The parameters are then periodically read by this class while the lightshow is running.
-// Upon exiting the user can choose if they want to keep the current configuration, in which case it is hardcoded into this class again via `apply_configuration.sh`. (Should be doable by calling the shell script from stop()).
-// This way developers can easily add new configuration-parameters.
-
-// This could also be usefull for monitoring values, by adding non-const values, which get set
-// (manually) within the program.
-class Configuration {
-   Configuration(String filePath) {
-      this.filePath = filePath;
-      this.runtimeValues = HashMap<String, Integer>();
-      updateFromConfigFile();
-   }
-
-   String filePath;
-
-   // If this is accessed, and the update cycle has passed... only then read from the file.
-   // Probably needs a getter-function to realize this behaviour.
-   HashMap<String, Integer> runtimeValues;
-
-   void updateFromConfigFile() {
-      // TODO
-
-   }
-
-   // Initial values:
-
-   // #threshold "Configuration Update Cycle"
-   const int seconds = 3;
-
-   // #threshold "Something"
-   const int something = 1;
-
-   // #threshold "Else"
-   const int other = 2;
-
-   //...
-
-   // #threshold-declarations-end
-}
-
-
-//-------------------------------------------------------------------//
-// GLOBAL OBJECTS
-//-------------------------------------------------------------------//
-
-
 Arduino arduino;
 Minim minim;
 AudioInput input;
 FFT fft;
-ArrayList<BandDescriptor> bandDescriptors;
-Visualizer visualizer;
+List<Server> servers;
 
-
-//-------------------------------------------------------------------//
-// SETUP
-//-------------------------------------------------------------------//
+List<Server> serversForInstantiationMap(String serverInstantiationMap) throws Exception {
+  List<Server> instantiatees = new ArrayList<Server>();
+  
+  // Iterates over the server instantiation map entry for each expected server instance.
+  Scanner mapScanner = new Scanner(serverInstantiationMap);
+  while (mapScanner.hasNextLine()) {
+    // Gets the map entry.
+    String mapEntry = mapScanner.nextLine(); 
+    String[] entryComponents = mapEntry.split(":");
+    
+    // Gets the map entry components as their respective types.
+    Class instanceClass = Class.forName("$Lightshow" + entryComponents[0]);
+    Path staticConfiguration = Paths.get(entryComponents[1]);
+    Path runtimeConfiguration = Paths.get(entryComponents[2]);
+    
+    // Creates the instance's configuration and constructor. 
+    Configuration configuration = new Configuration(staticConfiguration, runtimeConfiguration);
+    Constructor instanceConstructor = instanceClass.getConstructor(Lightshow.class, Configuration.class);
+    
+    // Instantiates the instance and adds it to the list of servers.
+    Server instance = (Server) instanceConstructor.newInstance(this, configuration);
+    instantiatees.add(instance);
+  }
+  
+  mapScanner.close();
+  return instantiatees;
+}
 
 
 void setup() {
-  // Sets the window size.
   size(1280, 720, P3D);
-
-  // Initializes the non-native objects.
   minim = new Minim(this);
   input = minim.getLineIn();
   fft = new FFT(input.bufferSize(), input.sampleRate());
 
   String arduinoPath = "";
-  String configFilePath = "";
+  String serverInstantiationMap = "";
+
   if (args != null && args.length == 2) {
     arduinoPath = args[0];
-    configFilePath = args[1];
+    serverInstantiationMap = args[1];
   } else {
-    System.err.println("Error: Expected <arduino device path> <configuration file> as parameters");
-    exit();
+    println("Internal error: `Lightshow.pde` didn't receive the correct number of command line arguments");
+    System.exit(1);
+  }
+  
+  try {
+    servers = serversForInstantiationMap(serverInstantiationMap);
+  } catch (Exception e) {
+    // # TODO: Fatal error.
+    println(e);
+    System.exit(2);
   }
 
   arduino = new Arduino(this, arduinoPath, 57600);
-
-  // Initializes the band descriptors.
-  bandDescriptors = new ArrayList<BandDescriptor>(Arrays.asList(
-    new BandDescriptor(30f, 300f, new ArrayList<Integer>(Arrays.asList(2, 3, 4)), 2f),
-    new BandDescriptor(300f, 4000f, new ArrayList<Integer>(Arrays.asList(5, 6, 7)), 4f),
-    new BandDescriptor(4000f, 16000f, new ArrayList<Integer>(Arrays.asList(8, 9, 10)), 5f)
-   ));
-
-  // Initializes the visualizer.
-  visualizer = new Visualizer(bandDescriptors);
-
-  // Initializes the Arduino's pins.
-  for (BandDescriptor bandDescriptor : bandDescriptors) {
-    for (Integer pin : bandDescriptor.outputPins) {
-      arduino.pinMode(pin, Arduino.OUTPUT);
-    }
+  for (Integer pin = 2; pin <= 13; pin++) {
+    arduino.pinMode(pin, Arduino.OUTPUT);
   }
 }
 
 
-//-------------------------------------------------------------------//
-// TEARDOWN
-//-------------------------------------------------------------------//
+//-TEARDOWN----------------------------------------------------------//
 
 
 void stop() {
@@ -124,18 +87,14 @@ void stop() {
 }
 
 
-//-------------------------------------------------------------------//
-// MAIN
-//-------------------------------------------------------------------//
+//-MAIN--------------------------------------------------------------//
+
 
 void draw() {
-  background(0);
+  AudioBuffer chunk = input.mix;
+  fft.forward(chunk);
 
-  fft.forward(input.mix);
-  for (BandDescriptor descriptor : bandDescriptors) {
-    descriptor.processCurrentFrame(fft);
+  for (Server server: servers) {
+    server.processFrame(chunk, fft);
   }
-  visualizer.visualizeWaveformForFrame(input.mix);
-  visualizer.visualizeDescriptorParameters();
-  visualizer.visualizeSpectrumForFrame(fft, true);
 }
