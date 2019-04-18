@@ -14,7 +14,7 @@
 
 # Gets the directory of this script.
 dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports scripting, lookup and index utilities.
+# Imports scripting and lookup utilities.
 . "$dot/../../Utilities/scripting.sh"
 . "$dot/../../Utilities/lookup.sh"
 

@@ -4,6 +4,8 @@
 # files. It can be "imported" via sourcing.
 # It should be noted that this script activates alias expansion.
 
+# TODO: Consolidate some of these functions with flags/identifiers.
+
 
 #-Preliminaries---------------------------------#
 
@@ -47,7 +49,7 @@ function _index_entries_in_file_for_column_matching_value_ {
 
    # Prints the entries in the index corresponding to the row.
    while read line_number; do
-      echo "$(line_at_number_ "$line_number" --in-file "$1")"
+      echo "$(line_ "$line_number" --in-file "$1")"
    done <<< "$line_numbers"
 
    return 0
@@ -88,7 +90,7 @@ function column_number_for_ {
             class-name)  echo 2 ;;
             file-path)   echo 3 ;;
             config-file) echo 4 ;;
-            *) echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
+            *) echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$1\"" >&2
                return 1 ;;
          esac ;;
 
@@ -98,6 +100,8 @@ function column_number_for_ {
             instance-id) echo 1 ;;
             server-id)   echo 2 ;;
             config-file) echo 3 ;;
+            *) echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$1\"" >&2
+               return 1 ;;
          esac ;;
 
       *) echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$3\"" >&2
@@ -239,6 +243,7 @@ function _runtime_ {
 
    return 0
 }
+
 
 #-Cleanup---------------------------------------#
 

@@ -12,29 +12,6 @@
 
 
 
-configure_thresholds.sh: Malformed Configuration:
-RED>The specified configuration contains malformed entries.NORMAL>
-
-Entries must have the form:
-YELLOW><microphone-identifier>: <threshold-value>NORMAL>
-The characters YELLOW>"NORMAL> and YELLOW>:NORMAL> may not be used in \
-YELLOW><microphone-identifier>NORMAL>s.
-The YELLOW><threshold-value>NORMAL> must be an integer not starting with a YELLOW>0NORMAL> \
-(unless it is exactly YELLOW>0NORMAL>).
-SEGMENT-END
-
-
-
-configure_thresholds.sh: Duplicate Identifier:
-RED>The specified configuration contains duplicate microphone-identifiers.NORMAL>
-
-Entries must have the form:
-YELLOW><microphone-identifier>: <threshold-value>NORMAL>
-No two YELLOW><microphone-identifier>NORMAL>s may be identical.
-SEGMENT-END
-
-
-
 arduino_trait.sh: No Arduino:
 RED>No Arduino connected to this computer could be found.NORMAL>
 
@@ -74,6 +51,6 @@ RED>Invalid argument.NORMAL>
 The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
 ◦ YELLOW>initialize NORMAL>
 ◦ YELLOW>start NORMAL>
-◦ YELLOW>directory NORMAL>
 ◦ YELLOW>reindex NORMAL>
+◦ YELLOW>directory NORMAL>
 SEGMENT-END

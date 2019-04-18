@@ -1,24 +1,22 @@
 #!/bin/bash
 
-# This script gets parameters needed to and starts the lightshow-program.
+# This script sets up the environment for and starts the lightshow-program.
 #
 # Return status:
 # 0: success
 # 1: invalid number of command line arguments
 # 2: the user chose to quit
-# 3: internal error
 
 
 #-Preliminaries---------------------------------#
 
 
 # Gets the directory of this script.
-_dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports lookup and utilities.
-. "$_dot/../Utilities/lookup.sh"
-. "$_dot/../Utilities/utilities.sh"
-# (Re)sets the dot-variable after imports.
-dot="$_dot"
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+# Imports scripting, lookup and index utilities.
+. "$dot/../Utilities/scripting.sh"
+. "$dot/../Utilities/lookup.sh"
+. "$dot/../Utilities/index.sh"
 
 
 #-Constants-------------------------------------#
@@ -27,72 +25,42 @@ dot="$_dot"
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
    readonly arduino_port=$("$dot/arduino_trait.sh" --port); [ $? -eq 3 ] && exit 1
-
-   readonly program_folder="$dot/../../$(path_for_ lightshow-directory)"
-   readonly id_class_map="$dot/../../$(path_for_ server-id-class-map)"
-   readonly instance_type_map="$dot/../../$(path_for_ server-instance-type-map)"
-   readonly instance_config_file_map="$dot/../../$(path_for_ server-instance-config-file-map)"
+   readonly program_folder="$dot/../$(path_for_ lightshow-directory)"
 }
 
 
 #-Functions-------------------------------------#
 
 
-# Opens the instance-type map in Vi, and allows the user to edit it. The user will be prompted to
-# rewrite the configuration as long as it is malformed. They also have the option to quit.
+# Prints a list of the form:
+# <class name 1>:<static configuration file 1>:<runtime configuration file 1>
+# <class name 2>:<static configuration file 2>:<runtime configuration file 2>
+# ...
+# for each server instance in the runtime index.
 #
-# Return status:
-# 0: success
-# 1: the user chose to quit
-# 2: internal error
-function carry_out_configuration_editing_ {
-   # Iterates until the instance type map contains a valid configuration, or the user quits.
-   while true; do
-      # Allows the user to edit to specify the instance-type map.
-      vi "$instance_type_map"
+# This map is used in the lightshow program to instantiate the server instances.
+function server_instantiation_map {
+   # Gets constants.
+   local -r static_index="$dot/../$(path_for_ static-index)"
+   local -r runtime_index="$dot/../$(path_for_ runtime-index)"
+   local -r runtime_server_id_column=$(column_number_for_ server-id --in runtime-index)
+   local -r runtime_config_file_column=$(column_number_for_ config-file --in runtime-index)
 
-      # Gets all of the items in the instance type map which are invalid and captures the return
-      # status.
-      local error_items=$("$dot/../Configuration/assert_instance_type_map_validity.sh")
-      local return_status=$?
+   # Iterates over the runtime-index.
+   while read runtime_entry; do
+      # Gets the server-ID associated with the current runtime entry's server instance.
+      local server_id=$(cut -d : -f $runtime_server_id_column <<< "$runtime_entry")
 
-      case $? in
-         # Leaves the while-loop on success.
-         0) break ;;
+      # Gets the components for a server instantiation map entry.
+      local class_name=$(static_ class-name --for server-id "$server_id")
+      local static_config_file=$(static_ config-file --for server-id "$server_id")
+      local runtime_config_file=$(cut -d : -f $runtime_config_file_column <<< "$runtime_entry")
 
-         # TODO: Add proper error messages.
-         2) error_message="Malformed instance-identifiers\n$error_items" ;;
-         3) error_message="Duplicate instance-identifiers:\n$error_items" ;;
-         4) error_message="Invalid server-identifiers:\n$error_items" ;;
-
-         # Prints an error message and returns on failure if any other error occured.
-         *) echo "Internal error: \`${BASH_SOURCE[0]}\`"
-            return 2 ;;
-      esac
-
-      # This point is only reached if there was a recoverable error.
-      clear
-      echo -e "$error_message"
-      echo -e "${print_green}Do you want to try again? [y or n]$print_normal"
-      succeed_on_approval_ || return 1
-   done
+      # Prints the server instantiation map entry.
+      echo "$class_name:$static_config_file:$runtime_config_file"
+   done < "$runtime_index"
 
    return 0
-}
-
-# Prints a list of the classes that should be instantiated in the main program.
-# Items can occur multiple times, which implies that they should be instantiated multiple times.
-function class_instantiation_list {
-   local -r server_types=$(cut -d : -f 2 "$instance_type_map")
-
-   while read server_type; do
-      local -r cleaned_server_type=$(awk '{$1=$1;print}' <<< "$server_type")
-      local -r id_class_map_entry=$(fgrep "$cleaned_server_type:" "$id_class_map")
-      local -r class_name=$(cut -d : -f 2 <<< "$id_class_map_entry")
-
-      # No quotes to remove leading or trailing whitespace.
-      echo $class_name
-   done
 }
 
 
@@ -102,22 +70,11 @@ function class_instantiation_list {
 assert_correct_argument_count_ 0 || exit 1
 declare_constants "$@"
 
-# Generates configuration files.
-"$dot/../Configuration/id_class_map.sh" >"$id_class_map"
-"$dot/../Configuration/instance_type_map_template.sh" >"$instance_type_map"
+# Sets up the runtime environment, or exits if the user chose to quit.
+"$dot/../Configuration/Scripts/setup_runtime.sh" || exit 2
 
+# Gets the server instantiation map (SIM).
+readonly sim=$(server_instantiation_map)
 
-# Allows the user to setup the program configuration.
-carry_out_configuration_editing_ || exit $(($?+1))
-
-# Generates the instance-configuration-file map for the specified instances.
-"$dot/../Configuration/instance_configuration_file_map.sh" >"$instance_config_file_map"
-# Populates the instance's configuration files with their hardcoded values.
-# TODO: Implement.
-
-# Gets a list of the classes that should be instantiated in the main program.
-readonly instantiation_list=$(class_instantiation_list)
-
-# Starts the lightshow program, while passing it the Arduino's port and the location of the runtime
-# configuration file.
-silently- processing-java --sketch="$program_folder" --run "$arduino_port" "$configuration_file" &
+# Starts the lightshow program, while passing it the Arduino's port and the SIM.
+silently- processing-java --sketch="$program_folder" --run "$arduino_port" "$sim" &

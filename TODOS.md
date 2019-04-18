@@ -1,10 +1,10 @@
 
 ---
 ### `Configuration.pde`:
-* line 111: Fatal error.
-* line 79: Add documentation.
-* line 8: Add documentation.
-* line 93: Factor this out.
+* line 20: Factor this out, e.g. by automatically adding a trait to the static-traits in the static_index.sh
+* line 23: Fatal error. */ }
+* line 39: Fatal error. */ }
+* line 7: Add documentation.
 ---
 ### `DefaultServer.pde`:
 * line 1: Give Default Servers inertia.
@@ -17,21 +17,10 @@
 ### `Lightshow.pde`:
 * line 1: Check these imports.
 * line 2: Add documentation.
-* line 47: Fatal error.
-* line 72: Fatal error.
-* line 76: Fatal error.
-* line 88: Fatal error.
+* line 68: Fatal error.
 ---
 ### `Server.pde`:
 * line 3: Figure out how to add a constructor or static method requirement.
----
-### `_configure_thresholds.sh`:
-* line 42: --repo-program-directory does not exist anymore
----
-### `apply_configuration.sh`:
-* line 16: Increases the space after the trait-declarations each time. Fix that.
-* line 17: Figure out how to handle the trait-declaration-body-variables not being renamable.
-* line 183: Remove any uses of "threshold_declaration_[n >= number of declarations]_value".
 ---
 ### `coding-conventions.md`:
 * line 1: Rewrite these.
@@ -39,6 +28,9 @@
 ### `file-paths`:
 * line 56: Find a location.
 * line 62: Find a location.
+---
+### `index.sh`:
+* line 7: Consolidate some of these functions with flags/identifiers.
 ---
 ### `install.sh`:
 * line 14: Also install vi if necessary.
@@ -50,10 +42,6 @@
 ---
 ### `run_tests.sh`:
 * line 6: Increase test-coverage.
----
-### `start_lightshow.sh`:
-* line 116: Implement.
-* line 63: Add proper error messages.
 ---
 ### `testing.sh`:
 * line 127: Iron out the race conditions by having some kind of detection of input being read/expected.

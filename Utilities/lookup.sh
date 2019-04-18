@@ -261,12 +261,12 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      server-header)             regex_identifier='Server declaration header:'            ;;
-      server-body)               regex_identifier='Server declaration body:'              ;;
-      trait)                     regex_identifier='Trait declaration:'                    ;;
-      trait-configuration-entry) regex_identifier='Configuration entry:'                  ;;
-      number)                    regex_identifier='Number:'                               ;;
-      app-directory-tag)         regex_identifier='Application directory tag:'            ;;
+      server-header)             regex_identifier='Server declaration header:' ;;
+      server-body)               regex_identifier='Server declaration body:'   ;;
+      trait)                     regex_identifier='Trait declaration:'         ;;
+      trait-configuration-entry) regex_identifier='Configuration entry:'       ;;
+      number)                    regex_identifier='Number:'                    ;;
+      app-directory-tag)         regex_identifier='Application directory tag:' ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
@@ -299,18 +299,10 @@ function _text_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      ct-malformed-configuration)
-         segment_identifier='configure_thresholds.sh: Malformed Configuration:' ;;
-      ct-duplicate-identifiers)
-         segment_identifier='configure_thresholds.sh: Duplicate Identifier:' ;;
-      at-no-arduino)
-         segment_identifier='arduino_trait.sh: No Arduino:' ;;
-      at-multiple-arduinos)
-         segment_identifier='arduino_trait.sh: Multiple Arduinos:' ;;
-      uct-template)
-         segment_identifier='user_configuration_template.sh: Template:' ;;
-      lightshow-usage)
-         segment_identifier='lightshow: Usage:' ;;
+      at-no-arduino)        segment_identifier='arduino_trait.sh: No Arduino:'             ;;
+      at-multiple-arduinos) segment_identifier='arduino_trait.sh: Multiple Arduinos:'      ;;
+      uct-template)         segment_identifier='user_configuration_template.sh: Template:' ;;
+      lightshow-usage)      segment_identifier='lightshow: Usage:'                         ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;

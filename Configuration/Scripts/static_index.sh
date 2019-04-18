@@ -84,15 +84,15 @@ function index_entry_for_file_ {
    fi
 
    # Asserts the validity of the declaration body.
-   local -r body=$(line_at_number_ 2 --in-string "$server_declaration")
-   local -r body_pattern=$(line_at_number_ 2 --in-string "$server_declaration")
+   local -r body=$(line_ 2 --in-string "$server_declaration")
+   local -r body_pattern=$(line_ 2 --in-string "$server_declaration")
    if ! egrep -q "$body_pattern" <<< "$body"; then
       echo "Error: \`$1\` contains a malformed server-declaration body" >&2
       return 2
    fi
 
    # Extracts the server identifier.
-   local -r header=$(line_at_number_ 1 --in-string "$server_declaration")
+   local -r header=$(line_ 1 --in-string "$server_declaration")
    local -r server_identifier=$(cut -d '"' -f 2 <<< "$header")
 
    # Extracts the server class name.

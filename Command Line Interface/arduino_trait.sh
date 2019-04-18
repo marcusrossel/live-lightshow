@@ -12,18 +12,17 @@
 # 1: invalid number of command line arguments
 # 2: <trait flag 1> or <trait flag 2> was invalid
 # 3: the user chose to quit
+# 4: internal error
 
 
 #-Preliminaries---------------------------------#
 
 
 # Gets the directory of this script.
-_dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports lookup and utilities.
-. "$_dot/../Utilities/lookup.sh"
-. "$_dot/../Utilities/utilities.sh"
-# (Re)sets the dot-variable after imports.
-dot="$_dot"
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+# Imports scripting and lookup utilities.
+. "$dot/../Utilities/scripting.sh"
+. "$dot/../Utilities/lookup.sh"
 
 
 #-Main------------------------------------------#
@@ -66,7 +65,7 @@ while true; do
    succeed_on_approval_ || exit 3
 done
 
-# Gets the FQBN and port of the connected Arduino.
+# Gets the traits of the connected Arduino in an array.
 read -a components <<< "$board_list"
 
 # Prints the components corresponding to the given trait flag, sequentially.
@@ -76,8 +75,8 @@ for flag in "$@"; do
       --port) echo "${components[1]}" ;;
 
       # Should be unreachable.
-      *) echo "Error: \`${BASH_SOURCE[0]}\` received invalid flag \"$flag\"" >&2
-         exit 2 ;;
+      *) echo "Internal error: \`${BASH_SOURCE[0]}\`" >&2
+         exit 4 ;;
    esac
 done
 

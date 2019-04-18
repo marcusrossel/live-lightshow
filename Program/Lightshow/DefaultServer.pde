@@ -83,8 +83,8 @@ final class DefaultServer implements Server {
   private Float loudnessRecalibrationDuration() { return configuration.valueForTrait("Loudness Recalibration Duration"); }
 
   // # TODO: Figure out how to deal with non-Float traits.
-  // #trait "Output Pins": [Integer]
-  private List<Integer> outputPins() { return new ArrayList<Integer>(); }
+  // #trait "Output Pin": 11
+  private Integer outputPin() { return Math.round(configuration.valueForTrait("Output Pin")); }
 
   Float loudnessOfLastFrame = 0f;
   Boolean lastFrameDidTrigger = false;
@@ -168,9 +168,10 @@ final class DefaultServer implements Server {
     }
 
     // Updates the pins' states.
-    for (Integer pin : outputPins()) {
-      arduino.digitalWrite(pin, lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
-    }
+    // for (Integer pin : outputPins()) {
+    //  arduino.digitalWrite(pin, lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
+    // }
+    arduino.digitalWrite(outputPin(), lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
 
     // Records the loudness of this frame.
     loudnessHistory.push(loudnessOfLastFrame);

@@ -74,7 +74,7 @@ function current_OS_ {
 # Return status:
 # 0: success
 # 1: received invalid <search object type flag>
-function line_at_number_ {
+function line_ {
    case "$2" in
       --in-file)   tail -n "+$1" "$3"     | head -n 1 ;;
       --in-string) tail -n "+$1" <<< "$3" | head -n 1 ;;
