@@ -52,9 +52,9 @@ while true; do
    # Prints an error message and returns on failure if no, of multiple Arduinos were found.
    # Otherwise the while-loop is exited.
    if [ -z "$board_list" ]; then
-      error_message=$(message_for_ at-no-arduino)
+      error_message=$(text_for_ at-no-arduino)
    elif [ "$(wc -l <<< "$board_list")" -gt 1 ]; then
-      error_message=$(message_for_ at-multiple-arduinos)
+      error_message=$(text_for_ at-multiple-arduinos)
    else
       break
    fi

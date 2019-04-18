@@ -78,8 +78,8 @@ function carry_out_configuration_editing_ {
          0) break ;;
 
          # Sets an appropriate error-message if the operation failed on a recoverable error.
-         3) error_message=`message_for_ --ct-malformed-configuratation` ;;
-         4) error_message=`message_for_ --ct-duplicate-identifiers` ;;
+         3) error_message=`text_for_ --ct-malformed-configuratation` ;;
+         4) error_message=`text_for_ --ct-duplicate-identifiers` ;;
 
          # Prints an error message and returns on failure if any other error occured.
          *) echo 'Internal error:'; cat "$error_pool"; return 1 ;;

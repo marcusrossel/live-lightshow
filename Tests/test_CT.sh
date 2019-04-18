@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: Add more tests.
-
 
 #-Preliminaries---------------------------------#
 

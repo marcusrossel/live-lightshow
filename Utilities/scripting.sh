@@ -95,7 +95,7 @@ function line_at_number_ {
 #
 # Returns:
 # 0: success
-# 1: reaceived invalid <search object type flag>
+# 1: received invalid <search object type flag>
 # 2: no line found equal to <string>
 function line_numbers_of_string_ {
    case "$2" in
@@ -111,7 +111,7 @@ function line_numbers_of_string_ {
    while read line; do
       if [ "$line" == "$1" ]; then
          echo $line_counter
-         return_status=1
+         return_status=0
       fi
 
       ((line_counter++))

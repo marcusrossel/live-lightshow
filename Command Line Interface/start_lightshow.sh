@@ -37,6 +37,7 @@ function declare_constants {
 
 #-Functions-------------------------------------#
 
+
 # Opens the instance-type map in Vi, and allows the user to edit it. The user will be prompted to
 # rewrite the configuration as long as it is malformed. They also have the option to quit.
 #

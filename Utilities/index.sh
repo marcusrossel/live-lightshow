@@ -37,7 +37,7 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Return status:
 # 0: success
 # 1: <string value> is not an existing value in <column> in <index file>
-function _index_entry_in_file_for_column_matching_value_ {
+function _index_entries_in_file_for_column_matching_value_ {
    # Gets the column from the index file.
    local -r index_column=$(cut -d : -f "$2" "$1")
 
@@ -121,7 +121,7 @@ function column_number_for_ {
 # 0: success
 # 1: <attribute identifier> was invalid
 # 2: <string value> is not an existing value for the attribute in the index file
-alias static_index_entry_for_='_static_index_entry_for_ '$(path_for_ static-index)' '
+alias static_index_entry_for_="_static_index_entry_for_ '$dot/../$(path_for_ static-index)' "
 function _static_index_entry_for_ {
    # Gets the column that needs to be checked in the index file from the given attribute
    # indentifier, or prints an error message and returns on failure if it is invalid.
@@ -148,7 +148,7 @@ function _static_index_entry_for_ {
 # 0: success
 # 1: <attribute identifier> was invalid
 # 2: <string value> is not an existing value for the attribute in the index file
-alias runtime_index_entries_for_='_runtime_index_entries_for_ '$(path_for_ runtime-index)' '
+alias runtime_index_entries_for_="_runtime_index_entries_for_ '$dot/../$(path_for_ runtime-index)' "
 function _runtime_index_entries_for_ {
    # Gets the column that needs to be checked in the index file from the given attribute
    # indentifier, or prints an error message and returns on failure if it is invalid.
@@ -179,7 +179,7 @@ function _runtime_index_entries_for_ {
 # 0: success
 # 1: <target attribute>, <source attribute>, or <for flag> was invalid
 # 2: <source field> is not an existing value for the attribute in the index file
-alias static_="_static_ '$(path_for_ static-index)' "
+alias static_="_static_ '$dot/../$(path_for_ static-index)' "
 function _static_ {
    # Binds the target column.
    target_column=$(column_number_for_ "$2" --in static-index) || return 1
@@ -217,7 +217,7 @@ function _static_ {
 # 0: success
 # 1: <target attribute>, <source attribute>, or <for flag> was invalid
 # 2: <source field> is not an existing value for the attribute in the index file
-alias runtime_="_runtime_ '$(path_for_ runtime-index)' "
+alias runtime_="_runtime_ '$dot/../$(path_for_ runtime-index)' "
 function _runtime_ {
    # Binds the target column.
    target_column=$(column_number_for_ "$2" --in runtime-index) || return 1

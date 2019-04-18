@@ -45,5 +45,5 @@ case "$subcommand" in
    start) "$app_directory/Command Line Interface/start_lightshow.sh" ;;
    directory) echo "$app_directory" ;;
    *)
-      echo -e "$(message_for_ lightshow-usage)"; exit 1 ;;
+      echo -e "$(text_for_ lightshow-usage)"; exit 1 ;;
 esac

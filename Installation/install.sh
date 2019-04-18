@@ -11,6 +11,9 @@
 # 4: repository-interal error
 # 5: post-install tests failed
 
+# TODO: Also install vi if necessary.
+
+
 #-Preliminaries---------------------------------#
 
 

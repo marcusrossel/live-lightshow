@@ -150,60 +150,6 @@ function _url_for_ {
    return 0
 }
 
-# Prints the error message associated with a given identifier.
-# All messages are taken from a given file defaulting to <lookup file: error messages>.
-# The lookup file should only really be changed for testing purposes.
-#
-# Arguments:
-# * <error message file> passed automatically by the alias
-# * <identifier>, possible values: *see below*
-#
-# Return status:
-# 0: success
-# 1: <identifier> is invalid
-# 2: <error message file> does not contain <identifier>'s identifier-string
-alias message_for_="_message_for_ '$dot/../Lookup Files/error-messages' "
-function _message_for_ {
-   # The string used to search the lookup file for a certain pattern.
-   local message_identifier
-
-   # Sets the search string according to the given identifier, or prints an error and returns on
-   # failure if an unknown identifier was passed.
-   case "$2" in
-      ct-malformed-configuration)
-         message_identifier='configure_thresholds.sh: Malformed Configuration:' ;;
-      ct-duplicate-identifiers)
-         message_identifier='configure_thresholds.sh: Duplicate Identifier:' ;;
-      at-no-arduino)
-         message_identifier='arduino_trait.sh: No Arduino:' ;;
-      at-multiple-arduinos)
-         message_identifier='arduino_trait.sh: Multiple Arduinos:' ;;
-      lightshow-usage)
-         message_identifier='lightshow: Usage:' ;;
-      *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
-         return 1 ;;
-   esac
-
-   # Gets the lines following the search string in the lookup file upto the line containing only
-   # "MESSAGE-END", or returns on failure if that operation fails.
-   if ! local -r message=$(_lines_after_unique_ "$message_identifier" "$1" --until 'MESSAGE-END')
-   then return 2; fi
-
-   # Performs manual line continuation.
-   local -r expanded_message=$(_expand_line_continuations "$message")
-
-   # Substitutes color variables declared in <lookup file: error messages> for actual values and
-   # prints the result.
-   echo "$expanded_message" | sed \
-      -e 's/RED>/\\033[0;31m/g' \
-      -e 's/GREEN>/\\033[0;32m/g' \
-      -e 's/YELLOW>/\\033[0;33m/g' \
-      -e 's/NORMAL>/\\033[0;m/g'
-
-   return 0
-}
-
 # Prints the constant string associated with a given identifier.
 # All constants are taken from a given file defaulting to <lookup file: item names>.
 # The lookup file should only really be changed for testing purposes.
@@ -218,7 +164,7 @@ function _message_for_ {
 # 2: <item name file> does not contain <identifier>'s identifier-string
 alias name_for_="_name_for_ '$dot/../Lookup Files/item-names' "
 function _name_for_ {
-   # The string used to search the lookup file for a certain pattern.
+   # The string used to search the lookup file for a certain name.
    local name_identifier
 
    # Sets the search string according to the given identifier, or prints an error and returns on
@@ -329,6 +275,62 @@ function _regex_for_ {
    # Prints the lines following the search string in the lookup file, or returns on failure if that
    # operation fails.
    _lines_after_unique_ "$regex_identifier" "$1" || return 2
+
+   return 0
+}
+
+# Prints the text segment associated with a given identifier.
+# All segments are taken from a given file defaulting to <lookup file: text segments>.
+# The lookup file should only really be changed for testing purposes.
+#
+# Arguments:
+# * <text segment file> passed automatically by the alias
+# * <identifier>, possible values: *see below*
+#
+# Return status:
+# 0: success
+# 1: <identifier> is invalid
+# 2: <text segment file> does not contain <identifier>'s identifier-string
+alias text_for_="_text_for_ '$dot/../Lookup Files/text-segments' "
+function _text_for_ {
+   # The string used to search the lookup file for a certain segment.
+   local segment_identifier
+
+   # Sets the search string according to the given identifier, or prints an error and returns on
+   # failure if an unknown identifier was passed.
+   case "$2" in
+      ct-malformed-configuration)
+         segment_identifier='configure_thresholds.sh: Malformed Configuration:' ;;
+      ct-duplicate-identifiers)
+         segment_identifier='configure_thresholds.sh: Duplicate Identifier:' ;;
+      at-no-arduino)
+         segment_identifier='arduino_trait.sh: No Arduino:' ;;
+      at-multiple-arduinos)
+         segment_identifier='arduino_trait.sh: Multiple Arduinos:' ;;
+      uct-template)
+         segment_identifier='user_configuration_template.sh: Template:' ;;
+      lightshow-usage)
+         segment_identifier='lightshow: Usage:' ;;
+      *)
+         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
+         return 1 ;;
+   esac
+
+   # Gets the lines following the search string in the lookup file upto the line containing only
+   # "SEGMENT-END", or returns on failure if that operation fails.
+   if ! local -r text=$(_lines_after_unique_ "$segment_identifier" "$1" --until 'SEGMENT-END')
+   then return 2; fi
+
+   # Performs manual line continuation.
+   local -r expanded_text=$(_expand_line_continuations "$text")
+
+   # Substitutes color variables declared in <lookup file: text segments> for actual values and
+   # prints the result.
+   echo "$expanded_text" | sed \
+      -e 's/RED>/\\033[0;31m/g' \
+      -e 's/GREEN>/\\033[0;32m/g' \
+      -e 's/YELLOW>/\\033[0;33m/g' \
+      -e 's/NORMAL>/\\033[0;m/g'
 
    return 0
 }

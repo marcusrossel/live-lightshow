@@ -24,9 +24,6 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly lightshow_program_directory="$dot/../../$(path_for_ lightshow-directory)"
-   readonly static_configuration_directory="$dot/../../$(path_for_ static-configuration-directory)"
-
    readonly static_index="$dot/../../$(path_for_ static-index)"
    readonly config_file_column=$(column_number_for_ config-file --in static-index)
    readonly file_path_column=$(column_number_for_ file-path --in static-index)
