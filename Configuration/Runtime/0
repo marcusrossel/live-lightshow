@@ -1,3 +1,4 @@
-Lower Frequency Bound: 0
-Upper Frequency Bound: 0
-Loudness Recalibration Duration: 0
+Lower Frequency Bound:30
+Upper Frequency Bound:300
+Loudness Recalibration Duration:3
+Output Pin:3

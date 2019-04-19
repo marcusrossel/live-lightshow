@@ -302,6 +302,7 @@ function _text_for_ {
       at-no-arduino)        segment_identifier='arduino_trait.sh: No Arduino:'             ;;
       at-multiple-arduinos) segment_identifier='arduino_trait.sh: Multiple Arduinos:'      ;;
       uct-template)         segment_identifier='user_configuration_template.sh: Template:' ;;
+      csi-header)           segment_identifier='configure_server_instance.sh: Header:'     ;;
       lightshow-usage)      segment_identifier='lightshow: Usage:'                         ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2

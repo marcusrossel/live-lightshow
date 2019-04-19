@@ -45,12 +45,27 @@ SEGMENT-END
 
 
 
+configure_server_instance.sh: Header:
+# Declare which of the server instance's traits should have which values.
+# Each declaration should have the form:
+# <trait identifier>: <value>
+#
+# So for example one declaration could be:
+# Example Trait: 3.14
+#
+# The <value>s must be numeric. Lines starting with # are ignored.
+# Possible <trait identifier>s for this server instance are:
+SEGMENT-END
+
+
+
 lightshow: Usage:
 RED>Invalid argument.NORMAL>
 
 The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
 ◦ YELLOW>initialize NORMAL>
 ◦ YELLOW>start NORMAL>
-◦ YELLOW>reindex NORMAL>
+◦ YELLOW>configure <NORMAL>instanceYELLOW>> NORMAL>
 ◦ YELLOW>directory NORMAL>
+◦ YELLOW>reindex NORMAL>
 SEGMENT-END

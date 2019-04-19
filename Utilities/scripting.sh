@@ -91,7 +91,7 @@ function line_ {
 # Arguments:
 # * <string>
 # * <search object type flag>, possible values: "--in-file", "--in-string"
-# * <lines>
+# * <line source>
 #
 # Returns:
 # 0: success
@@ -99,8 +99,8 @@ function line_ {
 # 2: no line found equal to <string>
 function line_numbers_of_string_ {
    case "$2" in
-      --in-file)   local -r search_space=$(cat "$1") ;;
-      --in-string) local -r search_space=$1 ;;
+      --in-file)   local -r search_space=$(cat "$3") ;;
+      --in-string) local -r search_space=$3 ;;
       *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
          return 1 ;;
    esac
