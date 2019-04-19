@@ -15,12 +15,10 @@
 # shells.
 shopt -s expand_aliases
 
-# Saves the previous value of the $dot-variable.
-previous_dot="$dot"
 # Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot_lookup=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports scripting utilities.
-. "$dot/scripting.sh"
+. "$dot_lookup/scripting.sh"
 
 
 #-Private-Functions-----------------------------#
@@ -125,7 +123,7 @@ function _expand_line_continuations {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <item name file> does not contain <identifier>'s identifier-string
-alias url_for_="_url_for_ '$dot/../Lookup Files/dependency-urls' "
+alias url_for_="_url_for_ '$dot_lookup/../Lookup Files/dependency-urls' "
 function _url_for_ {
    # The string used to search the lookup file for a certain pattern.
    local url_identifier
@@ -162,7 +160,7 @@ function _url_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <item name file> does not contain <identifier>'s identifier-string
-alias name_for_="_name_for_ '$dot/../Lookup Files/item-names' "
+alias name_for_="_name_for_ '$dot_lookup/../Lookup Files/item-names' "
 function _name_for_ {
    # The string used to search the lookup file for a certain name.
    local name_identifier
@@ -204,7 +202,7 @@ function _name_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <file locations file> does not contain <identifier>'s identifier-string
-alias path_for_="_path_for_ '$dot/../Lookup Files/file-paths' "
+alias path_for_="_path_for_ '$dot_lookup/../Lookup Files/file-paths' "
 function _path_for_ {
    # The string used to search the lookup file for certain paths.
    local path_identifier
@@ -253,7 +251,7 @@ function _path_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <regular expression file> does not contain <identifier>'s identifier-string
-alias regex_for_="_regex_for_ '$dot/../Lookup Files/regular-expressions' "
+alias regex_for_="_regex_for_ '$dot_lookup/../Lookup Files/regular-expressions' "
 function _regex_for_ {
    # The string used to search the lookup file for a certain pattern.
    local regex_identifier
@@ -291,7 +289,7 @@ function _regex_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <text segment file> does not contain <identifier>'s identifier-string
-alias text_for_="_text_for_ '$dot/../Lookup Files/text-segments' "
+alias text_for_="_text_for_ '$dot_lookup/../Lookup Files/text-segments' "
 function _text_for_ {
    # The string used to search the lookup file for a certain segment.
    local segment_identifier
@@ -327,10 +325,3 @@ function _text_for_ {
 
    return 0
 }
-
-
-#-Cleanup---------------------------------------#
-
-
-# Resets the $dot-variable to its previous value.
-dot="$previous_dot"

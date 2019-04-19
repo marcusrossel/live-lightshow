@@ -15,12 +15,10 @@
 # shells.
 shopt -s expand_aliases
 
-# Saves the previous value of the $dot-variable.
-previous_dot="$dot"
 # Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot_testing=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports scripting utilities.
-. "$dot/scripting.sh"
+. "$dot_testing/scripting.sh"
 
 
 #-Functions-------------------------------------#
@@ -182,10 +180,3 @@ function _interactively- {
    wait $command_pid
    return $?
 }
-
-
-#-Cleanup---------------------------------------#
-
-
-# Resets the $dot-variable to its previous value.
-dot="$previous_dot"

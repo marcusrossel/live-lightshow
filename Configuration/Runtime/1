@@ -1,4 +1,4 @@
-Lower Frequency Bound:300
-Upper Frequency Bound:4000
+Lower Frequency Bound:4000
+Upper Frequency Bound:16000
 Loudness Recalibration Duration:3
-Output Pin:6
+Output Pin:10

@@ -28,7 +28,7 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly server_id=$(runtime_ server-id --for instance-id "$1")
+   readonly server_id=$(values_for_ server-id --in runtime-index --with instance-id "$1")
 
    return 0
 }
@@ -43,7 +43,8 @@ function declare_constants {
 # * <server ID>
 function header_for_server_id {
    # Gets the list of valid trait IDs.
-   local -r static_config_file=$(static_ config-file --for server-id "$server_id")
+   local -r static_config_file=$(values_for_ config-file --in static-index \
+                                                      --with server-id "$server_id")
    local -r valid_trait_ids=$(cut -d : -f 1 "$static_config_file")
 
    # Prints the header.
@@ -114,7 +115,7 @@ declare_constants "$@"
 
 # Gets the runtime configuration file associated with the given <server instance identifier>, or
 # returns on failure if none was found.
-if ! runtime_config_file=$(runtime_ config-file --for instance-id "$1"); then
+if ! runtime_config_file=$(values_for_ config-file --in runtime-index --with instance-id "$1"); then
    echo "Error: \`${BASH_SOURCE[0]}\` received invalid server instance identifier \"$1\"" >&2
    exit 2
 fi

@@ -20,35 +20,19 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 . "$dot/../../Utilities/index.sh"
 
 
-#-Constants-------------------------------------#
-
-
-# The function wrapping all constant-declarations for this script.
-function declare_constants {
-   readonly runtime_index="$dot/../../$(path_for_ runtime-index)"
-   readonly static_index="$dot/../../$(path_for_ static-index)"
-
-   readonly runtime_server_id_column=$(column_number_for_ server-id --in runtime-index)
-   readonly runtime_config_file_column=$(column_number_for_ config-file --in runtime-index)
-
-   return 0
-}
-
-
 #-Main------------------------------------------#
 
 
 assert_correct_argument_count_ 0 || exit 1
-declare_constants "$@"
 
 # Iterates over the runtime index' entries.
 while read runtime_entry; do
    # Gets the server-ID and configuration file of the runtime entry.
-   server_id=$(cut -d : -f $runtime_server_id_column <<< "$runtime_entry")
-   runtime_config_file=$(cut -d : -f $runtime_config_file_column <<< "$runtime_entry")
+   server_id=$(column_for_ server-id --in-entries "$runtime_entry" --of runtime-index)
+   runtime_config_file=$(column_for_ config-file --in-entries "$runtime_entry" --of runtime-index)
 
    # Gets the static configuration file corresponding to the runtime entry's server-ID.
-   static_config_file=$(static_ config-file --for server-id "$server_id")
+   static_config_file=$(values_for_ config-file --in static-index --with server-id "$server_id")
 
    # Aborts if the previous operation didn't work.
    [ $? -ne 0 ] && { echo "Internal error: \`${BASH_SOURCE[0]}\`"; exit 2; }
@@ -56,6 +40,6 @@ while read runtime_entry; do
    # Copies the contents of the static configuration file for current server-ID, to the current
    # runtime configuration file.
    cat "$static_config_file" >"$runtime_config_file"
-done < "$runtime_index"
+done < "$dot/../../$(path_for_ runtime-index)"
 
 exit 0

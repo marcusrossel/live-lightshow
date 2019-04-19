@@ -15,11 +15,6 @@
 # shells.
 shopt -s expand_aliases
 
-# Saves the previous value of the $dot-variable.
-previous_dot="$dot"
-# Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-
 
 #-Constants-------------------------------------#
 
@@ -228,10 +223,3 @@ function succeed_on_approval_ {
       esac
    done
 }
-
-
-#-Cleanup---------------------------------------#
-
-
-# Resets the $dot-variable to its previous value.
-dot="$previous_dot"

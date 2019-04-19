@@ -28,14 +28,14 @@
 * line 1: Rewrite these.
 ---
 ### `configure_server_instance.sh`:
-* line 87: Add proper error messages.
+* line 88: Add proper error messages.
 ---
 ### `file-paths`:
 * line 56: Find a location.
 * line 62: Find a location.
 ---
 ### `index.sh`:
-* line 7: Consolidate some of these functions with flags/identifiers.
+* line 84: Document this.
 ---
 ### `install.sh`:
 * line 14: Also install vi if necessary.
@@ -52,7 +52,7 @@
 * line 6: Increase test-coverage.
 ---
 ### `testing.sh`:
-* line 127: Iron out the race conditions by having some kind of detection of input being read/expected.
+* line 125: Iron out the race conditions by having some kind of detection of input being read/expected.
 ---
 ### `write_runtime_index_into.sh`:
 * line 67: Add proper error messages.

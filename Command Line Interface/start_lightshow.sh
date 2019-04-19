@@ -40,25 +40,21 @@ function declare_constants {
 #
 # This map is used in the lightshow program to instantiate the server instances.
 function server_instantiation_map {
-   # Gets constants.
-   local -r static_index="$dot/../$(path_for_ static-index)"
-   local -r runtime_index="$dot/../$(path_for_ runtime-index)"
-   local -r runtime_server_id_column=$(column_number_for_ server-id --in runtime-index)
-   local -r runtime_config_file_column=$(column_number_for_ config-file --in runtime-index)
-
    # Iterates over the runtime-index.
    while read runtime_entry; do
       # Gets the server-ID associated with the current runtime entry's server instance.
-      local server_id=$(cut -d : -f $runtime_server_id_column <<< "$runtime_entry")
+      local server_id=$(column_for_ server-id --in-entries "$runtime_entry" --of runtime-index)
 
       # Gets the components for a server instantiation map entry.
-      local class_name=$(static_ class-name --for server-id "$server_id")
-      local static_config_file=$(static_ config-file --for server-id "$server_id")
-      local runtime_config_file=$(cut -d : -f $runtime_config_file_column <<< "$runtime_entry")
+      local class_name=$(values_for_ class-name --in static-index --with server-id "$server_id")
+      local static_config_file=$(values_for_ config-file --in static-index \
+                                                       --with server-id "$server_id")
+      local runtime_config_file=$(column_for_ config-file --in-entries "$runtime_entry" \
+                                                                  --of runtime-index)
 
       # Prints the server instantiation map entry.
       echo "$class_name:$static_config_file:$runtime_config_file"
-   done < "$runtime_index"
+   done < "$dot/../$(path_for_ runtime-index)"
 
    return 0
 }

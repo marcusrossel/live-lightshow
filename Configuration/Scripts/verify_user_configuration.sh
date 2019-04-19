@@ -39,16 +39,6 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 . "$dot/../../Utilities/index.sh"
 
 
-#-Constants-------------------------------------#
-
-
-# The function wrapping all constant-declarations for this script.
-function declare_constants {
-   readonly static_index="$dot/../../$(path_for_ static-index)"
-   readonly static_server_id_column=$(column_number_for_ server-id --in static-index)
-}
-
-
 #-Functions-------------------------------------#
 
 
@@ -93,7 +83,7 @@ function duplicate_instance_identifiers_in {
 function invalid_server_identifiers_in {
    # Gets lists of the given and valid server IDs.
    local -r given_server_ids=$(cut -d : -f 2- <<< "$1")
-   local -r valid_server_ids=$(cut -d : -f "$static_server_id_column" "$static_index")
+   local -r valid_server_ids=$(column_for_ server-id --in static-index)
 
    # Iterates over the given server IDs.
    while read -r given_server_id; do
@@ -114,7 +104,6 @@ function invalid_server_identifiers_in {
 
 
 assert_correct_argument_count_ 1 '<user configuration>' || exit 1
-declare_constants "$@"
 
 # Gets the lines that are not empty and don't start with #.
 readonly configuration_entries=$(egrep -v '(^$|^\s*#)' "$1")

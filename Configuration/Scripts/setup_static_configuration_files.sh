@@ -19,19 +19,6 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 . "$dot/../../Utilities/index.sh"
 
 
-#-Constants-------------------------------------#
-
-
-# The function wrapping all constant-declarations for this script.
-function declare_constants {
-   readonly static_index="$dot/../../$(path_for_ static-index)"
-   readonly config_file_column=$(column_number_for_ config-file --in static-index)
-   readonly file_path_column=$(column_number_for_ file-path --in static-index)
-
-   return 0
-}
-
-
 #-Functions-------------------------------------#
 
 
@@ -63,15 +50,14 @@ function trait_configuration_for_file {
 
 
 assert_correct_argument_count_ 0 || exit 1
-declare_constants "$@"
 
 # Iterates over the static index' entries.
 while read index_entry; do
-   file_path=$(cut -d : -f "$file_path_column" <<< "$index_entry")
-   config_file=$(cut -d : -f "$config_file_column" <<< "$index_entry")
+   file_path=$(column_for_ file-path --in-entries "$index_entry" --of static-index)
+   config_file=$(column_for_ config-file --in-entries "$index_entry" --of static-index)
 
    # Creates a new configuration file containing the appropriate trait configuration.
    trait_configuration_for_file "$file_path" > "$config_file"
-done < "$static_index"
+done < "$dot/../../$(path_for_ static-index)"
 
 exit 0

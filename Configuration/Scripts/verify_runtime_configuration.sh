@@ -46,7 +46,8 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
    local -r server_id=$2
-   readonly static_config_file=$(static_ config-file --for server-id "$server_id")
+   readonly static_config_file=$(values_for_ config-file --in static-index \
+                                                      --with server-id "$server_id")
 }
 
 

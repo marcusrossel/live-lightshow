@@ -19,21 +19,10 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 . "$dot/../../Utilities/index.sh"
 
 
-#-Constants-------------------------------------#
-
-
-# The function wrapping all constant-declarations for this script.
-function declare_constants {
-   readonly static_index="$dot/../../$(path_for_ static-index)"
-   readonly server_id_column=$(column_number_for_ server-id --in static-index)
-}
-
-
 #-Main------------------------------------------#
 
 
 assert_correct_argument_count_ 0 || exit 1
-declare_constants "$@"
 
 # Prints the user configuration template.
 echo "$(text_for_ uct-template)"
@@ -42,9 +31,7 @@ echo "$(text_for_ uct-template)"
 # # * <server ID 1>
 # # * <server ID 2>
 # ...
-cut -d : -f "$server_id_column" "$static_index" | while read server_id; do
-   echo "# * $server_id"
-done
+column_for_ server-id --in static-index | while read server_id; do echo "# * $server_id"; done
 
 # Adds a trailing newline.
 echo
