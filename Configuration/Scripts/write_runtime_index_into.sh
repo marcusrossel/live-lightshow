@@ -18,9 +18,10 @@
 
 # Gets the directory of this script.
 dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports scripting and lookup utilities.
+# Imports scripting, lookup and index utilities.
 . "$dot/../../Utilities/scripting.sh"
 . "$dot/../../Utilities/lookup.sh"
+. "$dot/../../Utilities/index.sh"
 
 
 #-Constants-------------------------------------#
@@ -85,6 +86,25 @@ function carry_out_configuration_editing_ {
    return 0
 }
 
+# Prints a template which can be displayed to the user when retrieving their desired instance-ID to
+# server-type(server ID) mapping.
+function user_configuration_template {
+   # Prints the user configuration template header.
+   echo "$(text_for_ uct-template)"
+
+   # Prints the server-identifiers contained in static index in the form:
+   # # * <server ID 1>
+   # # * <server ID 2>
+   # ...
+   column_for_ server-id --in static-index | while read server_id; do
+      echo "# * $server_id"
+   done
+
+   # Adds a trailing newline.
+   echo
+   return 0
+}
+
 
 #-Main------------------------------------------#
 
@@ -96,7 +116,7 @@ declare_constants "$@"
 trap "silently- rm '$user_configuration_file'" EXIT
 
 # Sets up the user configuration file.
-"$dot/user_configuration_template.sh" >"$user_configuration_file"
+user_configuration_template >"$user_configuration_file"
 
 carry_out_configuration_editing_ "$user_configuration_file" || exit $(($?+1))
 

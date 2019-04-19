@@ -55,4 +55,4 @@
 * line 125: Iron out the race conditions by having some kind of detection of input being read/expected.
 ---
 ### `write_runtime_index_into.sh`:
-* line 67: Add proper error messages.
+* line 68: Add proper error messages.
