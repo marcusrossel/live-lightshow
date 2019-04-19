@@ -7,9 +7,10 @@ import java.nio.file.Path;
 // # TODO: Add documentation.
 public final class Configuration {
   
+  // # TODO: Make private.
   private Map<String, Float> staticTraits;
   private Map<String, Float> runtimeTraits;
-  private Path runtimeConfiguration;
+  public Path runtimeConfiguration;
   private Integer timeOfLastRefresh;
   private Integer millisecondsToRefresh; 
   
@@ -18,9 +19,9 @@ public final class Configuration {
     timeOfLastRefresh = 0;
     
     // # TODO: Factor this out, e.g. by automatically adding a trait to the static-traits in the static_index.sh
-    millisecondsToRefresh = 3000; 
+    millisecondsToRefresh = 5000; 
     
-    try { staticTraits = mapFromConfiguration(staticConfiguration); } catch (Exception _) { /* # TODO: Fatal error. */ }  
+    try { staticTraits = mapFromConfiguration(staticConfiguration); } catch (Exception e) { /* # TODO: Fatal error. */ }  
     updateRuntimeTraitConfiguration();
   }
   
@@ -42,7 +43,7 @@ public final class Configuration {
   
   void updateRuntimeTraitConfiguration() {
     timeOfLastRefresh = millis();
-    try { runtimeTraits = mapFromConfiguration(runtimeConfiguration); } catch (Exception _) { }
+    try { runtimeTraits = mapFromConfiguration(runtimeConfiguration); } catch (Exception e) { }
   }
   
   private Map<String, Float> mapFromConfiguration(Path path) throws Exception {
@@ -57,9 +58,9 @@ public final class Configuration {
       Float value = Float.parseFloat(entryComponents[1]);
       
       map.put(traitIdentifier, value);
-      configurationScanner.close();
     }
     
+    configurationScanner.close();
     return map;
   }
 }

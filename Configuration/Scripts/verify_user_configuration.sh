@@ -45,7 +45,7 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
    readonly static_index="$dot/../../$(path_for_ static-index)"
-   readonly server_id_column=$(column_number_for_ server-id --in static-index)
+   readonly static_server_id_column=$(column_number_for_ server-id --in static-index)
 }
 
 
@@ -93,7 +93,7 @@ function duplicate_instance_identifiers_in {
 function invalid_server_identifiers_in {
    # Gets lists of the given and valid server IDs.
    local -r given_server_ids=$(cut -d : -f 2- <<< "$1")
-   local -r valid_server_ids=$(cut -d : -f "$server_id_column" "$static_index")
+   local -r valid_server_ids=$(cut -d : -f "$static_server_id_column" "$static_index")
 
    # Iterates over the given server IDs.
    while read -r given_server_id; do

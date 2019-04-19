@@ -25,14 +25,23 @@ readonly app_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd
 #-Main------------------------------------------#
 
 
+# Binds the subcommand and shifts the rest of the command line arguments to be passable to the
+# subcommand.
+readonly subcommand=$1
+shift
+
 # Runs the script corresponding to the given subcommand, or prints an error message and returns on
 # failure if the given subcommand was invalid.
-case "$1" in
+case "$subcommand" in
    initialize)
       "$app_directory/Command Line Interface/push_program.sh" || exit $?
       "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
    start)
       "$app_directory/Command Line Interface/start_lightshow.sh" ;;
+   configure)
+      "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@";;
+   save-configuration)
+      ;; # TODO: Implement.
    reindex)
       "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
    directory)

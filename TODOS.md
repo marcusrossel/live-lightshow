@@ -1,15 +1,16 @@
 
 ---
 ### `Configuration.pde`:
-* line 20: Factor this out, e.g. by automatically adding a trait to the static-traits in the static_index.sh
-* line 23: Fatal error. */ }
-* line 39: Fatal error. */ }
+* line 10: Make private.
+* line 21: Factor this out, e.g. by automatically adding a trait to the static-traits in the static_index.sh
+* line 24: Fatal error. */ }
+* line 40: Fatal error. */ }
 * line 7: Add documentation.
 ---
 ### `DefaultServer.pde`:
 * line 1: Give Default Servers inertia.
 * line 65: Clean this up.
-* line 85: Figure out how to deal with non-Float traits.
+* line 87: Figure out how to deal with non-Float traits.
 ---
 ### `DefaultVisualizer.pde`:
 * line 1: Figure out how to handle visualizers.
@@ -20,10 +21,14 @@
 * line 68: Fatal error.
 ---
 ### `Server.pde`:
-* line 3: Figure out how to add a constructor or static method requirement.
+* line 2: For testing only.
+* line 4: Figure out how to add a constructor or static method requirement.
 ---
 ### `coding-conventions.md`:
 * line 1: Rewrite these.
+---
+### `configure_server_instance.sh`:
+* line 87: Add proper error messages.
 ---
 ### `file-paths`:
 * line 56: Find a location.
@@ -39,6 +44,9 @@
 * line 231: Check if all of the commands are working and the tests pass.
 * line 67: Make this properly global.
 * line 98: Hacky.
+---
+### `lightshow`:
+* line 44: Implement.
 ---
 ### `run_tests.sh`:
 * line 6: Increase test-coverage.

@@ -67,6 +67,8 @@ final class LoudnessHistory {
 // #server "default"
 final class DefaultServer implements Server {
 
+  Configuration getConfiguration() { return configuration; }
+
   private Configuration configuration;
 
   public DefaultServer(Configuration configuration) {
@@ -88,6 +90,7 @@ final class DefaultServer implements Server {
 
   Float loudnessOfLastFrame = 0f;
   Boolean lastFrameDidTrigger = false;
+  Integer previousOutput = Arduino.LOW;
 
   Float maxLoudness = 0f;
   Float recentMaxLoudness = 0f;
@@ -121,6 +124,9 @@ final class DefaultServer implements Server {
   private Float bandLoudnessForFrame(FFT frameSpectrum) {
     Integer lowestBand = Math.round(lowerBound() / frameSpectrum.getBandWidth());
     Integer highestBand = Math.round(upperBound() / frameSpectrum.getBandWidth());
+    Integer bandCount = highestBand - lowestBand;
+
+    if (bandCount < 1) { return 0f; }
 
     Float aWeightedSquareIntensitySum = 0f;
     for (Integer band = lowestBand; band <= highestBand; band++) {
@@ -129,7 +135,6 @@ final class DefaultServer implements Server {
       aWeightedSquareIntensitySum += pow(weightedIntensity, 2);
     }
 
-    Integer bandCount = highestBand - lowestBand;
     Float aWeightedRootMeanSquare = sqrt(aWeightedSquareIntensitySum / bandCount);
 
     return aWeightedRootMeanSquare;
@@ -171,7 +176,12 @@ final class DefaultServer implements Server {
     // for (Integer pin : outputPins()) {
     //  arduino.digitalWrite(pin, lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
     // }
-    arduino.digitalWrite(outputPin(), lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
+
+    Integer newOutput = lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW;
+    if (newOutput != previousOutput) {
+      previousOutput = newOutput;
+      arduino.digitalWrite(outputPin(), newOutput);
+    }
 
     // Records the loudness of this frame.
     loudnessHistory.push(loudnessOfLastFrame);

@@ -65,13 +65,13 @@ function carry_out_configuration_editing_ {
          0) break ;;
 
          # TODO: Add proper error messages.
-         2) error_message="Malformed instance-identifiers\n$invalid_items" ;;
+         2) error_message="Malformed instance-identifiers:\n$invalid_items" ;;
          3) error_message="Duplicate instance-identifiers:\n$invalid_items" ;;
          4) error_message="Invalid server-identifiers:\n$invalid_items" ;;
 
          # Prints an error message and returns on failure if any other error occured.
          *) echo "Internal error: \`${BASH_SOURCE[0]}\`" >&2
-            return 3 ;;
+            return 2 ;;
       esac
 
       # This point is only reached if a recoverable error occured.
@@ -79,7 +79,7 @@ function carry_out_configuration_editing_ {
       clear >&2
       echo -e "$error_message" >&2
       echo -e "\n${print_green}Do you want to try again? [y or n]$print_normal" >&2
-      succeed_on_approval_ || return 2
+      succeed_on_approval_ || return 1
    done
 
    return 0
@@ -98,7 +98,7 @@ trap "silently- rm '$user_configuration_file'" EXIT
 # Sets up the user configuration file.
 "$dot/user_configuration_template.sh" >"$user_configuration_file"
 
-carry_out_configuration_editing_ "$user_configuration_file" || exit 2
+carry_out_configuration_editing_ "$user_configuration_file" || exit $(($?+1))
 
 # Empties the target file.
 >"$target_file"

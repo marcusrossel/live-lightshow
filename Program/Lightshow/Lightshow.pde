@@ -27,7 +27,7 @@ List<Server> serversForInstantiationMap(String serverInstantiationMap) throws Ex
     String[] entryComponents = mapEntry.split(":");
     
     // Gets the map entry components as their respective types.
-    Class instanceClass = Class.forName("$Lightshow" + entryComponents[0]);
+    Class instanceClass = Class.forName("Lightshow$" + entryComponents[0]);
     Path staticConfiguration = Paths.get(entryComponents[1]);
     Path runtimeConfiguration = Paths.get(entryComponents[2]);
     
