@@ -25,7 +25,8 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
    readonly arduino_port=$("$dot/arduino_trait.sh" --port); [ $? -eq 3 ] && exit 1
-   readonly program_folder="$dot/../$(path_for_ lightshow-directory)"
+   readonly program_directory="$dot/../$(path_for_ lightshow-directory)"
+   readonly servers_directory="$dot/../$(path_for_ servers-directory)"
 }
 
 
@@ -72,5 +73,15 @@ declare_constants "$@"
 # Gets the server instantiation map (SIM).
 readonly sim=$(server_instantiation_map)
 
+# Copies all servers' program files to the lightshow program directory for compilation.
+# TODO: Make sure none of the servers are called "Server", "Configuration", or "Lightshow".
+cp "$servers_directory"/* "$program_directory"
+
 # Starts the lightshow program, while passing it the Arduino's port and the SIM.
-silently- processing-java --sketch="$program_folder" --run "$arduino_port" "$sim" &
+processing-java --sketch="$program_directory" --run "$arduino_port" "$sim" &
+
+# Removes all servers' program files from the lightshow program directory after compilation.
+for server_file in $(ls "$servers_directory"); do
+   # TODO: Change this to `rm` when safe.
+   rem "$program_directory/$(basename "$server_file")"
+done

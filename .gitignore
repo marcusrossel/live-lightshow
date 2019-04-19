@@ -1,1 +1,4 @@
 .DS_Store
+# Configuration/Index/*
+# Configuration/Static/*
+# Configuration/Runtime/*

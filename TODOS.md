@@ -51,6 +51,10 @@
 ### `run_tests.sh`:
 * line 6: Increase test-coverage.
 ---
+### `start_lightshow.sh`:
+* line 77: Make sure none of the servers are called "Server", "Configuration", or "Lightshow".
+* line 85: Change this to `rm` when safe.
+---
 ### `testing.sh`:
 * line 125: Iron out the race conditions by having some kind of detection of input being read/expected.
 ---

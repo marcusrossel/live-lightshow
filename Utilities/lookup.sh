@@ -175,6 +175,7 @@ function _name_for_ {
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
       lightshow-program)        name_identifier='Lightshow program:'                    ;;
+      runtime-servers-file)     name_identifier='Runtime-servers program file:'         ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2

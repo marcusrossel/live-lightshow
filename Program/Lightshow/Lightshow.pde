@@ -18,28 +18,28 @@ List<Server> servers;
 
 List<Server> serversForInstantiationMap(String serverInstantiationMap) throws Exception {
   List<Server> instantiatees = new ArrayList<Server>();
-  
+
   // Iterates over the server instantiation map entry for each expected server instance.
   Scanner mapScanner = new Scanner(serverInstantiationMap);
   while (mapScanner.hasNextLine()) {
     // Gets the map entry.
-    String mapEntry = mapScanner.nextLine(); 
+    String mapEntry = mapScanner.nextLine();
     String[] entryComponents = mapEntry.split(":");
-    
+
     // Gets the map entry components as their respective types.
     Class instanceClass = Class.forName("Lightshow$" + entryComponents[0]);
     Path staticConfiguration = Paths.get(entryComponents[1]);
     Path runtimeConfiguration = Paths.get(entryComponents[2]);
-    
-    // Creates the instance's configuration and constructor. 
+
+    // Creates the instance's configuration and constructor.
     Configuration configuration = new Configuration(staticConfiguration, runtimeConfiguration);
     Constructor instanceConstructor = instanceClass.getConstructor(Lightshow.class, Configuration.class);
-    
+
     // Instantiates the instance and adds it to the list of servers.
     Server instance = (Server) instanceConstructor.newInstance(this, configuration);
     instantiatees.add(instance);
   }
-  
+
   mapScanner.close();
   return instantiatees;
 }
@@ -61,7 +61,7 @@ void setup() {
     println("Internal error: `Lightshow.pde` didn't receive the correct number of command line arguments");
     System.exit(1);
   }
-  
+
   try {
     servers = serversForInstantiationMap(serverInstantiationMap);
   } catch (Exception e) {

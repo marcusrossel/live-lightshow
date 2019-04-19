@@ -30,7 +30,7 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly lightshow_program_directory="$dot/../../$(path_for_ lightshow-directory)"
+   readonly servers_directory="$dot/../../$(path_for_ servers-directory)"
    readonly static_configuration_directory="$dot/../../$(path_for_ static-configuration-directory)"
 
    return 0
@@ -111,13 +111,12 @@ function index_entry_for_file_ {
 assert_correct_argument_count_ 0 || exit 1
 declare_constants "$@"
 
-# Iterates over the files in the Lightshow program directory.
+# Iterates over the files in the servers' program directory.
 server_counter=0
-for file in $(ls "$lightshow_program_directory"); do
+for file in $(ls "$servers_directory"); do
    # Gets the index entry corresponding to the given file, without the static configuration file
    # path.
-   partial_entry=$(index_entry_for_file_ "$lightshow_program_directory/$file") || exit $(($?+1))
-
+   partial_entry=$(index_entry_for_file_ "$servers_directory/$file") || exit $(($?+1))
 
    # Only prints the entry and increments the server counter if there actually was a server in the
    # file.
