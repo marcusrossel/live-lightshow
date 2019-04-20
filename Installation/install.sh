@@ -11,7 +11,7 @@
 # 4: repository-interal error
 # 5: post-install tests failed
 
-# TODO: Also install vi if necessary.
+# TODO: Also install vi and check for curl.
 
 
 #-Preliminaries---------------------------------#
@@ -20,8 +20,8 @@
 # Gets the directory of this script.
 dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports scripting and lookup utilities.
-. "$dot/scripting.sh"
-. "$dot/lookup.sh"
+. "$dot/../Utilities/scripting.sh"
+. "$dot/../Utilities/lookup.sh"
 
 
 #-Constants-------------------------------------#

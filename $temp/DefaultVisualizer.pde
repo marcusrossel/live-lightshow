@@ -1,5 +1,3 @@
-// # TODO: Figure out how to handle visualizers.
-
 final class DefaultVisualizer {
 
   DefaultVisualizer(ArrayList<DefaultServer> defaultServers) {

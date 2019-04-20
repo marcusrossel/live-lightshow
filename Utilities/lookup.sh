@@ -24,6 +24,40 @@ dot_lookup=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 #-Private-Functions-----------------------------#
 
 
+# Prints the line of <file> immediately following the line containing only <string>.
+# It is expected for there to be exactly one line containing only <string>.
+# The line following the matched <string>-line must be non-empty.
+#
+# Arguments:
+# * <string>
+# * <in flag> possible values: "--in-string", "--in-file"
+# * <file>
+#
+# Return status:
+# 0: success
+# 1: the given <in flag> was invalid
+# 2: there were less or more than one line exactly matching <string> in <file>
+function _line_after_unique_ {
+   # Gets the line containing only <string> and the one following it and makes sure the <in flag>
+   # was valid.
+   case "$2" in
+      --in-string) local -r match=$(egrep -A1 "^$1\$" <<< "$3") ;;
+      --in-file)   local -r match=$(egrep -A1 "^$1\$" "$3") ;;
+      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
+         return 1
+   esac
+
+   # Returns on success if there was exaclty one match, or on failure otherwise.
+   if [ "$(wc -l <<< "$match")" -eq 2 ]; then
+      # Prints the result.
+      line_ 2 --in-string "$match"
+      return 0
+   else
+      echo "Error: \`${FUNCNAME[0]}\` did not match exactly one line with \"$1\"" >&2
+      return 2
+   fi
+}
+
 # Prints all of the lines of <file> immediately following the line containing only <string> upto a
 # certain delimiter.
 # It is expected for there to be exactly one line containing only <string>.
@@ -48,13 +82,13 @@ function _lines_after_unique_ {
    if [ -n "$3" ]; then
       # Asserts flag validity.
       if [ "$3" != '--until' ]; then
-         echo "Error: \`${FUNCNAME[0]}\` received invalid flag" >&2
+         echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$3\"" >&2
          return 1
       fi
 
       # Asserts delimiter validity.
       if [ -z "$4" ]; then
-         echo "Error: \`${FUNCNAME[0]}\` received invalid delimiter" >&2
+         echo "Error: \`${FUNCNAME[0]}\` received invalid delimiter \"$4\"" >&2
          return 2
       fi
 
@@ -107,6 +141,72 @@ function _expand_line_continuations {
    return 0
 }
 
+# Replaces non-terminal symbols of a given regular expression file in a given regular expression.
+#
+# Arguments:
+# * <regular expression file>
+# * <in flag> possible values: "--in"
+# * <regular expression>
+#
+# Return status:
+# 0: success
+# 1: the given <in flag> was invalid
+# 2: <regular expression file> contains an improperly declared symbol
+# 2: <regular expression file> contains an undefined
+function _replace_symbols_of_ {
+   # Makes sure the <in flag> was passed.
+   if [ "$2" != '--in' ]; then
+      echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
+      return 1
+   fi
+
+   # Creates a working variable for the pattern and a symbol table for memoizing the regular
+   # expressions of previously seen symbols.
+   local raw_pattern=$3
+   local symbol_table=''
+
+   # Iterates as long as the raw pattern contains symbol delimiters.
+   while [[ "$raw_pattern" == *!* ]]; do
+      # Makes sure there are an even number of symbol delimiters.
+      local symbol_delimiter_count=$(awk -F '!' '{print NF-1}' <<< "$raw_pattern")
+      if [ $((symbol_delimiter_count % 2)) -eq 1 ]; then
+         echo "Error: regular expression \"$3\" contains improperly declared symbol" >&2
+         return 2
+      fi
+
+      # Gets the first symbol in the raw pattern.
+      local first_symbol=$(cut -d '!' -f 2 <<< "$raw_pattern")
+      local symbol_pattern
+
+      # Tries to get the symbol pattern from the symbol table.
+      symbol_pattern=$(silently- --stderr \
+         _line_after_unique_ "!$first_symbol!" --in-string "$symbol_table"
+      )
+
+      # Gets the symbol pattern from the regular expression file and memoizes it, if it was not
+      # already memoized.
+      if [ $? -ne 0 ]; then
+         symbol_pattern=$(silently- --stderr _line_after_unique_ "!$first_symbol!" --in-file "$1")
+
+         if [ $? -ne 0 ]; then
+            echo "Error: regular expression \"$3\" contains undefined symbol \"$first_symbol\"" >&2
+            return 3
+         fi
+
+         symbol_table=$symbol_table$'\n!'$first_symbol$'!\n'$symbol_pattern
+      fi
+
+      # Updates the raw pattern with the symbol's pattern.
+      local sed_safe_symbol=$(sed_safe_ -s "!$first_symbol!")
+      local sed_safe_symbol_pattern=$(sed_safe_ -r "$symbol_pattern")
+      raw_pattern=$(sed -e "s/$sed_safe_symbol/$sed_safe_symbol_pattern/g" <<< "$raw_pattern")
+   done
+
+   # Prints the result and returns successfully.
+   echo "$raw_pattern"
+   return 0
+}
+
 
 #-Public-Functions------------------------------#
 
@@ -141,9 +241,9 @@ function _url_for_ {
          return 1 ;;
    esac
 
-   # Prints the lines following the search string in the lookup file, or returns on failure if that
+   # Prints the line following the search string in the lookup file, or returns on failure if that
    # operation fails.
-   _lines_after_unique_ "$url_identifier" "$1" || return 2
+   _line_after_unique_ "$url_identifier" --in-file "$1" || return 2
 
    return 0
 }
@@ -174,17 +274,15 @@ function _name_for_ {
       processing-lib-directory) name_identifier='Processing library directory:'         ;;
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
-      lightshow-program)        name_identifier='Lightshow program:'                    ;;
-      runtime-servers-file)     name_identifier='Runtime-servers program file:'         ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
    esac
 
-   # Prints the lines following the search string in the lookup file, or returns on failure if that
+   # Prints the line following the search string in the lookup file, or returns on failure if that
    # operation fails.
-   _lines_after_unique_ "$name_identifier" "$1" || return 2
+   _line_after_unique_ "$name_identifier" --in-file "$1" || return 2
 
    return 0
 }
@@ -252,6 +350,7 @@ function _path_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <regular expression file> does not contain <identifier>'s identifier-string
+# 3: <regular expression file> contains an invalid symbol
 alias regex_for_="_regex_for_ '$dot_lookup/../Lookup Files/regular-expressions' "
 function _regex_for_ {
    # The string used to search the lookup file for a certain pattern.
@@ -260,21 +359,30 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      server-header)             regex_identifier='Server declaration header:' ;;
-      server-body)               regex_identifier='Server declaration body:'   ;;
-      trait)                     regex_identifier='Trait declaration:'         ;;
-      trait-configuration-entry) regex_identifier='Configuration entry:'       ;;
-      number)                    regex_identifier='Number:'                    ;;
-      app-directory-tag)         regex_identifier='Application directory tag:' ;;
+      server-header)     regex_identifier='Server declaration header:' ;;
+      server-body)       regex_identifier='Server declaration body:'   ;;
+      trait)             regex_identifier='Trait declaration:'         ;;
+      number)            regex_identifier='Number:'                    ;;
+      app-directory-tag) regex_identifier='Application directory tag:' ;;
+      int)               regex_identifier='Integer:'                   ;;
+      float)             regex_identifier='Float:'                     ;;
+      bool)              regex_identifier='Bool:'                      ;;
+      homogeneous-array) regex_identifier='Homogeneous array:'         ;;
       *)
          echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
          return 1 ;;
    esac
 
-   # Prints the lines following the search string in the lookup file, or returns on failure if that
-   # operation fails.
-   _lines_after_unique_ "$regex_identifier" "$1" || return 2
+   # Gets the line following the search string in the lookup file, or returns on failure if that
+   # operation fails. This pattern might contain non-terminal symbols and is therefore "raw".
+   local raw_pattern
+   raw_pattern=$(_line_after_unique_ "$regex_identifier" --in-file "$1") || return 2
+   # Gets the result of replacing all non-terminal symbols in the raw pattern, or returns on failure
+   # if that operation failed
+   local pattern; pattern=$(_replace_symbols_of_ "$1" --in "$raw_pattern") || return 3
 
+   # Prints the result and returns successfully
+   echo "$pattern"
    return 0
 }
 

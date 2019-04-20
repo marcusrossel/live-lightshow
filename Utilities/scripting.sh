@@ -115,6 +115,25 @@ function line_numbers_of_string_ {
    return $return_status
 }
 
+# Prints the search or replacement pattern of a given literal string, that is safe to use as literal
+#  with sed (stream editor).
+#
+# Arguments:
+# * <type flag> possible values: "-s", "-r", "--search-string", "--replacement"
+# * <literal string>
+#
+# Return status:
+# 0: success
+# 1: the given <type flag> was invalid
+function sed_safe_ {
+   case "$1" in
+      -s|--search-string) sed -e 's/[]\/$*.^[]/\\&/g' <<< "$2" ;;
+      -r|--replacement)   sed -e 's/[\/&]/\\&/g' <<< "$2" ;;
+      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$1\"" >&2
+         return 1 ;;
+   esac
+}
+
 # Checks the given number of command line arguments is equal to a given expected range of them.
 # If not, prints an error message containing the given correct usage pattern and returns on failure.
 # If the expected number of arguments is not a range, the upper bound can be omitted.

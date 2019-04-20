@@ -24,11 +24,5 @@ arduino
 ddf's Minim library:
 minim
 
-Lightshow program:
-Lightshow.pde
-
-Runtime-servers program file:
-Runtime Servers.pde
-
 Arduino-UNO FQBN:
 arduino:avr:uno

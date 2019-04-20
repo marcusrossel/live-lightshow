@@ -12,9 +12,6 @@
 * line 65: Clean this up.
 * line 87: Figure out how to deal with non-Float traits.
 ---
-### `DefaultVisualizer.pde`:
-* line 1: Figure out how to handle visualizers.
----
 ### `Lightshow.pde`:
 * line 1: Check these imports.
 * line 2: Add documentation.
@@ -38,7 +35,7 @@
 * line 84: Document this.
 ---
 ### `install.sh`:
-* line 14: Also install vi if necessary.
+* line 14: Also install vi and check for curl.
 * line 164: Remove the downloads folder as well.
 * line 194: Hacky.
 * line 231: Check if all of the commands are working and the tests pass.
