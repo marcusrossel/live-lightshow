@@ -1,1 +1,4 @@
-# This file will contain the static trait value map for the first statically indexed server.
+Lower Frequency Bound:0.0:float
+Upper Frequency Bound:20000.0:float
+Loudness Recalibration Duration:5.0:float
+Output Pin:[5]:int-list

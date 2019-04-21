@@ -25,7 +25,7 @@ Server declaration body:
 ^.*class\s+[a-zA-Z_][a-zA-Z0-9_]*\s+.*$
 
 Trait declaration:
-^\s*//\s*#trait\s+"[^:"]+"\s*:(!int!|!float!)$
+^\s*//\s*#trait\s+"[^:"]+"\s*:!trait value!$
 
 Application directory tag:
 ^\s*#\s*APP-DIRECTORY\s*$
@@ -40,12 +40,17 @@ Integer:
 Float:
 ^!float!$
 
-Bool:
+Boolean:
 ^!bool!$
 
-Homogeneous array:
-^(!empty array!|\s*\[(!int!(,!int!)*|!float!(,!float!)*|!bool!(,!bool!)*)\]\s*)$
+Integer-list:
+^!int-list!$
 
+Float-list:
+^!float-list!$
+
+Boolean-list:
+^!bool-list!$
 
 
 #-Private-Symbols-------------------------------#
@@ -60,5 +65,14 @@ Homogeneous array:
 !bool!
 (\s*(true|false)\s*)
 
-!empty array!
-(\s*(i\[\]|f\[\]|b\[\])\s*)
+!int-list!
+(\s*(i\[\]|\[!int!(,!int!)*\])\s*)
+
+!float-list!
+(\s*(f\[\]|\[!float!(,!float!)*\])\s*)
+
+!bool-list!
+(\s*(b\[\]|\[!bool!(,!bool!)*\])\s*)
+
+!trait value!
+(!int!|!float!|!bool!|!int-list!|!float-list!|!bool-list!)

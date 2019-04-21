@@ -18,6 +18,7 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 . "$dot/../../Utilities/scripting.sh"
 . "$dot/../../Utilities/lookup.sh"
 . "$dot/../../Utilities/index.sh"
+. "$dot/../../Utilities/types.sh"
 
 
 #-Constants-------------------------------------#
@@ -34,26 +35,34 @@ function declare_constants {
 #-Functions-------------------------------------#
 
 
-# Prints the trait configuration corresponding to the trait declarations contained in a given file.
+# Prints the static configuration corresponding to the trait declarations contained in a given file.
 #
-# A trait configuration has the form (note the space after the colon):
-# <trait 1 ID>: <trait 1 value>
-# <trait 2 ID>: <trait 2 value>
+# A static configuration has the form:
+# <trait 1 ID>:<trait 1 value>:<trait 1 type>
+# <trait 2 ID>:<trait 2 value>:<trait 2 type>
 # ...
 #
 # Arguments:
 # * <program file>
-function trait_configuration_for_file {
-   # Gets the trait declarations in the file.
-   local -r trait_pattern=$(regex_for_ trait)
-   local -r trait_declarations=$(egrep "$trait_pattern" "$1")
+#
+# Return status:
+# 0: success
+# 1: internal error
+function static_configuration_for_file_ {
+   # Gets and iterates over the list of trait declarations in the given file.
+   egrep "$(regex_for_ trait)" "$1" | while read trait_declaration; do
+      # Extracts the parameters from the declaration.
+      local trait_identifier=$(cut -d '"' -f 2 <<< "$trait_declaration")
+      local trait_value=$(echo "$trait_declaration" | cut -d ':' -f 2 | trimmed)
+      local trait_value_type
+      if ! trait_value_type=$(type_for_value_ "$trait_value"); then
+         # This should be unreachable.
+         print_error_for_ --internal; return 1
+      fi
 
-   # Exctracts the parameters from the declaration.
-   local -r trait_identifiers=$(cut -d '"' -f 2 <<< "$trait_declarations")
-   local -r trait_values=$(cut -d ':' -f 2 <<< "$trait_declarations")
-
-   # Prints the result and returns succesfully.
-   paste -d ':' <(echo "$trait_identifiers") <(echo "$trait_values")
+      # Prints the entry for the current declaration.
+      echo "$trait_identifier:$trait_value:$trait_value_type"
+   done;
 
    return 0
 }
@@ -65,8 +74,8 @@ function setup_static_configuration_files {
       file_path=$(column_for_ file-path --in-entries "$index_entry" --of static-index)
       config_file=$(column_for_ config-file --in-entries "$index_entry" --of static-index)
 
-      # Creates a new configuration file containing the appropriate trait configuration.
-      trait_configuration_for_file "$file_path" > "$config_file"
+      # Creates a new configuration file containing the appropriate static configuration.
+      static_configuration_for_file_ "$file_path" > "$config_file"
    done < "$static_index"
 
    return 0

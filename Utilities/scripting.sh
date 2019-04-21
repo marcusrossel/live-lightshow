@@ -34,6 +34,34 @@ readonly win10_OS='win10'
 #-Functions-------------------------------------#
 
 
+# Prints an error to stderr formatted according to a given flag for a given problem item.
+#
+# Arguments:
+# * <type flag> possible values: "--internal", "--identifier", "--flag"
+# * <problem item>
+#
+# Return status:
+# 0: success
+# 1: <type flag> was invalid
+function print_error_for_ {
+   local -r caller_script="$print_yellow$(basename "${BASH_SOURCE[1]}")$print_normal"
+   local -r caller_function="$print_yellow${FUNCNAME[1]}$print_normal"
+   local -r caller_line="$print_yellow${BASH_LINENO[0]}$print_normal"
+
+   case "$1" in
+      --internal)
+         echo -e "Internal error: $caller_script" >&2 ;;
+      --identifier|--flag)
+         echo -e "${print_red}Error$print_normal: $caller_script: line $caller_line: function" \
+                 "$caller_function: received invalid ${1:2} '$print_yellow$2$print_normal'" >&2 ;;
+      *)
+         print_error_for_ --flag "$1"
+         return 1 ;;
+   esac
+
+   return 0
+}
+
 # Prints a string identifying the current operating system.
 #
 # Possible return values are: $linux_OS, $macOS_OS, $win10_OS
@@ -113,6 +141,21 @@ function line_numbers_of_string_ {
    done <<< "$search_space"
 
    return $return_status
+}
+
+# Prints the given string without leading and trailing whitespace (on each line).
+# If no string is passed stdin will be used as input.
+#
+# Arguments:
+# * <string> passable via stdin
+function trimmed {
+   if [ -n "$1" ]; then
+      awk '{$1=$1};1' <<< "$1"
+   else
+      cat | awk '{$1=$1};1'
+   fi
+
+   return 0
 }
 
 # Prints the search or replacement pattern of a given literal string, that is safe to use as literal

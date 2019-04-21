@@ -88,7 +88,7 @@ function invalid_server_identifiers_in {
    # Iterates over the given server IDs.
    while read -r given_server_id; do
       # Removes leading and trailing whitespace from the given server ID.
-      local cleaned_given_server_id=$(awk '{$1=$1};1' <<< "$given_server_id")
+      local cleaned_given_server_id=$(trimmed "$given_server_id")
 
       # Prints the given server ID, if it is not contained in the list of valid types.
       if ! fgrep -q "$cleaned_given_server_id" <<< "$valid_server_ids"; then

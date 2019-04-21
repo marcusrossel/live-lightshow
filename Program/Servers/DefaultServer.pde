@@ -75,17 +75,16 @@ final class DefaultServer implements Server {
     this.configuration = configuration;
   }
 
-  // #trait "Lower Frequency Bound": 0
+  // #trait "Lower Frequency Bound": 0.0
   private Float lowerBound() { return configuration.valueForTrait("Lower Frequency Bound"); }
 
-  // #trait "Upper Frequency Bound": 0
+  // #trait "Upper Frequency Bound": 20000.0
   private Float upperBound() { return configuration.valueForTrait("Upper Frequency Bound"); }
 
-  // #trait "Loudness Recalibration Duration": 0
+  // #trait "Loudness Recalibration Duration": 5.0
   private Float loudnessRecalibrationDuration() { return configuration.valueForTrait("Loudness Recalibration Duration"); }
 
-  // # TODO: Figure out how to deal with non-Float traits.
-  // #trait "Output Pin": 11
+  // #trait "Output Pin": [5]
   private Integer outputPin() { return Math.round(configuration.valueForTrait("Output Pin")); }
 
   Float loudnessOfLastFrame = 0f;

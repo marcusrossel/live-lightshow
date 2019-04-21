@@ -66,7 +66,7 @@ function invalid_trait_identifiers_in {
    # Iterates over the given trait-IDs.
    while read -r given_trait_id; do
       # Removes leading and trailing whitespace from the given trait-ID.
-      local cleaned_given_trait_id=$(awk '{$1=$1};1' <<< "$given_trait_id")
+      local cleaned_given_trait_id=$(trimmed "$given_trait_id")
 
       # Prints the given trait-ID, if it is not contained in the list of valid trait-IDs.
       if ! fgrep -q "$cleaned_given_trait_id" <<< "$valid_trait_ids"; then

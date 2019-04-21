@@ -43,8 +43,7 @@ function _line_after_unique_ {
    case "$2" in
       --in-string) local -r match=$(egrep -A1 "^$1\$" <<< "$3") ;;
       --in-file)   local -r match=$(egrep -A1 "^$1\$" "$3") ;;
-      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
-         return 1
+      *)           print_error_for_ --identifier "$2"; return 1 ;;
    esac
 
    # Returns on success if there was exaclty one match, or on failure otherwise.
@@ -81,10 +80,7 @@ function _lines_after_unique_ {
    # returns on failure. A flag is also set in the process, indicating whether a <flag> was passed.
    if [ -n "$3" ]; then
       # Asserts flag validity.
-      if [ "$3" != '--until' ]; then
-         echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$3\"" >&2
-         return 1
-      fi
+      [ "$3" != '--until' ] && { print_error_for_ --flag "$3"; return 1; }
 
       # Asserts delimiter validity.
       if [ -z "$4" ]; then
@@ -155,10 +151,7 @@ function _expand_line_continuations {
 # 2: <regular expression file> contains an undefined
 function _replace_symbols_of_ {
    # Makes sure the <in flag> was passed.
-   if [ "$2" != '--in' ]; then
-      echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
-      return 1
-   fi
+   [ "$2" != '--in' ] && { print_error_for_ --flag "$2"; return 1; }
 
    # Creates a working variable for the pattern and a symbol table for memoizing the regular
    # expressions of previously seen symbols.
@@ -236,9 +229,7 @@ function _url_for_ {
       ddfs-minim-lib)         url_identifier="ddf's Minim library:"        ;;
       arduino-cli)            url_identifier="Arduino-CLI $(current_OS_):" ;;
       processing)             url_identifier="Processing $(current_OS_):"  ;;
-      *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
-         return 1 ;;
+      *)                      print_error_for_ --identifier "$2"; return 1 ;;
    esac
 
    # Prints the line following the search string in the lookup file, or returns on failure if that
@@ -275,9 +266,7 @@ function _name_for_ {
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
-      *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
-         return 1 ;;
+      *)                        print_error_for_ --identifier "$2"; return 1            ;;
    esac
 
    # Prints the line following the search string in the lookup file, or returns on failure if that
@@ -321,9 +310,7 @@ function _path_for_ {
       cli-command-destination)         path_identifier='CLI-command destination:'              ;;
       arduino-cli-destination)         path_identifier='Arduino-CLI destination:'              ;;
       app-directory)                   path_identifier="Application directory $(current_OS_):" ;;
-      *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
-         return 1 ;;
+      *)                               print_error_for_ --identifier "$2"; return 1            ;;
    esac
 
    # Gets the lines matched in the location-file for the given identifier, or returns on failure if
@@ -359,18 +346,18 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      server-header)     regex_identifier='Server declaration header:' ;;
-      server-body)       regex_identifier='Server declaration body:'   ;;
-      trait)             regex_identifier='Trait declaration:'         ;;
-      number)            regex_identifier='Number:'                    ;;
-      app-directory-tag) regex_identifier='Application directory tag:' ;;
-      int)               regex_identifier='Integer:'                   ;;
-      float)             regex_identifier='Float:'                     ;;
-      bool)              regex_identifier='Bool:'                      ;;
-      homogeneous-array) regex_identifier='Homogeneous array:'         ;;
-      *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
-         return 1 ;;
+      server-header)     regex_identifier='Server declaration header:'  ;;
+      server-body)       regex_identifier='Server declaration body:'    ;;
+      trait)             regex_identifier='Trait declaration:'          ;;
+      number)            regex_identifier='Number:'                     ;;
+      app-directory-tag) regex_identifier='Application directory tag:'  ;;
+      int)               regex_identifier='Integer:'                    ;;
+      float)             regex_identifier='Float:'                      ;;
+      bool)              regex_identifier='Boolean:'                    ;;
+      int-list)          regex_identifier='Integer-list:'               ;;
+      float-list)        regex_identifier='Float-list:'                 ;;
+      bool-list)         regex_identifier='Boolean-list:'               ;;
+      *)                 print_error_for_ --identifier "$2"; return 1   ;;
    esac
 
    # Gets the line following the search string in the lookup file, or returns on failure if that
@@ -411,9 +398,7 @@ function _text_for_ {
       uct-template)         segment_identifier='user_configuration_template.sh: Template:' ;;
       csi-header)           segment_identifier='configure_server_instance.sh: Header:'     ;;
       lightshow-usage)      segment_identifier='lightshow: Usage:'                         ;;
-      *)
-         echo "Error: \`${FUNCNAME[0]}\` received invalid identifier \"$2\"" >&2
-         return 1 ;;
+      *)                    print_error_for_ --identifier "$2"; return 1                   ;;
    esac
 
    # Gets the lines following the search string in the lookup file upto the line containing only

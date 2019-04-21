@@ -130,8 +130,8 @@ while read -r configuration_entry; do
    egrep -q '(^$|^\s*#)' <<< "$configuration_entry" && continue
 
    # Creates clean components from the user configuration entry (removing spaces).
-   instance_id=$(echo "$configuration_entry" | cut -d : -f 1 | awk '{$1=$1;print}')
-   server_id=$(echo "$configuration_entry" | cut -d : -f 2 | awk '{$1=$1;print}')
+   instance_id=$(echo "$configuration_entry" | cut -d : -f 1 | trimmed)
+   server_id=$(echo "$configuration_entry" | cut -d : -f 2 | trimmed)
 
    # Completes and writes the entry to the target file, and increments the instance counter.
    echo "$instance_id:$server_id:$runtime_config_directory/$instance_counter" >>"$target_file"
