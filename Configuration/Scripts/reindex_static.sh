@@ -62,7 +62,7 @@ function static_configuration_for_file_ {
 
       # Prints the entry for the current declaration.
       echo "$trait_identifier:$trait_value:$trait_value_type"
-   done;
+   done
 
    return 0
 }

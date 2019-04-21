@@ -1,4 +1,2 @@
-# This file will contain the runtime index of the form:
-# <instance 1 ID>:<instance 1 server ID>:<instance 1 runtime configuration file>
-# <instance 2 ID>:<instance 2 server ID>:<instance 2 runtime configuration file>
-# ...
+l:default:/Users/marcusrossel/Developer/Open Source/live-lightshow/Configuration/Scripts/../../Configuration/Runtime/0
+m:default:/Users/marcusrossel/Developer/Open Source/live-lightshow/Configuration/Scripts/../../Configuration/Runtime/1

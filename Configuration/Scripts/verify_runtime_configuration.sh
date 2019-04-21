@@ -1,8 +1,8 @@
 # This script scans a given runtime configuration, asserting the validity of each entry based on a
 # given server-ID.
 # User runtime configurations have the form:
-# <trait 1 ID>: <trait 1 value>
-# <trait 2 ID>: <trait 2 value>
+# <trait 1 ID>:<trait 1 value>
+# <trait 2 ID>:<trait 2 value>
 # ...
 #
 # A trait-ID must appear in the static configuration associated with the given server-ID. A trait-ID
@@ -15,10 +15,10 @@
 # Validity aspects are checked in the order:
 # * trait-ID validity
 # * trait-ID uniqueness
-# * trait-value wellformedness
+# * trait-value type correctness
 #
 # Arguments:
-# * <runtime configuration file>
+# * <runtime configuration>
 # * <server id>
 #
 # Return status:
@@ -32,12 +32,12 @@
 #-Preliminaries---------------------------------#
 
 
-# Gets the directory of this script.
+# Gets the directory of this script and imports utilities.
 dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports scripting and lookup utilities.
 . "$dot/../../Utilities/scripting.sh"
 . "$dot/../../Utilities/lookup.sh"
 . "$dot/../../Utilities/index.sh"
+. "$dot/../../Utilities/types.sh"
 
 
 #-Constants-------------------------------------#
@@ -45,9 +45,8 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   local -r server_id=$2
-   readonly static_config_file=$(values_for_ config-file --in static-index \
-                                                      --with server-id "$server_id")
+   readonly static_config_file=$(values_for_ config-file --in static-index --with server-id "$2")
+   return 0
 }
 
 
@@ -65,12 +64,9 @@ function invalid_trait_identifiers_in {
 
    # Iterates over the given trait-IDs.
    while read -r given_trait_id; do
-      # Removes leading and trailing whitespace from the given trait-ID.
-      local cleaned_given_trait_id=$(trimmed "$given_trait_id")
-
       # Prints the given trait-ID, if it is not contained in the list of valid trait-IDs.
-      if ! fgrep -q "$cleaned_given_trait_id" <<< "$valid_trait_ids"; then
-         echo "$cleaned_given_trait_id"
+      if ! fgrep -q "$given_trait_id" <<< "$valid_trait_ids"; then
+         echo "$given_trait_id"
       fi
    done <<< "$given_trait_ids"
 
@@ -96,17 +92,25 @@ function duplicate_trait_identifiers_in {
    return 0
 }
 
-# Prints a list of the malformed trait-IDs contained in given runtime configuration entries.
+# Prints a list of trait values with non-matching expected type contained in given runtime
+# configuration entries.
 #
 # Arguments:
 # * <runtime configuration entries>
 function malformed_trait_values_in {
-   # Gets lists of the trait values and the pattern they need to match.
-   local -r trait_values=$(cut -d : -f 2 <<< "$1")
-   local -r trait_value_pattern=$(regex_for_ number)
+   # Iterates over the list of given configuration entries.
+   while read entry; do
+      # Extracts the parameters from the entry.
+      local trait_id=$(cut -d : -f 1 <<< "$entry")
+      local trait_value=$(cut -d : -f 2 <<< "$entry")
+      local expected_value_type=$(cut -d : -f 3 <<< "$entry")
 
-   # Prints all of the trait values not conforming to the required pattern.
-   egrep -v "$trait_value_pattern" <<< "$trait_values"
+      # Gets the type of the trait value.
+      local value_type=$(type_for_value_ "$trait_value")
+
+      # Prints the trait-ID if it does not match
+      [ "$value_type" != "$expected_value_type" ] && echo "$trait_value: $expected_value_type"
+   done <<< "$1"
 
    return 0
 }
@@ -118,19 +122,16 @@ function malformed_trait_values_in {
 assert_correct_argument_count_ 2 '<runtime configuration file> <server ID>' || exit 1
 declare_constants "$@"
 
-# Gets the lines that are not empty and don't start with #.
-readonly configuration_entries=$(egrep -v '(^$|^\s*#)' "$1")
-
 # Asserts trait-ID validity.
-readonly invalid_trait_ids=$(invalid_trait_identifiers_in "$configuration_entries")
+readonly invalid_trait_ids=$(invalid_trait_identifiers_in "$1")
 [ -z "$invalid_trait_ids" ] || { echo "$invalid_trait_ids"; exit 2; }
 
 # Asserts trait-ID uniqueness.
-readonly duplicate_trait_ids=$(duplicate_trait_identifiers_in "$configuration_entries")
+readonly duplicate_trait_ids=$(duplicate_trait_identifiers_in "$1")
 [ -z "$duplicate_trait_ids" ] || { echo "$duplicate_trait_ids"; exit 3; }
 
-# Asserts trait-value wellformedness.
-readonly malformed_trait_values=$(malformed_trait_values_in "$configuration_entries")
+# Asserts trait-value type correctness.
+readonly malformed_trait_values=$(malformed_trait_values_in "$1")
 [ -z "$malformed_trait_values" ] || { echo "$malformed_trait_values"; exit 4; }
 
 exit 0
