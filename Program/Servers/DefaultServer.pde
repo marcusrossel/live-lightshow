@@ -76,16 +76,16 @@ final class DefaultServer implements Server {
   }
 
   // #trait "Lower Frequency Bound": 0.0
-  private Float lowerBound() { return configuration.valueForTrait("Lower Frequency Bound"); }
+  private Float lowerBound() { return (Float) configuration.valueForTrait("Lower Frequency Bound"); }
 
   // #trait "Upper Frequency Bound": 20000.0
-  private Float upperBound() { return configuration.valueForTrait("Upper Frequency Bound"); }
+  private Float upperBound() { return (Float) configuration.valueForTrait("Upper Frequency Bound"); }
 
   // #trait "Loudness Recalibration Duration": 5.0
-  private Float loudnessRecalibrationDuration() { return configuration.valueForTrait("Loudness Recalibration Duration"); }
+  private Float loudnessRecalibrationDuration() { return (Float) configuration.valueForTrait("Loudness Recalibration Duration"); }
 
-  // #trait "Output Pin": [5]
-  private Integer outputPin() { return Math.round(configuration.valueForTrait("Output Pin")); }
+  // #trait "Output Pins": [5]
+  private List<Integer> outputPins() { return (List<Integer>) configuration.valueForTrait("Output Pins"); }
 
   Float loudnessOfLastFrame = 0f;
   Boolean lastFrameDidTrigger = false;
@@ -171,15 +171,11 @@ final class DefaultServer implements Server {
       timeOfLastTrigger = millis();
     }
 
-    // Updates the pins' states.
-    // for (Integer pin : outputPins()) {
-    //  arduino.digitalWrite(pin, lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW);
-    // }
-
+    // Updates the pins' states if necessary.
     Integer newOutput = lastFrameDidTrigger ? Arduino.HIGH : Arduino.LOW;
     if (newOutput != previousOutput) {
       previousOutput = newOutput;
-      arduino.digitalWrite(outputPin(), newOutput);
+      for (Integer pin : outputPins()) { arduino.digitalWrite(pin, newOutput); }
     }
 
     // Records the loudness of this frame.

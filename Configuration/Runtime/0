@@ -1,4 +1,4 @@
-Lower Frequency Bound:0.0:float
-Upper Frequency Bound:20000.0:float
+Lower Frequency Bound:30.0:float
+Upper Frequency Bound:300.0:float
 Loudness Recalibration Duration:5.0:float
-Output Pin:[5, 6, 7]:int-list
+Output Pins:[2, 3, 4]:int-list
