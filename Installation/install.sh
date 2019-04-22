@@ -127,7 +127,8 @@ function tag_cli_command_ {
 
    # Makes sure that a line with the tag was found, or prints an error and returns on failure.
    if [ -z "$tag_line" ]; then
-      echo "Error: \`$command_script\` does not contain the required application directory tag" >&2
+      print_error_for "'$print_yellow$command_script$print_normal' does not contain the required" \
+                      "application directory tag."
       return 1
    fi
 
@@ -143,7 +144,8 @@ function tag_cli_command_ {
 
    # Makes sure the folder declaration was wellformed, or prints an error and returns on failure.
    if [ -z "$folder_declaration_prefix" ]; then
-      echo "Error: \`$command_script\` contains a malformed application directory declaration" >&2
+      print_error_for "'$print_yellow$command_script$print_normal' contains a malformed" \
+                      "application directory declaration."
       return 2
    fi
 

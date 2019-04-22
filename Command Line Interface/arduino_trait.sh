@@ -35,8 +35,7 @@ for flag in "$@"; do
    # Prints an error and returns on failure if the flag is invalid.
    case "$flag" in
       --fqbn|--port) continue ;;
-      *) echo "Error: \`${BASH_SOURCE[0]}\` received invalid flag \"$flag\"" >&2
-         exit 2 ;;
+      *) print_error_for --flag "$flag"; exit 2 ;;
    esac
 done
 
@@ -73,10 +72,7 @@ for flag in "$@"; do
    case "$flag" in
       --fqbn) echo "${components[0]}" ;;
       --port) echo "${components[1]}" ;;
-
-      # Should be unreachable.
-      *) echo "Internal error: \`${BASH_SOURCE[0]}\`" >&2
-         exit 4 ;;
+      *) print_error_for --internal; exit 4 ;; # Should be unreachable.
    esac
 done
 

@@ -43,18 +43,22 @@ function _line_after_unique_ {
    case "$2" in
       --in-string) local -r match=$(egrep -A1 "^$1\$" <<< "$3") ;;
       --in-file)   local -r match=$(egrep -A1 "^$1\$" "$3") ;;
-      *)           print_error_for_ --identifier "$2"; return 1 ;;
+      *)           print_error_for --identifier "$2"; return 1 ;;
    esac
 
+   local -r matched_line_count=$(wc -l <<< "$match")
+
    # Returns on success if there was exaclty one match, or on failure otherwise.
-   if [ "$(wc -l <<< "$match")" -eq 2 ]; then
-      # Prints the result.
-      line_ 2 --in-string "$match"
-      return 0
+   if [ "$matched_line_count" -eq 2 ]; then
+      line_ 2 --in-string "$match"; return 0
+   elif [ "$matched_line_count" -eq 0 ]; then
+      print_error_for "Function matched no line for '$print_yellow$1$print_normal'."
    else
-      echo "Error: \`${FUNCNAME[0]}\` did not match exactly one line with \"$1\"" >&2
-      return 2
+      print_error_for "Function matched multiple lines for '$print_yellow$1$print_normal'."
    fi
+
+   # This point is only reached if not exactly one line matched <string>.
+   return 2
 }
 
 # Prints all of the lines of <file> immediately following the line containing only <string> upto a
@@ -80,14 +84,9 @@ function _lines_after_unique_ {
    # returns on failure. A flag is also set in the process, indicating whether a <flag> was passed.
    if [ -n "$3" ]; then
       # Asserts flag validity.
-      [ "$3" != '--until' ] && { print_error_for_ --flag "$3"; return 1; }
-
+      [ "$3" != '--until' ] && { print_error_for --flag "$3"; return 1; }
       # Asserts delimiter validity.
-      if [ -z "$4" ]; then
-         echo "Error: \`${FUNCNAME[0]}\` received invalid delimiter \"$4\"" >&2
-         return 2
-      fi
-
+      [ -z "$4" ] && { print_error_for "Function received no delimiter argument."; return 2; }
       local -r custom_delimiter=true
    else
       local -r custom_delimiter=false
@@ -97,8 +96,11 @@ function _lines_after_unique_ {
    local -r match_line=$(egrep -n "^$1\$" "$2")
 
    # Makes sure that there was exactly one match line, or prints an error and returns on failure.
-   if [ -z "$match_line" -o $(wc -l <<< "$match_line") -gt 1 ]; then
-      echo "Error: \`${FUNCNAME[0]}\` did not match exactly one line with \"$1\"" >&2
+   if [ -z "$match_line" ]; then
+      print_error_for "Function matched no line for '$print_yellow$1$print_normal'."
+      return 3
+   elif [ $(wc -l <<< "$match_line") -gt 1 ]; then
+      print_error_for "Function matched multiple lines for '$print_yellow$1$print_normal'."
       return 3
    fi
 
@@ -151,7 +153,7 @@ function _expand_line_continuations {
 # 2: <regular expression file> contains an undefined
 function _replace_symbols_of_ {
    # Makes sure the <in flag> was passed.
-   [ "$2" != '--in' ] && { print_error_for_ --flag "$2"; return 1; }
+   [ "$2" != '--in' ] && { print_error_for --flag "$2"; return 1; }
 
    # Creates a working variable for the pattern and a symbol table for memoizing the regular
    # expressions of previously seen symbols.
@@ -163,7 +165,8 @@ function _replace_symbols_of_ {
       # Makes sure there are an even number of symbol delimiters.
       local symbol_delimiter_count=$(awk -F '!' '{print NF-1}' <<< "$raw_pattern")
       if [ $((symbol_delimiter_count % 2)) -eq 1 ]; then
-         echo "Error: regular expression \"$3\" contains improperly declared symbol" >&2
+         print_error_for "Regular expression '$print_yellow$3$print_normal' contains invalid" \
+                         "symbol declaration."
          return 2
       fi
 
@@ -182,7 +185,8 @@ function _replace_symbols_of_ {
          symbol_pattern=$(silently- --stderr _line_after_unique_ "!$first_symbol!" --in-file "$1")
 
          if [ $? -ne 0 ]; then
-            echo "Error: regular expression \"$3\" contains undefined symbol \"$first_symbol\"" >&2
+            print_error_for "Regular expression '$print_yellow$3$print_normal' contains undefined" \
+                            "symbol '$print_yellow$first_symbol$print_normal'."
             return 3
          fi
 
@@ -229,7 +233,7 @@ function _url_for_ {
       ddfs-minim-lib)         url_identifier="ddf's Minim library:"        ;;
       arduino-cli)            url_identifier="Arduino-CLI $(current_OS_):" ;;
       processing)             url_identifier="Processing $(current_OS_):"  ;;
-      *)                      print_error_for_ --identifier "$2"; return 1 ;;
+      *)                      print_error_for --identifier "$2"; return 1  ;;
    esac
 
    # Prints the line following the search string in the lookup file, or returns on failure if that
@@ -266,7 +270,7 @@ function _name_for_ {
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
-      *)                        print_error_for_ --identifier "$2"; return 1            ;;
+      *)                        print_error_for --identifier "$2"; return 1             ;;
    esac
 
    # Prints the line following the search string in the lookup file, or returns on failure if that
@@ -310,7 +314,7 @@ function _path_for_ {
       cli-command-destination)         path_identifier='CLI-command destination:'              ;;
       arduino-cli-destination)         path_identifier='Arduino-CLI destination:'              ;;
       app-directory)                   path_identifier="Application directory $(current_OS_):" ;;
-      *)                               print_error_for_ --identifier "$2"; return 1            ;;
+      *)                               print_error_for --identifier "$2"; return 1             ;;
    esac
 
    # Gets the lines matched in the location-file for the given identifier, or returns on failure if
@@ -357,7 +361,7 @@ function _regex_for_ {
       int-list)          regex_identifier='Integer-list:'               ;;
       float-list)        regex_identifier='Float-list:'                 ;;
       bool-list)         regex_identifier='Boolean-list:'               ;;
-      *)                 print_error_for_ --identifier "$2"; return 1   ;;
+      *)                 print_error_for --identifier "$2"; return 1    ;;
    esac
 
    # Gets the line following the search string in the lookup file, or returns on failure if that
@@ -393,12 +397,28 @@ function _text_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      at-no-arduino)        segment_identifier='arduino_trait.sh: No Arduino:'             ;;
-      at-multiple-arduinos) segment_identifier='arduino_trait.sh: Multiple Arduinos:'      ;;
-      uct-template)         segment_identifier='user_configuration_template.sh: Template:' ;;
-      csi-header)           segment_identifier='configure_server_instance.sh: Header:'     ;;
-      lightshow-usage)      segment_identifier='lightshow: Usage:'                         ;;
-      *)                    print_error_for_ --identifier "$2"; return 1                   ;;
+      at-no-arduino)
+         segment_identifier='arduino_trait.sh: No Arduino:' ;;
+      at-multiple-arduinos)
+         segment_identifier='arduino_trait.sh: Multiple Arduinos:' ;;
+      wrii-header)
+         segment_identifier='write_runtime_index_into.sh: Header:' ;;
+      wrii-duplicate-instance-ids)
+         segment_identifier='write_runtime_index_into.sh: Duplicate instance-IDs:' ;;
+      wrii-invalid-server-ids)
+         segment_identifier='write_runtime_index_into.sh: Invalid server-IDs:' ;;
+      csi-header)
+         segment_identifier='configure_server_instance.sh: Header:' ;;
+      csi-invalid-trait-ids)
+         segment_identifier='configure_server_instance.sh: Invalid trait-IDs:' ;;
+      csi-duplicate-trait-ids)
+         segment_identifier='configure_server_instance.sh: Duplicate trait-IDs:' ;;
+      csi-invalid-trait-values)
+         segment_identifier='configure_server_instance.sh: Invalid trait-values:' ;;
+      lightshow-usage)
+         segment_identifier='lightshow: Usage:' ;;
+      *)
+         print_error_for --identifier "$2"; return 1 ;;
    esac
 
    # Gets the lines following the search string in the lookup file upto the line containing only

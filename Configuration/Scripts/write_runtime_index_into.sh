@@ -56,23 +56,35 @@ function carry_out_configuration_editing_ {
       # Allows the user to edit the user configuration.
       vi "$1"
 
+      # Creates a cleaned version of the user-edited runtime configuration.
+      local clean_configuration=$(cleaned_configuration "$1")
+
       # Gets all of the items in the user configuration which are invalid and captures the return
       # status.
-      invalid_items=$("$dot/verify_user_configuration.sh" "$1"); local return_status=$?
+      local invalid_items
+      invalid_items=$("$dot/verify_user_configuration.sh" "$clean_configuration")
 
       # Performs different actions based on the verifier's return status.
-      case $return_status in
-         # Leaves the while-loop on success.
-         0) break ;;
+      case $? in
+         # Writes the cleaned configuration into the user configuration file and leaves the while-
+         # loop.
+         0) echo "$clean_configuration" >"$1"; break ;;
 
-         # TODO: Add proper error messages.
-         2) error_message="Malformed instance-identifiers:\n$invalid_items" ;;
-         3) error_message="Duplicate instance-identifiers:\n$invalid_items" ;;
-         4) error_message="Invalid server-identifiers:\n$invalid_items" ;;
+         # Sets an appropriate error message if a recoverable error occurs.
+         2)
+         local error_message=$(text_for_ wrii-duplicate-instance-ids)
+         while read -r duplicate_id; do
+            error_message="$error_message${newline}◦ '$print_yellow$duplicate_id$print_normal'"
+         done <<< "$invalid_items" ;;
+
+         3)
+         local error_message=$(text_for_ wrii-invalid-server-ids)
+         while read -r invalid_server_id; do
+            error_message="$error_message${newline}◦ '$print_yellow$invalid_server_id$print_normal'"
+         done <<< "$invalid_items" ;;
 
          # Prints an error message and returns on failure if any other error occured.
-         *) echo "Internal error: \`${BASH_SOURCE[0]}\`" >&2
-            return 2 ;;
+         *) print_error_for --internal; return 2 ;;
       esac
 
       # This point is only reached if a recoverable error occured.
@@ -90,19 +102,42 @@ function carry_out_configuration_editing_ {
 # server-type(server ID) mapping.
 function user_configuration_template {
    # Prints the user configuration template header.
-   echo "$(text_for_ uct-template)"
+   echo "$(text_for_ wrii-header)"
 
    # Prints the server-identifiers contained in static index in the form:
-   # # * <server ID 1>
-   # # * <server ID 2>
+   # # ◦ <server ID 1>
+   # # ◦ <server ID 2>
    # ...
-   column_for_ server-id --in static-index | while read server_id; do
-      echo "# * $server_id"
+   column_for_ server-id --in static-index | while read -r server_id; do
+      echo "# ◦ $server_id"
    done
 
    # Adds a trailing newline.
    echo
    return 0
+}
+
+# Takes a given user configuration file and prints the corresponding cleaned user configuration.
+#
+# Arguments:
+# * <user configuration file>
+function cleaned_configuration {
+   # Strips all of the empty lines and those starting with #.
+   # Then removes all leading and trailing whitespace from the entry's components.
+   # If an entry does not contain any : character, one is added at the end.
+   while read entry; do
+      egrep -q '(^$|^\s*#)' <<< "$entry" && continue
+
+      if [ "$(awk -F : '{print NF-1}' <<< "$entry")" -eq 0 ]; then
+         entry="$entry:"
+      fi
+
+      local instance_id=$(echo "$entry" | cut -d : -f 1 | trimmed)
+      local server_id=$(echo "$entry" | cut -d : -f 2- | trimmed)
+
+      # Prints the cleaned entry.
+      echo "$instance_id:$server_id"
+   done <"$1"
 }
 
 
@@ -121,21 +156,14 @@ user_configuration_template >"$user_configuration_file"
 carry_out_configuration_editing_ "$user_configuration_file" || exit $(($?+1))
 
 # Empties the target file.
->"$target_file"
+echo -n >"$target_file"
 
 # Iterates over the entries in the user configuration.
 instance_counter=0
 while read -r configuration_entry; do
-   # Goes to the next entry if the current one is empty or starts with a #.
-   egrep -q '(^$|^\s*#)' <<< "$configuration_entry" && continue
-
-   # Creates clean components from the user configuration entry (removing spaces).
-   instance_id=$(echo "$configuration_entry" | cut -d : -f 1 | trimmed)
-   server_id=$(echo "$configuration_entry" | cut -d : -f 2 | trimmed)
-
    # Completes and writes the entry to the target file, and increments the instance counter.
-   echo "$instance_id:$server_id:$runtime_config_directory/$instance_counter" >>"$target_file"
+   echo "$configuration_entry:$runtime_config_directory/$instance_counter" >>"$target_file"
    ((instance_counter++))
-done < "$user_configuration_file"
+done <"$user_configuration_file"
 
 exit 0

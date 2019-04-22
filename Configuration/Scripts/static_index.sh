@@ -79,7 +79,7 @@ function index_entry_for_file_ {
    # were multiple.
    [ $return_status -eq 1 ] && return 0
    if [ $return_status -eq 2 ]; then
-      echo "Error: \`$1\` contains multiple server declarations" >&2
+      print_error_for "File '$print_yellow$1$print_normal' contains multiple server declarations."
       return 1
    fi
 
@@ -87,7 +87,8 @@ function index_entry_for_file_ {
    local -r body=$(line_ 2 --in-string "$server_declaration")
    local -r body_pattern=$(line_ 2 --in-string "$server_declaration")
    if ! egrep -q "$body_pattern" <<< "$body"; then
-      echo "Error: \`$1\` contains a malformed server-declaration body" >&2
+      print_error_for "File '$print_yellow$1$print_normal' contains a malformed server-" \
+                      "declaration body."
       return 2
    fi
 

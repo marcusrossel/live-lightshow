@@ -78,10 +78,9 @@ readonly sim=$(server_instantiation_map)
 cp "$servers_directory"/* "$program_directory"
 
 # Starts the lightshow program, while passing it the Arduino's port and the SIM.
-processing-java --sketch="$program_directory" --run "$arduino_port" "$sim" &
+silently- processing-java --sketch="$program_directory" --run "$arduino_port" "$sim" &
 
 # Removes all servers' program files from the lightshow program directory after compilation.
 for server_file in $(ls "$servers_directory"); do
-   # TODO: Change this to `rm` when safe.
-   rem "$program_directory/$(basename "$server_file")"
+   rm "$program_directory/$(basename "$server_file")"
 done

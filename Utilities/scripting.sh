@@ -19,6 +19,8 @@ shopt -s expand_aliases
 #-Constants-------------------------------------#
 
 
+readonly newline=$'\n'
+
 # Declares color codes for printing.
 readonly print_red='\033[0;31m'
 readonly print_green='\033[0;32m'
@@ -37,26 +39,27 @@ readonly win10_OS='win10'
 # Prints an error to stderr formatted according to a given flag for a given problem item.
 #
 # Arguments:
-# * <type flag> possible values: "--internal", "--identifier", "--flag"
-# * <problem item>
-#
-# Return status:
-# 0: success
-# 1: <type flag> was invalid
-function print_error_for_ {
-   local -r caller_script="$print_yellow$(basename "${BASH_SOURCE[1]}")$print_normal"
-   local -r caller_function="$print_yellow${FUNCNAME[1]}$print_normal"
-   local -r caller_line="$print_yellow${BASH_LINENO[0]}$print_normal"
+# * <error source script> passed automatically by the alias
+# * <error source line> passed automatically by the alias
+# * <error source function> passed automatically by the alias
+# * <message> or <type flag> possible values: "--internal", "--identifier", "--flag"
+# * <problem item> required if <type flag> was passed
+alias print_error_for='_print_error_for "${BASH_SOURCE[0]}" "${LINENO[0]}" "${FUNCNAME[0]}" '
+function _print_error_for {
+   # Prints the exact location of the call site of this error.
+   local -r script="$print_yellow$(basename "$1")$print_normal"
+   local -r line="$print_yellow$2$print_normal"
+   local -r function="$print_yellow${3:-main}$print_normal"
+   echo -e "${print_red}Error$print_normal: $script: $line: $function:" >&2
 
-   case "$1" in
+   case "$4" in
       --internal)
-         echo -e "Internal error: $caller_script" >&2 ;;
+         echo -e "Internal error." >&2 ;;
       --identifier|--flag)
-         echo -e "${print_red}Error$print_normal: $caller_script: line $caller_line: function" \
-                 "$caller_function: received invalid ${1:2} '$print_yellow$2$print_normal'" >&2 ;;
+         echo -e "> Received invalid ${4:2} '$print_yellow$5$print_normal'." >&2 ;;
       *)
-         print_error_for_ --flag "$1"
-         return 1 ;;
+         shift 3
+         echo -e "$@" >&2 ;;
    esac
 
    return 0
@@ -101,10 +104,37 @@ function line_ {
    case "$2" in
       --in-file)   tail -n "+$1" "$3"     | head -n 1 ;;
       --in-string) tail -n "+$1" <<< "$3" | head -n 1 ;;
-      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
-         return 1 ;;
+      *) print_error_for_ --flag "$2"; return 1 ;;
    esac
 
+   return 0
+}
+
+# Prints the line numbers of all of the lines in a given list of lines equal to a given string or
+# file. If none is found a return on failure occurs.
+#
+# Arguments:
+# * <string>
+# * <search object type flag>, possible values: "--is-line-in-file", "--is-line-in-string"
+# * <line source>
+#
+# Returns:
+# 0: success
+# 1: received invalid <search object type flag>
+function string_ {
+   case "$2" in
+      --is-line-in-file)   local -r search_space=$(cat "$3") ;;
+      --is-line-in-string) local -r search_space=$3 ;;
+      *) print_error_for_ --flag "$2"; return 1 ;;
+   esac
+
+   # Prints "true" and returns if a line in $search_space matched <string>.
+   while read line; do
+      [ "$line" == "$1" ] && { echo 'true'; return 0; }
+   done <<< "$search_space"
+
+   # Prints "false" if <string> was not a line in $search_space.
+   echo 'false'
    return 0
 }
 
@@ -119,28 +149,20 @@ function line_ {
 # Returns:
 # 0: success
 # 1: received invalid <search object type flag>
-# 2: no line found equal to <string>
 function line_numbers_of_string_ {
    case "$2" in
       --in-file)   local -r search_space=$(cat "$3") ;;
       --in-string) local -r search_space=$3 ;;
-      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$2\"" >&2
-         return 1 ;;
+      *) print_error_for_ --flag "$2"; return 1 ;;
    esac
 
-   local return_status=2
    local line_counter=1
-
    while read line; do
-      if [ "$line" == "$1" ]; then
-         echo $line_counter
-         return_status=0
-      fi
-
+      [ "$line" == "$1" ] && echo $line_counter
       ((line_counter++))
    done <<< "$search_space"
 
-   return $return_status
+   return 0
 }
 
 # Prints the given string without leading and trailing whitespace (on each line).
@@ -172,8 +194,7 @@ function sed_safe_ {
    case "$1" in
       -s|--search-string) sed -e 's/[]\/$*.^[]/\\&/g' <<< "$2" ;;
       -r|--replacement)   sed -e 's/[\/&]/\\&/g' <<< "$2" ;;
-      *) echo "Error: \`${FUNCNAME[0]}\` received invalid flag \"$1\"" >&2
-         return 1 ;;
+      *) print_error_for_ --flag "$1"; return 1 ;;
    esac
 }
 
@@ -193,7 +214,7 @@ function sed_safe_ {
 # Return status:
 # 0: success
 # 1: the number arguments does not match the expected number
-alias assert_correct_argument_count_='_assert_correct_argument_count_ "${BASH_SOURCE##*/}" "$#" '
+alias assert_correct_argument_count_='_assert_correct_argument_count_ "${BASH_SOURCE[0]##*/}" "$#" '
 function _assert_correct_argument_count_ {
    # Sets up the <minimum expected number of command line arguments>, <maximum expected number of
    # command line arguments> and <correct usage pattern>, accoring to whether an upper bound was
@@ -213,7 +234,7 @@ function _assert_correct_argument_count_ {
 
    # Prints a different error message if the <expected number of command line arguments> is `0`.
    if [ "$3" -eq 0 ]; then
-      echo -e "Usage: $print_yellow$1$print_normal expects no arguments" >&2
+      echo -e "Usage: '$print_yellow$1$print_normal' expects no arguments" >&2
    else
       echo -e "Usage: $print_yellow$1$print_normal $4" >&2
    fi

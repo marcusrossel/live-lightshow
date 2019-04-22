@@ -50,7 +50,7 @@ function header_for_server_id {
    # Prints the header.
    echo "$(text_for_ csi-header)"
    while read valid_trait_id; do
-      echo "# * $valid_trait_id"
+      echo "# ◦ $valid_trait_id"
    done <<< "$valid_trait_ids"
 
    # Adds a trailing newline.
@@ -80,23 +80,39 @@ function carry_out_configuration_editing_ {
       local clean_configuration=$(cleaned_configuration "$1")
 
       # Gets all of the items in the configuration which are invalid and captures the return status.
+      local invalid_items;
       invalid_items=$("$dot/verify_runtime_configuration.sh" "$clean_configuration" "$server_id")
-      local return_status=$?
 
       # Performs different actions based on the verifier's return status.
-      case $return_status in
+      case $? in
          # Writes the cleaned configuration into the runtime configuration file and leaves the
          # while-loop.
          0) echo "$clean_configuration" >"$1"; break ;;
 
-         # TODO: Add proper error messages.
-         2) error_message="Invalid trait-identifiers:\n$invalid_items" ;;
-         3) error_message="Duplicate trait-declarations:\n$invalid_items" ;;
-         4) error_message="Trait-values with invalid type:\n$invalid_items" ;;
+         # Sets an appropriate error message if a recoverable error occurs.
+         2)
+         local error_message=$(text_for_ csi-invalid-trait-ids)
+         while read -r invalid_id; do
+            error_message="$error_message${newline}◦ '$print_yellow$invalid_id$print_normal'"
+         done <<< "$invalid_items" ;;
+
+         3)
+         local error_message=$(text_for_ csi-duplicate-trait-ids)
+         while read -r duplicate_id; do
+            error_message="$error_message${newline}◦ '$print_yellow$duplicate_id$print_normal'"
+         done <<< "$invalid_items" ;;
+
+         4)
+         local error_message=$(text_for_ csi-invalid-trait-values)
+         while read -r type_value_pair; do
+            local expected_type=$(cut -d : -f 1 <<< "$type_value_pair")
+            local value=$(cut -d : -f 2- <<< "$type_value_pair")
+            error_message="$error_message${newline}◦ got '$print_yellow$value$print_normal',"
+            error_message="$error_message expected $print_yellow$expected_type$print_normal"
+         done <<< "$invalid_items" ;;
 
          # Prints an error message and returns on failure if any other error occured.
-         *) echo "Internal error: \`${BASH_SOURCE[0]}\`" >&2
-            return 2 ;;
+         *) print_error_for --internal; return 2 ;;
       esac
 
       # This point is only reached if a recoverable error occured.
@@ -124,15 +140,26 @@ function cleaned_configuration {
    # Strips all of the empty lines and those starting with #.
    # Then removes all leading and trailing whitespace from the entry's components and appends the
    # proper value type at the end.
+   # If an entry does not contain any : character, one is added after the raw entry.
    while read entry; do
       egrep -q '(^$|^\s*#)' <<< "$entry" && continue
 
+      if [ "$(awk -F : '{print NF-1}' <<< "$entry")" -eq 0 ]; then
+         entry="$entry:"
+      fi
+
       local trait_id=$(echo "$entry" | cut -d : -f 1 | trimmed)
-      local trait_value=$(echo "$entry" | cut -d : -f 2 | trimmed)
+      local trait_value=$(echo "$entry" | cut -d : -f 2- | trimmed)
 
       local trait_entry_line=$(line_numbers_of_string_ "$trait_id" --in-string "$trait_id_column")
-      local trait_entry=$(line_ "$trait_entry_line" --in-file "$runtime_config_file")
-      local trait_type=$(cut -d : -f 3 <<< "$trait_entry")
+
+      # If no trait entry line is found, the identifier is malformed, so a dummy type is appended.
+      if [ -z "$trait_entry_line" ]; then
+         local trait_type='unknown'
+      else
+         local trait_entry=$(line_ "$trait_entry_line" --in-file "$runtime_config_file")
+         local trait_type=$(cut -d : -f 3 <<< "$trait_entry")
+      fi
 
       # Prints the cleaned entry.
       echo "$trait_id:$trait_value:$trait_type"
@@ -148,14 +175,15 @@ declare_constants "$@"
 # Gets the runtime configuration file associated with the given <server instance identifier>, or
 # returns on failure if none was found.
 if ! runtime_config_file=$(values_for_ config-file --in runtime-index --with instance-id "$1"); then
-   echo "Error: \`${BASH_SOURCE[0]}\` received invalid server instance identifier \"$1\"" >&2
+   print_error_for "Script received invalid server instance identifier" \
+                   "'$print_yellow$1$print_normal'."
    exit 2
 fi
 
 # Creates a working copy of the runtime configuration file, and makes sure it is removed upon
 # exiting.
 readonly configuration_copy=$(mktemp)
-trap "rm '$configuration_copy'" EXIT
+trap "silently- rm '$configuration_copy'" EXIT
 
 # Initializes the copy of the configuration.
 header_for_server_id "$server_id" > "$configuration_copy"

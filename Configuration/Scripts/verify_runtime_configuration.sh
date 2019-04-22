@@ -1,14 +1,13 @@
 # This script scans a given runtime configuration, asserting the validity of each entry based on a
 # given server-ID.
-# User runtime configurations have the form:
-# <trait 1 ID>:<trait 1 value>
-# <trait 2 ID>:<trait 2 value>
+# Runtime configurations have the form:
+# <trait 1 ID>:<trait 1 value>:<trait 1 type>
+# <trait 2 ID>:<trait 2 value>:<trait 1 type>
 # ...
 #
 # A trait-ID must appear in the static configuration associated with the given server-ID. A trait-ID
 # must also not be declared more than once.
-# A trait-value must be numeric.
-# Lines starting with # are ignored.
+# A trait-value must match its trait type.
 #
 # If any aspect is invalid, it is printed with the script returning on an associated return status.
 # If multiple aspects are invalid, only one of them will be printed.
@@ -24,9 +23,10 @@
 # Return status:
 # 0: success
 # 1: invalid number of arguments
-# 2: <runtime configuration file> contains invalid trait-identifiers
-# 3: <runtime configuration file> contains duplicate trait-declarations
-# 4: <runtime configuration file> contains malformed trait-values
+# 2: <runtime configuration file> contains malformed entries
+# 3: <runtime configuration file> contains invalid trait-identifiers
+# 4: <runtime configuration file> contains duplicate trait-declarations
+# 5: <runtime configuration file> contains invalid trait-values
 
 
 #-Preliminaries---------------------------------#
@@ -65,7 +65,9 @@ function invalid_trait_identifiers_in {
    # Iterates over the given trait-IDs.
    while read -r given_trait_id; do
       # Prints the given trait-ID, if it is not contained in the list of valid trait-IDs.
-      if ! fgrep -q "$given_trait_id" <<< "$valid_trait_ids"; then
+      if [ -z "$given_trait_id" ]; then
+         echo ' '
+      elif ! $(string_ "$given_trait_id" --is-line-in-string "$valid_trait_ids"); then
          echo "$given_trait_id"
       fi
    done <<< "$given_trait_ids"
@@ -103,13 +105,13 @@ function malformed_trait_values_in {
       # Extracts the parameters from the entry.
       local trait_id=$(cut -d : -f 1 <<< "$entry")
       local trait_value=$(cut -d : -f 2 <<< "$entry")
-      local expected_value_type=$(cut -d : -f 3 <<< "$entry")
+      local expected_value_type=$(echo "$entry" | rev | cut -d : -f 1 | rev)
 
       # Gets the type of the trait value.
       local value_type=$(type_for_value_ "$trait_value")
 
-      # Prints the trait-ID if it does not match
-      [ "$value_type" != "$expected_value_type" ] && echo "$trait_value: $expected_value_type"
+      # Prints a expected type value pair if it does not match.
+      [ "$value_type" != "$expected_value_type" ] && echo "$expected_value_type:$trait_value"
    done <<< "$1"
 
    return 0
@@ -119,7 +121,7 @@ function malformed_trait_values_in {
 #-Main------------------------------------------#
 
 
-assert_correct_argument_count_ 2 '<runtime configuration file> <server ID>' || exit 1
+assert_correct_argument_count_ 2 '<runtime configuration> <server ID>' || exit 1
 declare_constants "$@"
 
 # Asserts trait-ID validity.

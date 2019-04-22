@@ -65,7 +65,7 @@ function download_single_item_archive_ {
 
    # Downloads the item.
    if ! curl -Lk --progress-bar -o "$item_folder.zip" "$item_url"; then
-      echo "Error: failed to download from \"$item_url\"" >&2
+      print_error_for "Download from '$print_yellow$item_url$print_normal' failed."
       return 1
    fi
 
@@ -76,7 +76,7 @@ function download_single_item_archive_ {
    # Makes sure the downloaded archive has the expected format, or prints and error message and
    # returns on failure.
    if [ $(wc -l <<< $(ls "$item_folder")) -ne 1 ]; then
-      echo "Error: Downloaded archive has unexpected format" >&2
+      print_error_for "Downloaded archive has unexpected format."
       return 2
    fi
 
@@ -99,7 +99,7 @@ function download_standard_firmata_ {
 
 
    if ! curl -Lk --progress-bar "$raw_file_url" >"$file_name"; then
-      echo "Error: failed to download from \"$item_url\"" >&2
+      print_error_for "Download from '$print_yellow$item_url$print_normal' failed."
       exit 1
    fi
 

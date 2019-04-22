@@ -57,7 +57,7 @@ function static_configuration_for_file_ {
       local trait_value_type
       if ! trait_value_type=$(type_for_value_ "$trait_value"); then
          # This should be unreachable.
-         print_error_for_ --internal; return 1
+         print_error_for --internal; return 1
       fi
 
       # Prints the entry for the current declaration.
