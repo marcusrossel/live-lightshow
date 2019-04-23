@@ -93,7 +93,7 @@ function get_sketchbook_path_ {
    succeed_on_approval_ || return 1
 
    # Opens Processing on macOS, or displays where to find the app on other OSs.
-   if [ "$(current_OS_)" = "$macOS_OS" ]; then
+   if [ "$(current_OS_)" = 'macOS' ]; then
       silently- "$1/$(name_for_ processing-executable)" &
       sleep 3 # TODO: Hacky.
       processing_PID=$!;
@@ -226,7 +226,7 @@ cd "$app_directory"
 
 # Prompts the user to install the processing-javac utility, as this has to be done seperately on
 # macOS. If has to be done after Processing has been moved to its final location.
-if [ "$(current_OS_)" = "$macOS_OS" ]; then
+if [ "$(current_OS_)" = 'macOS' ]; then
    prompt_for_macOS_tools_ || exit 3
 fi
 

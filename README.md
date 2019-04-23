@@ -1,29 +1,36 @@
 # Live Lightshow
 
-_Live Lightshow_ is a utility that allows you to transform your computer's audio input into a corresponding visual output through an Arduino.  
-The setup currently only supports the [Arduino UNO](https://store.arduino.cc/arduino-uno-rev3).
+_Live Lightshow_ is a utility that allows you to transform your computer's audio input into a corresponding visual output through an _Arduino UNO_.  
+As a user you can easily configure your own custom light show. And as a developer you can create new light show components and make them available to other users.
 
----
+## Requirements
 
-## Installation
-To install the _Live Lightshow_, run the following command in a terminal:  
-```bash
-curl 'https://raw.githubusercontent.com/marcusrossel/live-lightshow/master/Installer/installer.sh' | bash
+This program runs as a command line utility, so you will have to be able to perform basic operations in a terminal. For a quick overview check out the [Terminal Basics](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/User/Terminal%20Basics.md) guide.
+
+Supported operating systems are _Windows 10_, _macOS_ and _Linux_ distributions. If you are running _Windows 10_ you need to use this program from the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+Following command line utilities are required:
+* [curl](https://curl.haxx.se/dlwiz/?type=bin) for installation
+* [bash](https://www.gnu.org/software/bash/) for running the program
+* [vi](https://www.vim.org/download.php) for configuring a light show
+
+If you are missing any of these utilities, please install them. You can check whether they are installed by running:  
+```
+for u in curl bash vi; do command -v $u &>/dev/null || echo $u is missing; done
 ```
 
-If you can't find your local terminal application, reference the following:
-* _macOS_: [how to open a terminal](https://www.wikihow.com/Open-a-Terminal-Window-in-Mac)
-* _Linux_: [how to open a terminal](https://www.lifewire.com/ways-to-open-a-terminal-console-window-using-ubuntu-4075024)
-* _Windows 10_: requires that you install the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+## Installation
+To install the _Live Lightshow_ you first need to download and unzip the [newest release](???). To install the program, navigate to the unzipped folder in a terminal and run `Installation/install.sh`.
 
-If the command `curl` is not found, please [install it](https://curl.haxx.se/dlwiz/?type=bin).
+The installer might ask you for your password along the way. If you would like to know why you need to provide it, check [Why my password?](???) for details.
 
-## Setup
-The _Live Lightshow_ can be configured to output to as many LEDs as you need, or even run custom code instead of producing regular output.  
+After completing the installation process, the _Live Lightshow_ will be accessible using the `lightshow` command.
 
-For a basic setup, refer to the [Basic Setup Guide](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Basic%20Setup%20Guide).  
-If you want to customize you setup, refer to the [Setup Customization Guide](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Setup%20Customization%20Guide).
 
-## Starting a Light Show
-If you have not used _Live Lightshow_ before, or loaded a different program onto your Arduino between uses, call `lightshow initialize`.
-You can then start a light show by calling `lightshow start`.
+## Using _Live Lightshow_
+
+_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use _Live Lightshow_, check out the following guides:
+
+* [Getting Started](???)
+* [Creating Presets](???)
+* [Developing a Server](???)

@@ -27,11 +27,6 @@ readonly print_green='\033[0;32m'
 readonly print_yellow='\033[0;33m'
 readonly print_normal='\033[0m'
 
-# Declares OS-name variables.
-readonly linux_OS='linux'
-readonly macOS_OS='macOS'
-readonly win10_OS='win10'
-
 
 #-Functions-------------------------------------#
 
@@ -67,7 +62,7 @@ function _print_error_for {
 
 # Prints a string identifying the current operating system.
 #
-# Possible return values are: $linux_OS, $macOS_OS, $win10_OS
+# Possible return values are: "linux", "macOS", "win10"
 #
 # Return status:
 # 0: success
@@ -77,12 +72,12 @@ function current_OS_ {
       linux-gnu)
          # The Windows subsystem for Linux also returns 'linux-gnu', so we have to check again.
          if egrep -i 'Microsoft' /proc/sys/kernel/osrelease &>/dev/null; then
-            echo "$win10_OS"
+            echo 'win10'
          else
-            echo "$linux_OS"
+            echo 'linux'
          fi ;;
       darwin*)
-         echo "$macOS_OS" ;;
+         echo 'macOS' ;;
       *)
          return 1 ;;
    esac

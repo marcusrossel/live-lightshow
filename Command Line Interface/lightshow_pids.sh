@@ -13,8 +13,8 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 #-Main------------------------------------------#
 
 
-# Prints all of the processes containing some reference to "--sketch" or "--sketch-path" being this
-# project's directory.
+# Prints all of the PIDs of processes containing some reference to "--sketch" or "--sketch-path"
+# being this project's directory.
 ps | egrep -e "--sketch(-path)?=$(realpath "$dot/..")" | egrep -o '^\s*[0-9]+'
 
 exit 0

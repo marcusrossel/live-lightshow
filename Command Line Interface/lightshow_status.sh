@@ -35,7 +35,7 @@ while read -r index_entry; do
 
    # Prints a header for the current server instance.
    echo
-   echo -e "Server '$print_yellow$instance_id$print_normal' of type" \
+   echo -e "Instance '$print_yellow$instance_id$print_normal' of server type" \
            "'$print_yellow$server_id$print_normal'"
 
    # Iterates over the current server instance's runtime configuration entries.

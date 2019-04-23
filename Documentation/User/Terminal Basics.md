@@ -1,0 +1,164 @@
+# Terminal Basics
+
+This guide contains a basic introduction on how to use a command line terminal.
+
+If you don't know how to start your local terminal application, reference the following:
+* _macOS_: [how to open a terminal](https://www.wikihow.com/Open-a-Terminal-Window-in-Mac)
+* _Linux_: [how to open a terminal](https://www.lifewire.com/ways-to-open-a-terminal-console-window-using-ubuntu-4075024)
+* _Windows 10_: [invoking Windows Subsystem for Linux](https://devblogs.microsoft.com/commandline/a-guide-to-invoking-wsl/)
+
+## Command Prompt
+
+A terminal provides you with a _command-line interface_, which is a means of giving direct commands to your computer.
+
+When starting a terminal program you will be presented with a _command prompt_, which will look something like:
+
+```bash
+username@directory$
+```
+
+Seeing this command prompt means that the computer is ready to take commands.
+
+## Commands
+
+A _command_ is just a word which causes your computer to perform some task. For example, the commands we will cover in this guide are called `pwd`, `cd` and `ls`.  
+Command names are usually abbreviations as you have to type them out manually. The commands above are abbreviations for _print working directory_, _change directory_ and _list_.
+Commands can also take _arguments_, which is the means of providing input to a command. The arguments for a command are simply written after its name.
+
+## Basic Commands
+
+Now that you know what a command is, let's start using some.
+To run a command, simply type it after the command prompt and hit _enter_.
+
+### `pwd`:
+When browsing your computers files in a file browsers (like _Finder_ on _macOS_ or _Explorer_ on _Windows_) you are always located in a certain directory at any given time. It might be your _Documents_ folder, or your _Desktop_ - but you are always _somewhere_.  
+The same holds in a terminal. You are always in _some_ directory at any given time. To find out which directory you're in, you use the `pwd` command. Running `pwd` will look something like this:
+
+```bash
+marcusrossel@Music$ pwd
+/Users/marcusrossel/Desktop/Music
+```
+
+The command's output is a path from the root-directory to your current directory, which in this case is the _Music_ folder on my desktop.  
+So `pwd` is useful for finding out _where_ you currently are.
+
+### `ls`:
+When unsing a file browser you can always see the files and folders contained in your current directory. So for example, if you're in your _Music_ folder you might see and icon for the directory _Projects_ and icons for the files _song.mp3_ and _todos.txt_.  
+In a terminal you can't see the items in your current directory right away. You have to ask your computer to list them for you. For this you use the `ls` command. Running `ls` will look something like this:
+
+```bash
+marcusrossel@Music$ ls
+Projects  song.mp3  todos.txt
+```
+
+The commands output is a list of files and directories in your current directory. If there are many listed items, it might be more legible to have them listed vertically. To achieve this we can pass the argument `-1` to the `ls` command. This will tell `ls` to list each item on a new line:
+
+```bash
+marcusrossel@Music$ ls -1
+Projects
+song.mp3
+todos.txt
+```
+
+### `cd`:
+
+Now that we know how to find out _where_ we are and _what_ files and directories are available to us, we can start moving through our directories.
+To change your current directory you can use the `cd` command. You supply the name of the directory you want to move to as an argument to `cd`. So for example if you want to move into the _Projects_ folder contained in your current directory, you would call:
+
+```bash
+marcusrossel@Music$ cd Projects
+```
+
+If you now call `pwd`, you will see that your current directory has changed to the _Projects_ folder:
+
+```bash
+marcusrossel@Projects$ pwd
+/Users/marcusrossel/Desktop/Music/Projects
+```
+
+There are two important directories you should now about:
+
+**Parent Directory**: The _parent directory_ is the directory containing your current directory. So in the example above, the parent directory of _Projects_ would be _Music_, and the parent directory of _Music_ would be _Desktop_. You always have exactly one parent directory. It can be accessed by using the special name `..` with `cd`. So if you wanted to move from the _Projects_ directory back up to the _Music_ directory, you would call:
+
+```bash
+marcusrossel@Projects$ cd ..
+```
+
+**Home Directory**: Every user on a system has a _home directory_. It is usually where most of your files are stored in. If is either called _home_ or has the name of the current user. You can go to the home directory by calling `cd` without any arguments:
+
+```bash
+marcusrossel@Projects$ cd
+marcusrossel@~$ pwd
+/Users/marcusrossel
+```
+
+In this example the home directory has the name of the user _marcusrossel_.
+
+## Custom Commands
+
+The basic commands above are all provided by the terminal itself. But it is also possible to run files, that contain scripts, as commands.
+
+For example, to install this project you will run the file `installer.sh` as a command. To do so, you simply type the name of the file at the command prompt, as if it were any other command.  
+In this example, I will call the installer from a different directory, so I need to provide the full path from my current
+
+```bash
+marcusrossel@live-lightshow$ Installation/installer.sh
+```
+
+If you were in the _Installation_ directory already, you would need to call `installer.sh` as follows:
+
+```bash
+marcusrossel@Installation$ ./installer.sh
+```
+
+Like the parent directory (`..`), the _current directory_ has the special name `.` when referring to it.
+
+## The vi Text Editor
+
+The extent of the functionality of a single command can be quite broad. One such example is the `vi` command, which runs a text editor which you will use to configure your light show. In practice you won't be calling `vi` yourself, but you will need to know how to use the editor itself.
+In this example we will edit and save a simple text file.  
+
+### Opening a File
+
+You can open or create a file with _vi_ by passing its name as an argument to the `vi` command. So if you wanted to create the file `test` on your desktop, you could call:
+
+```bash
+marcusrossel@~$ cd Desktop
+marcusrossel@Desktop$ vi test
+```
+
+This will create and open a file called `test` in the _vi_ text editor, which will look someting like this:
+
+```bash
+
+~
+~
+~
+"test" [New File]
+```
+
+The only line actually contained in your file is the empty line. The ones starting with `~` are placeholders. The line at the very bottom shows you information about the current state of the editor. In this case it is telling you that you are editing a newly created file called `test`.
+
+### Editing a File
+
+The _vi_ editor can be in one of two modes: _insert_ mode or _command_ mode.
+When _vi_ starts up it is in command mode. To actually write text into the file you need to switch to the insert mode by pressing `i`. You can tell whether or not you are in insert mode, by checking whether the bottom most line says `-- INSERT --`.
+Once in insert mode you can start typing as usual. Hitting _enter_ will add a new line, as expected. But many of the keyboard shortcuts typical for graphical text editors won't work in _vi_.
+
+### Saving a File
+
+Once you are done entering text, you will want to save it. Saving a file is a command to _vi_, so you will have to change to command mode by pressing _escape_. You can tell whether or not you are in command mode, by checking whether the bottom most line is blank.
+To save the file in its current state and exit _vi_, enter `ZZ`  in command mode (that's capital `Z`s not lowercase `z`s).
+Once complete, you will return to your regular command prompt. If you now list the files in your current directory, you will see that you have created the new file `test`:
+
+```bash
+marcusrossel@Desktop$ ls -1
+Music
+test
+```
+
+## In Closing
+
+Now that you know how to move around the filesystem and call custom commands, you should also know what to do when they misbehave.
+If you feel like a command is stuck, or is not behaving as you expected, you can quit it by pressing `^c` (that is _control_+c).
+This will not work in _vi_, which will tell you what to do though if you press `^c`.
