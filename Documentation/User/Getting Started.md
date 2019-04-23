@@ -109,7 +109,29 @@ lightshow configure <instance name>
 ```
 
 This will open _vi_ with the configuration of the specified instance. You can then change the values of the specified traits. Deleting a trait will cause the server instance to use its default value. Specifying a trait value with an incorrect type, will cause the program to ask you to change the value to a valid one.
+
+Following the example above, we could reconfigure the `mids` instance to use different output pins:
+
+```bash
+lightshow configure mids
+```
+
+This will open vi with:
+
+```bash
+Frequency Bounds: [0.0, 20000.0]
+Output Pins: [5]
+```
+
+We can then change the trait values to:
+
+```bash
+Frequency Bounds: [0.0, 20000.0]
+Output Pins: [2, 3, 4]
+```
+
 Once you have reconfigured an instance's traits, it might take a moment to see the change in the visual output.  
+
 
 ### `end`  :
 
@@ -117,4 +139,4 @@ Ending a light show is as simple as calling `lightshow end`.
 
 ### `directory` and `reindex`:
 
-These commands are meant for developers. If you want to develop servers for this project, please checkout the [Developer](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Developer) section of the documentation.
+These commands are meant for developers. If you want to develop servers for this project, please check out the [Developer](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Developer) section of the documentation.

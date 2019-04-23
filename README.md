@@ -15,7 +15,8 @@ Following command line utilities are required:
 * [vi](https://www.vim.org/download.php) for configuring a light show
 
 If you are missing any of these utilities, please install them. You can check whether they are installed by running:  
-```
+
+```bash
 for u in curl bash vi; do command -v $u &>/dev/null || echo $u is missing; done
 ```
 
@@ -31,6 +32,6 @@ After completing the installation process, the _Live Lightshow_ will be accessib
 
 _Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use _Live Lightshow_, check out the following guides:
 
-* [Getting Started](???)
+* [Getting Started](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/User/Getting%20Started.md)
 * [Creating Presets](???)
 * [Developing a Server](???)
