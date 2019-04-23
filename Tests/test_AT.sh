@@ -5,7 +5,7 @@
 
 
 # Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports scripting and testing utilities.
 . "$dot/scripting.sh"
 . "$dot/testing.sh"
@@ -14,7 +14,7 @@ dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 #-Constants-------------------------------------#
 
 
-readonly test_command="$dot/../Scripts/arduino_trait.sh"
+readonly test_command="$dot/../Command Line Interface/arduino_trait.sh"
 
 
 #-Setup-----------------------------------------#

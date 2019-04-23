@@ -46,7 +46,8 @@ List<Server> serversForInstantiationMap(String serverInstantiationMap) throws Ex
 
 
 void setup() {
-  size(1280, 720, P3D);
+  surface.setVisible(false);
+
   minim = new Minim(this);
   input = minim.getLineIn();
   fft = new FFT(input.bufferSize(), input.sampleRate());

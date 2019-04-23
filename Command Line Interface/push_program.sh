@@ -12,13 +12,14 @@
 # 0: success
 # 1: invalid number of command line arguments
 # 2: the user chose to quit
+# 3: the <program directory> could not be compiled or uploaded
 
 
 #-Preliminaries---------------------------------#
 
 
 # Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports scripting and lookup utilities.
 . "$dot/../Utilities/scripting.sh"
 . "$dot/../Utilities/lookup.sh"
@@ -32,9 +33,9 @@ function declare_constants {
    # Sets the location of the folder holding the program file(s) as the first command line argument,
    # or to the firmata program folder as specified by <lookup file: file paths> if none was passed.
    if [ -n "$1" ]; then
-      readonly program_directory=${1%/}
+      readonly program_folder=${1%/}
    else
-      readonly program_directory="$dot/../../$(path_for_ firmata-directory)"
+      readonly program_folder="$dot/../../$(path_for_ firmata-directory)"
    fi
 }
 
@@ -51,7 +52,7 @@ readonly arduino_fqbn=$(line_ 1 --in-string "$traits")
 readonly arduino_port=$(line_ 2 --in-string "$traits")
 
 # Compiles and uploads the program to the Arduino.
-silently- arduino-cli compile --fqbn "$arduino_fqbn" "$program_directory"
-silently- arduino-cli upload -p "$arduino_port" --fqbn "$arduino_fqbn" "$program_directory"
+silently- arduino-cli compile --fqbn "$arduino_fqbn" "$program_folder" || exit 3
+silently- arduino-cli upload -p "$arduino_port" --fqbn "$arduino_fqbn" "$program_folder" || exit 3
 
 exit 0

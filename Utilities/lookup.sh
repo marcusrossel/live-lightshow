@@ -175,8 +175,8 @@ function _replace_symbols_of_ {
       local symbol_pattern
 
       # Tries to get the symbol pattern from the symbol table.
-      symbol_pattern=$(silently- --stderr \
-         _line_after_unique_ "!$first_symbol!" --in-string "$symbol_table"
+      symbol_pattern=$(
+         silently- --stderr _line_after_unique_ "!$first_symbol!" --in-string "$symbol_table"
       )
 
       # Gets the symbol pattern from the regular expression file and memoizes it, if it was not

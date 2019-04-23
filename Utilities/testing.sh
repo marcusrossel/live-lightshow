@@ -134,7 +134,7 @@ function _interactively- {
    local -r pipe_directory=$(mktemp -d)
 
    # Adds the removal of the pipe directory to the EXIT trap.
-   trap "rm -r \"$pipe_directory\"" EXIT
+   trap "rm -r '$pipe_directory'" EXIT
 
    # Creates the named pipes which will redirect the interactive commands' stdout to <command>'s
    # stdin and vice versa.

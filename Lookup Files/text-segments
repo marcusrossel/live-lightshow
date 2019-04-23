@@ -102,6 +102,8 @@ RED>Invalid argument.NORMAL>
 The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
 ◦ YELLOW>initialize NORMAL>
 ◦ YELLOW>start NORMAL>
+◦ YELLOW>end NORMAL>
+◦ YELLOW>status NORMAL>
 ◦ YELLOW>configure <NORMAL>instanceYELLOW>> NORMAL>
 ◦ YELLOW>directory NORMAL>
 ◦ YELLOW>reindex NORMAL>

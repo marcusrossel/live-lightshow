@@ -33,7 +33,7 @@
 
 
 # Gets the directory of this script and imports utilities.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 . "$dot/../../Utilities/scripting.sh"
 . "$dot/../../Utilities/lookup.sh"
 . "$dot/../../Utilities/index.sh"

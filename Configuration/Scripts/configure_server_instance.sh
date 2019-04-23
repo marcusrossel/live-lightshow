@@ -17,7 +17,7 @@
 
 
 # Gets the directory of this script.
-dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports scripting, lookup and index utilities.
 . "$dot/../../Utilities/scripting.sh"
 . "$dot/../../Utilities/lookup.sh"
@@ -43,8 +43,9 @@ function declare_constants {
 # * <server ID>
 function header_for_server_id {
    # Gets the list of valid trait IDs.
-   local -r static_config_file=$(values_for_ config-file --in static-index \
-                                                      --with server-id "$server_id")
+   local -r static_config_file=$(
+      values_for_ config-file --in static-index --with server-id "$server_id"
+   )
    local -r valid_trait_ids=$(cut -d : -f 1 "$static_config_file")
 
    # Prints the header.
@@ -105,9 +106,9 @@ function carry_out_configuration_editing_ {
          4)
          local error_message=$(text_for_ csi-invalid-trait-values)
          while read -r type_value_pair; do
-            local expected_type=$(cut -d : -f 1 <<< "$type_value_pair")
+            local expected_type=$(pretty_printed_type_ "$(cut -d : -f 1 <<< "$type_value_pair")")
             local value=$(cut -d : -f 2- <<< "$type_value_pair")
-            error_message="$error_message${newline}◦ got '$print_yellow$value$print_normal',"
+            error_message="$error_message${newline}◦ '$print_yellow$value$print_normal'"
             error_message="$error_message expected $print_yellow$expected_type$print_normal"
          done <<< "$invalid_items" ;;
 
@@ -122,6 +123,33 @@ function carry_out_configuration_editing_ {
       echo -e "\n${print_green}Do you want to try again? [y or n]$print_normal" >&2
       succeed_on_approval_ || return 1
    done
+
+   return 0
+}
+
+# Prints a pretty string representation of a given type.
+#
+# Arguments:
+# * <type> possible values: "int", "float", "bool", "int-list", "float-list", "bool-list"
+#
+# Return status:
+# 0: success
+# 1: <type> was not valid
+function pretty_printed_type_ {
+   case "$1" in
+      # Primitive types.
+      int)   echo 'Integer' ;;
+      float) echo 'Float' ;;
+      bool)  echo 'Boolean' ;;
+
+      # List types.
+      int-list|float-list|bool-list)
+         local -r subtype_identifier=$(cut -d '-' -f 1 <<< "$1")
+         echo "$(pretty_printed_type_ "$subtype_identifier")-List" ;;
+
+      # Invalid type identifiers.
+      *) print_error_for_ --internal; return 1 ;;
+   esac
 
    return 0
 }
