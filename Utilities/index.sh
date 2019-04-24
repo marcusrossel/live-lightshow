@@ -28,13 +28,13 @@ dot_index=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Prints the column number of a given attribute in a given index.
 #
 # Arguments:
-# * <attribute identifier>
-# ** possible values for <index identifier>="static index":
-# *** "server-id", "class-name", "config-file", "file-path"
-# ** possible values for <index identifier>="runtime index":
-# *** "instance-id", "server-id", "config-file"
+# * <attribute identifier> possible values: "server-id", "class-name", "config-file", "file-path"
 # * <in flag> possible values: "--in"
-# * <index identifier> possible values: "static-index", "runtime-index"
+# * <static-index identifier> possible values: "static-index"
+# or
+# * <attribute identifier> possible values: "instance-id", "server-id", "config-file"
+# * <in flag> possible values: "--in"
+# * <runtime-index identifier> possible values: "runtime-index"
 #
 # Return status:
 # 0: success
@@ -75,7 +75,23 @@ function _column_number_for_ {
 #-Functions-------------------------------------#
 
 
-# TODO: Document this.
+# Returns all of the values in the column for a given attribute, of a given index type, from a given
+# file of list of index entries.
+#
+# Arguments:
+# * <attribute identifier>
+# * <in flag> possible values: "--in"
+# * <index identifier> possible values: "static-index", "runtime-index"
+# or
+# * <attribute identifier>
+# * <in-entries flag> possible values: "--in-entries"
+# * <entries>
+# * <of flag> possible values: "--of"
+# * <index identifier> possible values: "static-index", "runtime-index"
+#
+# Return status:
+# 0: success
+# 1: a given flag or identifier was invalid
 function column_for_ {
    # Prints the target column of the given index file type / entries.
    case "$2" in

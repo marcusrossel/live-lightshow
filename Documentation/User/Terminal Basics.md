@@ -113,7 +113,7 @@ marcusrossel@Installation$ ./installer.sh
 
 Like the parent directory (`..`), the _current directory_ has the special name `.` when referring to it.
 
-## The vi Text Editor
+## The _vi_ Text Editor
 
 The extent of the functionality of a single command can be quite broad. One such example is the `vi` command, which runs a text editor which you will use to configure your light show. In practice you won't be calling `vi` yourself, but you will need to know how to use the editor itself.
 In this example we will edit and save a simple text file.  

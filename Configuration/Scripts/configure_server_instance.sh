@@ -27,8 +27,19 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 
 # The function wrapping all constant-declarations for this script.
-function declare_constants {
+function declare_constants_ {
    readonly server_id=$(values_for_ server-id --in runtime-index --with instance-id "$1")
+
+   # Gets the runtime configuration file associated with the given <server instance identifier>, or
+   # returns on failure if none was found.
+   local config_file
+   if ! config_file=$(values_for_ config-file --in runtime-index --with instance-id "$1"); then
+      print_error_for "Script received invalid server instance identifier" \
+                      "'$print_yellow$1$print_normal'."
+      return 1
+   fi
+   readonly runtime_config_file="$config_file"
+
 
    return 0
 }
@@ -161,7 +172,6 @@ function pretty_printed_type_ {
 # * <user-edited runtime-configuration file>
 function cleaned_configuration {
    # Gets constants needed in this function.
-   # TODO: Using non-properly declared global variable.
    local -r trait_id_column=$(cut -d : -f 1 "$runtime_config_file")
 
 
@@ -198,15 +208,7 @@ function cleaned_configuration {
 
 
 assert_correct_argument_count_ 1 '<server instance identifier>' || exit 1
-declare_constants "$@"
-
-# Gets the runtime configuration file associated with the given <server instance identifier>, or
-# returns on failure if none was found.
-if ! runtime_config_file=$(values_for_ config-file --in runtime-index --with instance-id "$1"); then
-   print_error_for "Script received invalid server instance identifier" \
-                   "'$print_yellow$1$print_normal'."
-   exit 2
-fi
+declare_constants_ "$@" || exit 2
 
 # Creates a working copy of the runtime configuration file, and makes sure it is removed upon
 # exiting.

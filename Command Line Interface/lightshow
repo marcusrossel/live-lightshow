@@ -16,10 +16,57 @@
 
 # This will be overwritten upon installation.
 # APP-DIRECTORY
-readonly app_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/.."
+readonly app_directory="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")/.."
 
 # Imports lookup utilities.
 . "$app_directory/Utilities/lookup.sh"
+
+
+#-Functions-------------------------------------#
+
+
+# Returns on success if the light show's running-status matched a given flag, or else prints an
+# error message and returns on failure.
+#
+# Arguments:
+# * <run status flag> possible values: "--running", "--not-running"
+#
+# Return status:
+# 0: success
+# 1: the given flag was invalid
+# 2: the running-status of the light show does not match the given flag
+function assert_lightshow_ {
+   case "$1" in
+      --running)
+         if [ -z "$("$app_directory/Command Line Interface/lightshow_pids.sh")" ]; then
+            echo -e "${print_red}No light show is currently running.$print_normal"
+            return 2
+         fi ;;
+      --not-running)
+         if [ -n "$("$app_directory/Command Line Interface/lightshow_pids.sh")" ]; then
+            echo -e "${print_red}A light show is currently running.$print_normal"
+            return 2
+         fi ;;
+      *)
+         print_error_for --flag "$1"; return 1 ;;
+   esac
+
+   return 0
+}
+
+# Ends a light show if one is running, or prints an error and returns on failure if none is running.
+#
+# Return status:
+# 0: success
+# 1: no light show is currently running
+function end_lightshow_ {
+   assert_lightshow_ --running || return 1
+
+   local -r pids=$("$app_directory/Command Line Interface/lightshow_pids.sh")
+   while read pid; do silently- kill "$pid"; done <<< "$pids"
+
+   echo -e "${print_green}Lightshow ended.$print_normal"
+}
 
 
 #-Main------------------------------------------#
@@ -34,27 +81,71 @@ shift
 # failure if the given subcommand was invalid.
 case "$subcommand" in
    initialize)
+      assert_lightshow_ --not-running || exit 1
       "$app_directory/Command Line Interface/push_program.sh" || exit $?
       "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
    start)
-      "$app_directory/Command Line Interface/start_lightshow.sh" ;;
-   end)
-      readonly pids=$("$app_directory/Command Line Interface/lightshow_pids.sh")
-      [ -z "$pids" ] && echo -e "${print_red}There is currently no running light show.$print_normal"
-      while read pid; do silently- kill "$pid"; done <<< "$pids"
-      echo -e "${print_green}Lightshow ended.$print_normal"
+      assert_lightshow_ --not-running || exit 1
+      "$app_directory/Command Line Interface/start_lightshow.sh"
+
+      # start <preset name: optional>
+
       ;;
+   end)
+      end_lightshow_ || exit 1 ;;
    status)
+      assert_lightshow_ --running || exit 1
       "$app_directory/Command Line Interface/lightshow_status.sh" ;;
    configure)
-      "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@";;
-   save-configuration)
-      ;; # TODO: Implement.
+      assert_lightshow_ --running || exit 1
+      silently- --stderr "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@"
+      readonly return_status=$?
+      if [ $return_status -eq 1 ]; then
+         echo -e "${print_red}This command expects a server-instance as argument.$print_normal"
+         exit 1
+      elif [ $return_status -eq 2 ]; then
+         echo -e "${print_red}The given server-instance is not currently defined.$print_normal"
+         exit 2
+      fi
+      ;;
    directory)
       echo "$(realpath "$app_directory")" ;;
    reindex)
+      assert_lightshow_ --not-running || exit 1
       "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
    *)
       echo -e "$(text_for_ lightshow-usage)"
       exit 1 ;;
+
+   live)
+      # configure <instance name>
+
+      # status
+
+      # save <new preset name>
+      ;;
+   server)
+      # import <file-path> <custom-server name: optional>
+      # > Make sure none of the server classes match class names from the Lightshow-directory or
+      # > server names of existing servers.
+
+      # remove <server name>
+      # > Notify about presets affected by this removal.
+
+      # info <server name>
+      # > Print the static configuration of the server, or possibly add #info-begin, #info-end tags
+      # > for servers to display a custom explaination.
+      ;;
+   preset)
+      # list
+      # > like _lightshow status_ but for presets
+
+      # configure <preset name>
+
+      # make <new preset's name>
+
+      # remove <preset name>
+      ;;
 esac
+
+exit 0

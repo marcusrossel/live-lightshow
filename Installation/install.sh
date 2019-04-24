@@ -11,8 +11,6 @@
 # 4: repository-interal error
 # 5: post-install tests failed
 
-# TODO: Also install vi and check for curl.
-
 
 #-Preliminaries---------------------------------#
 
@@ -29,7 +27,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly downloads_directory='downloads'
+   readonly downloads_directory="$dot/../$(path_for_ downloads-directory)"
    readonly app_directory=$(path_for_ app-directory)
 
    return 0
@@ -48,11 +46,11 @@ function declare_constants {
 function install_dependencies_ {
    # Moves the StandardFirmata program directory into the "Program" directory.
    local -r firmata_folder=$(basename "$(path_for_ firmata-directory)")
-   mv "$dot/$downloads_directory/$firmata_folder" "$dot/../Program"
+   mv "$downloads_directory/$firmata_folder" "$dot/../Program"
 
    # Moves the Arduino-CLI to a $PATH-directory.
    local -r arduino_cli=$(name_for_ arduino-cli)
-   sudo mv "$dot/$downloads_directory/$arduino_cli" "$(path_for_ arduino-cli-destination)"
+   sudo mv "$downloads_directory/$arduino_cli" "$(path_for_ arduino-cli-destination)"
 
    # Installs the Arduino UNO core.
    local -r uno_fqbn=$(name_for_ arduino-uno-fbqn)
@@ -61,16 +59,16 @@ function install_dependencies_ {
 
    # Installs Processing by moving it to the top-level repository directory.
    local -r processing=$(name_for_ processing)
-   mv "$dot/$downloads_directory/$processing" "$dot/.."
+   mv "$downloads_directory/$processing" "$dot/.."
 
    # Installs the libraries, by moving them to the sketchbook>libraries directory.
-   # TODO: Make this properly global.
+   local -r sketchbook_path
    sketchbook_path=$(get_sketchbook_path_ "$dot/../$processing")  || return $?
    local -r libraries_directory="$sketchbook_path/$(name_for_ processing-lib-directory)"
    local -r arduino_processing_lib=$(name_for_ arduino-processing-lib)
    local -r ddfs_minim_lib=$(name_for_ ddfs-minim-lib)
-   silently- mv "$dot/$downloads_directory/$arduino_processing_lib" "$libraries_directory"
-   silently- mv "$dot/$downloads_directory/$ddfs_minim_lib" "$libraries_directory"
+   silently- mv "$downloads_directory/$arduino_processing_lib" "$libraries_directory"
+   silently- mv "$downloads_directory/$ddfs_minim_lib" "$libraries_directory"
 
    return 0
 }
@@ -163,15 +161,14 @@ function tag_cli_command_ {
 # application directory, and moving the CLI-command to its destination.
 function install_application {
    # Removes all of the redundant items from the repository.
-   # TODO: Remove the downloads folder as well.
-   local -r redundant_items=$(path_for_ delete-with-install)
+   local -r redundant_items="$(path_for_ delete-with-install)$newline$downloads_directory"
    while read item; do rm -r "$dot/../$item"; done <<< "$redundant_items"
 
    # Moves the CLI-command to its destination.
    sudo mv "$dot/../$(path_for_ cli-command-source)" "$(path_for_ cli-command-destination)"
 
    # Copies this repository to its destination.
-   cp -R "$dot/.." "$app_directory"
+   sudo cp -R "$dot/.." "$app_directory"
 
    return 0
 }
@@ -210,12 +207,9 @@ function prompt_for_macOS_tools_ {
 assert_correct_argument_count_ 0 || exit 1
 declare_constants "$@"
 
-# Makes sure the downloads directory is removed when exiting.
-trap "rm -r '$dot/$downloads_directory'" EXIT
-
 # Tries to download the dependencies, or else returns on failure.
 echo 'Downloading dependencies:'
-"$dot/download_dependencies.sh" "$dot/$downloads_directory" || exit 2
+"$dot/download_dependencies.sh" "$downloads_directory" || exit 2
 
 install_dependencies_ || exit 3
 tag_cli_command_ || exit 4

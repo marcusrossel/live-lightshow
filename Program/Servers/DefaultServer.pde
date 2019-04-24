@@ -1,11 +1,9 @@
-// # TODO: Give Default Servers inertia.
-
+// # TODO: Clean this up.
 
 // ---------------- //
 // Loudness History //
 // ---------------- //
 
-// TODO: Clean this up.
 final class LoudnessHistory {
 
   LoudnessHistory(Float duration) {
@@ -62,17 +60,16 @@ final class LoudnessHistory {
 // Default Server //
 // -------------- //
 
-// # TODO: Clean this up.
 
 // #server "default"
 final class DefaultServer implements Server {
 
-  Configuration getConfiguration() { return configuration; }
-
   private Configuration configuration;
+  private Arduino arduino;
 
-  public DefaultServer(Configuration configuration) {
+  public DefaultServer(Configuration configuration, Arduino arduino) {
     this.configuration = configuration;
+    this.arduino = arduino;
   }
 
   // #trait "Lower Frequency Bound": 0.0
@@ -81,8 +78,12 @@ final class DefaultServer implements Server {
   // #trait "Upper Frequency Bound": 20000.0
   private Float upperBound() { return (Float) configuration.valueForTrait("Upper Frequency Bound"); }
 
-  // #trait "Loudness Recalibration Duration": 5.0
+  // #trait "Loudness Recalibration Duration": 3.0
   private Float loudnessRecalibrationDuration() { return (Float) configuration.valueForTrait("Loudness Recalibration Duration"); }
+
+  // #trait "Minimal Trigger Threshold": 0.3
+  // This is relative to maxLoudness.
+  private Float minimalTriggerThreshold() { return (Float) configuration.valueForTrait("Minimal Trigger Threshold"); }
 
   // #trait "Output Pins": [5]
   private List<Integer> outputPins() { return (List<Integer>) configuration.valueForTrait("Output Pins"); }
@@ -90,10 +91,8 @@ final class DefaultServer implements Server {
   Float loudnessOfLastFrame = 0f;
   Boolean lastFrameDidTrigger = false;
   Integer previousOutput = Arduino.LOW;
-
   Float maxLoudness = 0f;
   Float recentMaxLoudness = 0f;
-  Float minimalTriggerThreshold = 0.3; // relative to maxLoudness
   Float triggerTreshold = 0.7; // relative to recentMaxLoudness
   Integer timeOfLastTrigger = 0; // relative to program-start; in milliseconds
   LoudnessHistory loudnessHistory = new LoudnessHistory(1f);
@@ -163,7 +162,7 @@ final class DefaultServer implements Server {
     maxLoudness = max(maxLoudness, loudnessOfLastFrame);
 
     // Determines whether the current frame requires triggering.
-    Float triggerLoudness = max(minimalTriggerThreshold * maxLoudness, triggerTreshold * recentMaxLoudness);
+    Float triggerLoudness = max(minimalTriggerThreshold() * maxLoudness, triggerTreshold * recentMaxLoudness);
     lastFrameDidTrigger = (loudnessOfLastFrame > triggerLoudness);
 
     // Resets the `timeOfLastTrigger` if appropriate.

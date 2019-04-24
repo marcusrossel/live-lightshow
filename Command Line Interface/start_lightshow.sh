@@ -5,8 +5,7 @@
 # Return status:
 # 0: success
 # 1: invalid number of command line arguments
-# 2: there is already a lightshow running
-# 3: the user chose to quit
+# 2: the user chose to quit
 
 
 #-Preliminaries---------------------------------#
@@ -70,14 +69,8 @@ function server_instantiation_map {
 assert_correct_argument_count_ 0 || exit 1
 declare_constants "$@"
 
-# Aborts if there is already another lightshow running.
-if [ -n "$("$dot/lightshow_pids.sh")" ]; then
-   echo -e "${print_red}There is already another light show running.$print_normal"
-   exit 2
-fi
-
 # Sets up the runtime environment, or exits if the user chose to quit.
-"$dot/../Configuration/Scripts/setup_runtime.sh" || exit 3
+"$dot/../Configuration/Scripts/setup_runtime.sh" || exit 2
 
 echo -e "${print_green}Starting light show...$print_normal"
 
@@ -85,7 +78,6 @@ echo -e "${print_green}Starting light show...$print_normal"
 readonly sim=$(server_instantiation_map)
 
 # Copies all servers' program files to the lightshow program directory for compilation.
-# TODO: Make sure none of the server classes are called "Server", "Configuration", or "Lightshow".
 cp "$servers_directory"/* "$program_directory"
 
 # Starts the lightshow program, while passing it the Arduino's port and the SIM.

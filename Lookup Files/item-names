@@ -26,3 +26,6 @@ minim
 
 Arduino-UNO FQBN:
 arduino:avr:uno
+
+Configuration read cycle trait:
+Configuration read cycle (in seconds)

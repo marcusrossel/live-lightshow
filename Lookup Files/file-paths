@@ -42,6 +42,9 @@ Configuration/Static
 Runtime configuration directory:
 Configuration/Runtime
 
+Downloads directory:
+Installation/downloads
+
 
 #-Absolute--------------------------------------#
 
@@ -53,10 +56,10 @@ Arduino-CLI destination:
 /usr/local/bin
 
 Application directory linux:
-# TODO: Find a location.
+/usr/local/live-lightshow
 
 Application directory macOS:
 ~/Library/Application Support/Live Lightshow
 
 Application directory win10:
-# TODO: Find a location.
+/usr/local/live-lightshow

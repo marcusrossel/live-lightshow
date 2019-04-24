@@ -2,7 +2,7 @@
 # Getting Started
 
 This guide contains a basic introduction on how to use _Live Lightshow_.
-It will introduce basic concepts used in _Live Lightshow_ and show you how to apply them in practice.
+It will introduce its basic concepts and show you how to apply them in practice.
 
 ## Concepts
 
@@ -116,7 +116,7 @@ Following the example above, we could reconfigure the `mids` instance to use dif
 lightshow configure mids
 ```
 
-This will open vi with:
+This will open _vi_ with:
 
 ```bash
 Frequency Bounds: [0.0, 20000.0]

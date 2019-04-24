@@ -270,6 +270,7 @@ function _name_for_ {
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
+      config-read-cycle-trait)  name_identifier='Configuration read cycle trait:'       ;;
       *)                        print_error_for --identifier "$2"; return 1             ;;
    esac
 
@@ -314,6 +315,7 @@ function _path_for_ {
       cli-command-destination)         path_identifier='CLI-command destination:'              ;;
       arduino-cli-destination)         path_identifier='Arduino-CLI destination:'              ;;
       app-directory)                   path_identifier="Application directory $(current_OS_):" ;;
+      downloads-directory)             path_identifier='Downloads directory:'                  ;;
       *)                               print_error_for --identifier "$2"; return 1             ;;
    esac
 

@@ -1,27 +1,29 @@
+// # TODO: Clean this up.
+
 import java.nio.file.Path;
 
 // ------------- //
 // Configuration //
 // ------------- //
 
-// # TODO: Add documentation.
 public final class Configuration {
   
-  // # TODO: Make private.
   private Map<String, Object> staticTraits;
   private Map<String, Object> runtimeTraits;
-  public Path runtimeConfiguration;
+  private Path runtimeConfiguration;
   private Integer timeOfLastRefresh;
   private Integer millisecondsToRefresh; 
   
   public Configuration(Path staticConfiguration, Path runtimeConfiguration) {
     this.runtimeConfiguration = runtimeConfiguration;
     timeOfLastRefresh = 0;
+    millisecondsToRefresh = 0;    
     
-    // # TODO: Factor this out, e.g. by automatically adding a trait to the static-traits in the static_index.sh
-    millisecondsToRefresh = 5000; 
+    try { staticTraits = mapFromConfiguration(staticConfiguration); } catch (Exception e) {
+      println("Internal error: class `Configuration` was unable to create static trait map");
+      System.exit(3);
+    }  
     
-    try { staticTraits = mapFromConfiguration(staticConfiguration); } catch (Exception e) { /* # TODO: Fatal error. */ }  
     updateRuntimeTraitConfiguration();
   }
   
@@ -31,18 +33,12 @@ public final class Configuration {
     }
     
     Object runtimeValue = runtimeTraits.get(trait);
-    if (runtimeValue != null) {
-      return runtimeValue; 
-    } else {
-      Object staticValue = staticTraits.get(trait);
-      if (staticValue != null) { return staticValue; }
-      else                     { return null; /* # TODO: Fatal error. */ }
-    }
+    return (runtimeValue != null) ? runtimeValue : staticTraits.get(trait);
   }
   
   void updateRuntimeTraitConfiguration() {
+    try { runtimeTraits = mapFromConfiguration(runtimeConfiguration); } catch (Exception e) { /* This is ok. */ }
     timeOfLastRefresh = millis();
-    try { runtimeTraits = mapFromConfiguration(runtimeConfiguration); } catch (Exception e) { }
   }
   
   private Map<String, Object> mapFromConfiguration(Path path) throws Exception {
@@ -56,7 +52,11 @@ public final class Configuration {
       String traitIdentifier = entryComponents[0];
       Object value = valueFromStringWithType(entryComponents[1], entryComponents[2]);
       
-      map.put(traitIdentifier, value);
+      if (traitIdentifier == "Configuration read cycle (in seconds)") {
+        millisecondsToRefresh = Math.round((Float) value);
+      } else {
+        map.put(traitIdentifier, value); 
+      }
     }
     
     configurationScanner.close();
@@ -100,8 +100,6 @@ public final class Configuration {
          return boolList;
          
        default:
-         // # TODO: Fatal error.
-         println("Invalid type.");
          return null;
      }
   }

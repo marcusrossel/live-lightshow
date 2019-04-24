@@ -23,14 +23,14 @@ for u in curl bash vi; do command -v $u &>/dev/null || echo $u is missing; done
 ## Installation
 To install the _Live Lightshow_ you first need to download and unzip the [newest release](???). To install the program, navigate to the unzipped folder in a terminal and run `Installation/install.sh`.
 
-The installer might ask you for your password along the way. If you would like to know why you need to provide it, check [Why my password?](???) for details.
+The installer might ask you for your password along the way. If you would like to know why you need to provide it, check [Why my password?](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/User/Why%20My%20Password%3F.md) for details.
 
 After completing the installation process, the _Live Lightshow_ will be accessible using the `lightshow` command.
 
 
 ## Using _Live Lightshow_
 
-_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use _Live Lightshow_, check out the following guides:
+_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use and/or develop for it, check out the following guides:
 
 * [Getting Started](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/User/Getting%20Started.md)
 * [Creating Presets](???)

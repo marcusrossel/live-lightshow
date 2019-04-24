@@ -64,6 +64,9 @@ function static_configuration_for_file_ {
       echo "$trait_identifier:$trait_value:$trait_value_type"
    done
 
+   # Adds the configuration read cycle trait at a default value of 5 seconds.
+   echo "$(name_for_ config-read-cycle-trait):5.0:float"
+
    return 0
 }
 

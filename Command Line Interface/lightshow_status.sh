@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script prints a description of a currently running light show, or a message telling that no
-# light show is running.
+# This script prints a description of the light show's currently spcified server instances.
 
 
 #-Preliminaries---------------------------------#
@@ -17,12 +16,6 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 #-Main------------------------------------------#
 
-
-# Exits early if no light show is running.
-if [ -z "$("$dot/lightshow_pids.sh")" ]; then
-   echo -e "${print_red}There is currently no running light show.$print_normal"
-   exit 0
-fi
 
 # Prints a description of all of the server instances in the currently running light show.
 echo -e "${print_green}A light show is currently running$print_normal with the following setup:"
