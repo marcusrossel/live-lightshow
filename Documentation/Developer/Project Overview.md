@@ -2,7 +2,7 @@
 
 This document contains a high-level overview of all of the components contained in the _Live Lightshow_ project and explains how they work and interconnect.
 
-![Project Structure](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Assets/Project%20Structure.svg)
+![Project Structure](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Assets/Project%20Structure.png)
 
 The project can roughly be split into three parts, responsible for different tasks:
 
