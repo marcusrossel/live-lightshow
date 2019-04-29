@@ -2,7 +2,7 @@
 
 This document contains a high-level overview of all of the components contained in the _Live Lightshow_ project and explains how they work and interconnect.
 
-![Project Structure](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Assets/Project%20Structure.png)
+![Project Structure](../Assets/Project%20Structure.png)
 
 The project can roughly be split into three parts, responsible for different tasks:
 
@@ -32,12 +32,12 @@ This folders contains the definitions (classes) of the servers, which can be use
 
 ### _Lookup Files:_
 
-To make scripting for this project as transparent and modular as possible, constant values are seperated out into _lookup files_. They arrange the constants in a structured format, so that it is discernable which purpose a constant serves. The constants can be attained from the files as is, but are easier to access by using the `lookup.sh` utility script. The purpose of each lookup file is described in the directory's [readme](https://github.com/marcusrossel/live-lightshow/blob/master/Lookup%20Files/README.md).
+To make scripting for this project as transparent and modular as possible, constant values are seperated out into _lookup files_. They arrange the constants in a structured format, so that it is discernable which purpose a constant serves. The constants can be attained from the files as is, but are easier to access by using the `lookup.sh` utility script. The purpose of each lookup file is described in the directory's [readme](Lookup%20Files/README.md).
 
 
 ### _Utilities:_
 
-The _Utilities_ directory contains the _Bash_-equivalent of libraries - so scripts that contain functions which can be imported in other scripts. Each library contains functions centered around a specific problem domain. So for example the scripts in the _Tests_ directory use the `testing.sh`-library, and the scipts concered with indexing use the `index.sh`-library. The purpose of each library is described in the directory's [readme](https://github.com/marcusrossel/live-lightshow/blob/master/Utilities/README.md).
+The _Utilities_ directory contains the _Bash_-equivalent of libraries - so scripts that contain functions which can be imported in other scripts. Each library contains functions centered around a specific problem domain. So for example the scripts in the _Tests_ directory use the `testing.sh`-library, and the scipts concered with indexing use the `index.sh`-library. The purpose of each library is described in the directory's [readme](Utilities/README.md).
 
 ### _Configuration:_
 
@@ -70,4 +70,4 @@ This directory contains the scripts run by the user to install _Live Lightshow_.
 This directory contains tests for other _Bash_-scripts in this project. The tests use the `testing.sh`-library to achieve a homogeneous output.
 
 3. **_Documentation:_**
-This directory contains documentation for user and developers of this project. More information can be found in the directory's [readme](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/README.md).
+This directory contains documentation for user and developers of this project. More information can be found in the directory's [readme](Documentation/README.md).

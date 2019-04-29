@@ -139,4 +139,4 @@ Ending a light show is as simple as calling `lightshow end`.
 
 ### `directory` and `reindex`:
 
-These commands are meant for developers. If you want to develop servers for this project, please check out the [Developer](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation/Developer) section of the documentation.
+These commands are meant for developers. If you want to develop servers for this project, please check out the [Developer](Documentation/Developer) section of the documentation.
