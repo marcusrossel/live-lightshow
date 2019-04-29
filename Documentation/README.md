@@ -10,3 +10,7 @@ This directory contains user- and developer-oriented guides for using _Live Ligh
 
 
 ## Developer Guides
+
+* [Project Overview](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/Developer/Project%20Overview.md)
+* [Program Lifecycle](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/Developer/Program%20Lifecycle.md)
+* [Developing A Server](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/Developer/Developing%20A%20Server.md)

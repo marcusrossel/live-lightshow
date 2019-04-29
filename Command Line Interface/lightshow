@@ -38,12 +38,12 @@ readonly app_directory="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev
 function assert_lightshow_ {
    case "$1" in
       --running)
-         if [ -z "$("$app_directory/Command Line Interface/lightshow_pids.sh")" ]; then
+         if [ -z "$("$app_directory/Command Line Interface/live_pids.sh")" ]; then
             echo -e "${print_red}No light show is currently running.$print_normal"
             return 2
          fi ;;
       --not-running)
-         if [ -n "$("$app_directory/Command Line Interface/lightshow_pids.sh")" ]; then
+         if [ -n "$("$app_directory/Command Line Interface/live_pids.sh")" ]; then
             echo -e "${print_red}A light show is currently running.$print_normal"
             return 2
          fi ;;
@@ -62,7 +62,7 @@ function assert_lightshow_ {
 function end_lightshow_ {
    assert_lightshow_ --running || return 1
 
-   local -r pids=$("$app_directory/Command Line Interface/lightshow_pids.sh")
+   local -r pids=$("$app_directory/Command Line Interface/live_pids.sh")
    while read pid; do silently- kill "$pid"; done <<< "$pids"
 
    echo -e "${print_green}Lightshow ended.$print_normal"
@@ -92,10 +92,10 @@ case "$subcommand" in
 
       ;;
    end)
-      end_lightshow_ || exit 1 ;;
+      end_lightshow_ || exit 1 ;;
    status)
       assert_lightshow_ --running || exit 1
-      "$app_directory/Command Line Interface/lightshow_status.sh" ;;
+      "$app_directory/Command Line Interface/live_status.sh" ;;
    configure)
       assert_lightshow_ --running || exit 1
       silently- --stderr "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@"
