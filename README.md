@@ -30,7 +30,7 @@ After completing the installation process, the _Live Lightshow_ will be accessib
 
 ## Using _Live Lightshow_
 
-_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use and/or develop for it, check out the [Documentation](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation), containing guides like:
+_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use and/or develop for it, check out the [Documentation](https://github.com/marcusrossel/live-lightshow/tree/master/Documentation) containing guides like:
 
 * [Getting Started](https://github.com/marcusrossel/live-lightshow/blob/master/Documentation/User/Getting%20Started.md)
 * [Creating Presets](???)
