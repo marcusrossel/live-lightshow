@@ -68,6 +68,42 @@ function end_lightshow_ {
    echo -e "${print_green}Lightshow ended.$print_normal"
 }
 
+# This function handels the `live` subcommand.
+#
+# Arguments:
+# * <main's $2, $3, ...>
+#
+# Returns:
+# 1: <$2> was an invalid subcommand
+# otherwise: $? of the given subcommand
+function subcommand_live_ {
+   # Binds the subcommand to `live` and realigns the arguments.
+   local -r live_subcommand="$1"
+   shift
+
+   case "$live_subcommand" in
+      status)
+         assert_lightshow_ --running || return 1
+         "$app_directory/Command Line Interface/live_status.sh" ;;
+
+      configure)
+         assert_lightshow_ --running || return 1
+         silently- --stderr "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@"
+         readonly return_status=$?
+         if [ $return_status -eq 1 ]; then
+            echo -e "${print_red}This command expects a server-instance as argument.$print_normal"
+            return 1
+         elif [ $return_status -eq 2 ]; then
+            echo -e "${print_red}The given server-instance is not currently defined.$print_normal"
+            return 2
+         fi ;;
+
+      *)
+         echo -e "$(text_for_ subcommand-live-usage)"
+         return 1 ;;
+   esac
+}
+
 
 #-Main------------------------------------------#
 
@@ -91,23 +127,14 @@ case "$subcommand" in
       # start <preset name: optional>
 
       ;;
+   live)
+      subcommand_live_ "$@" || exit $?
+
+      # save <new preset name>
+
+      ;;
    end)
       end_lightshow_ || exit 1 ;;
-   status)
-      assert_lightshow_ --running || exit 1
-      "$app_directory/Command Line Interface/live_status.sh" ;;
-   configure)
-      assert_lightshow_ --running || exit 1
-      silently- --stderr "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@"
-      readonly return_status=$?
-      if [ $return_status -eq 1 ]; then
-         echo -e "${print_red}This command expects a server-instance as argument.$print_normal"
-         exit 1
-      elif [ $return_status -eq 2 ]; then
-         echo -e "${print_red}The given server-instance is not currently defined.$print_normal"
-         exit 2
-      fi
-      ;;
    directory)
       echo "$(realpath "$app_directory")" ;;
    reindex)
@@ -117,13 +144,6 @@ case "$subcommand" in
       echo -e "$(text_for_ lightshow-usage)"
       exit 1 ;;
 
-   live)
-      # configure <instance name>
-
-      # status
-
-      # save <new preset name>
-      ;;
    server)
       # import <file-path> <custom-server name: optional>
       # > Make sure none of the server classes match class names from the Lightshow-directory or

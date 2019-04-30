@@ -111,7 +111,7 @@ function _lines_after_unique_ {
    # Prints all of the lines in <file> starting from "$list_start", until the delimiter line is
    # reached. If a custom delimiter is read, this is remembered by setting a flag.
    havent_read_custom_delimiter=true
-   tail -n "+$list_start" "$2" | while read -r line; do
+   tail -n "+$list_start" "$2" | while IFS= read -r line; do
       if $custom_delimiter; then
          [ "$line" = "$4" ] && { havent_read_custom_delimiter=false; break; } || echo "$line"
       else
@@ -131,7 +131,7 @@ function _lines_after_unique_ {
 # * <string>
 function _expand_line_continuations {
    # Iterates over the lines in the given string.
-   while read -r line; do
+   while IFS= read -r line; do
       # If the last character in the line is "\", print neither it nor a trailing newline.
       [ "${line: -1}" = '\' ] && echo -ne "${line%?}" || echo -e "$line"
    done <<< "$1"
@@ -419,6 +419,8 @@ function _text_for_ {
          segment_identifier='configure_server_instance.sh: Invalid trait-values:' ;;
       lightshow-usage)
          segment_identifier='lightshow: Usage:' ;;
+      subcommand-live-usage)
+         segment_identifier='lightshow: <live> subcommand usage:' ;;
       *)
          print_error_for --identifier "$2"; return 1 ;;
    esac

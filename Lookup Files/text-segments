@@ -92,12 +92,23 @@ SEGMENT-END
 
 lightshow: Usage:
 RED>Invalid argument.NORMAL>
-The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL>):
+The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL> \
+and nested subcommands after YELLOW>▸NORMAL>):
 ◦ YELLOW>initialize NORMAL>
 ◦ YELLOW>start NORMAL>
 ◦ YELLOW>end NORMAL>
-◦ YELLOW>status NORMAL>
-◦ YELLOW>configure <NORMAL>instanceYELLOW>> NORMAL>
+◦ YELLOW>live NORMAL>
+  YELLOW>▸NORMAL> status
+  YELLOW>▸NORMAL> configure YELLOW><NORMAL>server instanceYELLOW>> NORMAL>
 ◦ YELLOW>directory NORMAL>
 ◦ YELLOW>reindex NORMAL>
+SEGMENT-END
+
+
+
+lightshow: <live> subcommand usage:
+RED>Invalid argument.NORMAL>
+The YELLOW>liveNORMAL> subcommand supports the following subcommands:
+◦ YELLOW>status NORMAL>
+◦ YELLOW>configure <NORMAL>server instanceYELLOW>> NORMAL>
 SEGMENT-END
