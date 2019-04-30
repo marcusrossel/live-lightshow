@@ -14,3 +14,4 @@ This directory contains user- and developer-oriented guides for using _Live Ligh
 1. [Developing A Server](Developer/1.%20Developing%20A%20Server.md)
 2. [Project Overview](Developer/2.%20Project%20Overview.md)
 3. [Program Lifecycle](Developer/3.%20Program%20Lifecycle.md)
+4. [Contributing](Developer/4.%20Contributing.md)
