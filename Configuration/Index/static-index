@@ -1,1 +1,4 @@
-default:DefaultServer:/Users/marcusrossel/Developer/Open Source/live-lightshow/Configuration/Scripts/../../Program/Servers/DefaultServer.pde:/Users/marcusrossel/Developer/Open Source/live-lightshow/Configuration/Scripts/../../Configuration/Static/0
+# This file will contain the static index of the form:
+# <server 1 ID>:<server 1 class name>:<server 1 program file>:<server 1 static configuration file>
+# <server 2 ID>:<server 2 class name>:<server 2 program file>:<server 2 static configuration file>
+# ...

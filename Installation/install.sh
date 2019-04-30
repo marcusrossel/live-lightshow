@@ -27,7 +27,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly downloads_directory="$dot/../$(path_for_ downloads-directory)"
+   readonly relative_downloads_directory=$(path_for_ downloads-directory)
    readonly app_directory=$(path_for_ app-directory)
 
    return 0
@@ -37,8 +37,8 @@ function declare_constants {
 #-Functions-------------------------------------#
 
 
-# Moves all of the dependencies (expected to be in the $downloads_directory) to their intended
-# destinations, etc.
+# Moves all of the dependencies (expected to be in the $relative_downloads_directory) to their
+# intended destinations, etc.
 #
 # Return status:
 # 0: success
@@ -46,11 +46,12 @@ function declare_constants {
 function install_dependencies_ {
    # Moves the StandardFirmata program directory into the "Program" directory.
    local -r firmata_folder=$(basename "$(path_for_ firmata-directory)")
-   mv "$downloads_directory/$firmata_folder" "$dot/../Program"
+   mv "$dot/../$relative_downloads_directory/$firmata_folder" "$dot/../Program"
 
    # Moves the Arduino-CLI to a $PATH-directory.
    local -r arduino_cli=$(name_for_ arduino-cli)
-   sudo mv "$downloads_directory/$arduino_cli" "$(path_for_ arduino-cli-destination)"
+   sudo mv "$dot/../$relative_downloads_directory/$arduino_cli" \
+           "$(path_for_ arduino-cli-destination)"
 
    # Installs the Arduino UNO core.
    local -r uno_fqbn=$(name_for_ arduino-uno-fbqn)
@@ -59,16 +60,17 @@ function install_dependencies_ {
 
    # Installs Processing by moving it to the top-level repository directory.
    local -r processing=$(name_for_ processing)
-   mv "$downloads_directory/$processing" "$dot/.."
+   mv "$dot/../$relative_downloads_directory/$processing" "$dot/.."
 
    # Installs the libraries, by moving them to the sketchbook>libraries directory.
-   local -r sketchbook_path
+   local sketchbook_path
    sketchbook_path=$(get_sketchbook_path_ "$dot/../$processing")  || return $?
    local -r libraries_directory="$sketchbook_path/$(name_for_ processing-lib-directory)"
    local -r arduino_processing_lib=$(name_for_ arduino-processing-lib)
    local -r ddfs_minim_lib=$(name_for_ ddfs-minim-lib)
-   silently- mv "$downloads_directory/$arduino_processing_lib" "$libraries_directory"
-   silently- mv "$downloads_directory/$ddfs_minim_lib" "$libraries_directory"
+   silently- mv "$dot/../$relative_downloads_directory/$arduino_processing_lib" \
+                "$libraries_directory"
+   silently- mv "$dot/../$relative_downloads_directory/$ddfs_minim_lib" "$libraries_directory"
 
    return 0
 }
@@ -83,11 +85,11 @@ function install_dependencies_ {
 # 0: success
 # 1: the user chose to quit
 function get_sketchbook_path_ {
-   echo "Please provide Processing's Sketchbook directory."
-   echo 'You can find it by opening Processing and navigating to the preferences.'
+   echo "Please provide Processing's Sketchbook directory." >&2
+   echo 'You can find it by opening Processing and navigating to the preferences.' >&2
 
    # Makes sure the user wants to continue, or returns on failure.
-   echo -e "${print_green}Do you want to continue? [y or n]$print_normal"
+   echo -e "${print_green}Do you want to continue? [y or n]$print_normal" >&2
    succeed_on_approval_ || return 1
 
    # Opens Processing on macOS, or displays where to find the app on other OSs.
@@ -96,11 +98,11 @@ function get_sketchbook_path_ {
       sleep 3 # TODO: Hacky.
       processing_PID=$!;
    else
-      echo -e "You can find the Processing application at $print_yellow$1$print_normal"
+      echo -e "You can find the Processing application at $print_yellow$1$print_normal" >&2
    fi
 
    # Gets and prints out the sketchbook path.
-   echo -e "${print_green}Paste the path here and hit [ENTER]: $print_normal"
+   echo -e "${print_green}Paste the path here and hit [ENTER]: $print_normal" >&2
    read; echo "$REPLY"
 
    # Closes processing if it was opened by this script.
@@ -161,14 +163,15 @@ function tag_cli_command_ {
 # application directory, and moving the CLI-command to its destination.
 function install_application {
    # Removes all of the redundant items from the repository.
-   local -r redundant_items="$(path_for_ delete-with-install)$newline$downloads_directory"
+   local -r redundant_items="$(path_for_ delete-with-install)$newline$relative_downloads_directory"
    while read item; do rm -r "$dot/../$item"; done <<< "$redundant_items"
 
    # Moves the CLI-command to its destination.
    sudo mv "$dot/../$(path_for_ cli-command-source)" "$(path_for_ cli-command-destination)"
 
-   # Copies this repository to its destination.
+   # Copies this repository to its destination and updates its owner to be the user again.
    sudo cp -R "$dot/.." "$app_directory"
+   sudo chown -R $USER: "$app_directory"
 
    return 0
 }
@@ -182,17 +185,17 @@ function install_application {
 # 1: the user chose to quit
 function prompt_for_macOS_tools_ {
    echo -e "\nPlease install ${print_yellow}processing-java$print_normal, by opening Processing" \
-           "and navigating to the ${print_yellow}Tools$print_normal menu."
+           "and navigating to the ${print_yellow}Tools$print_normal menu."  >&2
 
    # Makes sure the user wants to continue, or returns on failure.
-   echo -e "${print_green}Do you want to continue? [y or n]$print_normal"
+   echo -e "${print_green}Do you want to continue? [y or n]$print_normal"  >&2
    succeed_on_approval_ || return 1
 
    # Opens Processing and waits for the user to continue.
    "$(name_for_ processing)/$(name_for_ processing-executable)" &
    sleep 3 # TODO: Hacky.
-   echo -e "${print_green}Press any button once processing-java is installed.$print_normal"
-   read
+   echo -e "${print_green}Press any button once processing-java is installed.$print_normal"  >&2
+   read -n 1
 
    # Closes Processing, if it was only open because of this installer.
    silently- kill $processing_PID
@@ -208,8 +211,8 @@ assert_correct_argument_count_ 0 || exit 1
 declare_constants "$@"
 
 # Tries to download the dependencies, or else returns on failure.
-echo 'Downloading dependencies:'
-"$dot/download_dependencies.sh" "$downloads_directory" || exit 2
+echo 'Downloading dependencies:' >&2
+"$dot/download_dependencies.sh" "$dot/../$relative_downloads_directory" || exit 2
 
 install_dependencies_ || exit 3
 tag_cli_command_ || exit 4
@@ -224,6 +227,6 @@ if [ "$(current_OS_)" = 'macOS' ]; then
    prompt_for_macOS_tools_ || exit 3
 fi
 
-# TODO: Check if all of the commands are working and the tests pass.
+# TODO: Check ifthe commands are working, make sure the sketchbook path is valid and the tests pass.
 
 exit 0

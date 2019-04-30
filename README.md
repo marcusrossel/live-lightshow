@@ -25,7 +25,7 @@ To install the _Live Lightshow_ you first need to download and unzip the [newest
 
 The installer might ask you for your password along the way. If you would like to know why you need to provide it, check [Why my password?](Documentation/User/2.%20Why%20My%20Password%3F.md) for details.
 
-After completing the installation process, the _Live Lightshow_ will be accessible using the `lightshow` command.
+After completing the installation process, the _Live Lightshow_ will be accessible using the `lightshow` command and you can delete the downloaded folder if you like.
 
 
 ## Using _Live Lightshow_

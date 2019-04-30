@@ -1,6 +1,1 @@
-Lower Frequency Bound:0.0:float
-Upper Frequency Bound:20000.0:float
-Loudness Recalibration Duration:3.0:float
-Minimal Trigger Threshold:0.3:float
-Output Pins:[5]:int-list
-Configuration read cycle (in seconds):5.0:float
+# This file will contain the static trait value map for the first statically indexed server.

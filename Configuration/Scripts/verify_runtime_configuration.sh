@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This script scans a given runtime configuration, asserting the validity of each entry based on a
 # given server-ID.
 # Runtime configurations have the form:

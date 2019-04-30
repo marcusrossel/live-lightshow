@@ -17,9 +17,13 @@ final class LoudnessHistory {
   private List<Float> relevantHistory() {
     Integer now = millis();
 
-    // Gets the index of the oldest time stamp not older than `duration`.
+    // Gets the index of the oldest time stamp not older than `duration`. If there is none, an empty
+    // array is returned.
     Integer index = 0;
-    for (; now - timeStamps.get(index) > duration * 1000; index++);
+    while (now - timeStamps.get(index) > duration * 1000) {
+      index++;
+      if (index == timeStamps.size()) { return new ArrayList<Float>(); }
+   }
 
     return loudnesses.subList(index, loudnesses.size() - 1);
   }

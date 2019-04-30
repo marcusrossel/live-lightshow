@@ -62,22 +62,21 @@ function duplicate_instance_identifiers_in {
 # Arguments:
 # * <user configuration entries>
 function invalid_server_identifiers_in {
-   # Gets lists of the given and valid server IDs.
-   local -r given_server_ids=$(cut -d : -f 2- <<< "$1")
+   # Gets a list of the valid server IDs.
    local -r valid_server_ids=$(column_for_ server-id --in static-index)
 
-   # Iterates over the given server IDs.
-   while read -r given_server_id; do
-      # Removes leading and trailing whitespace from the given server ID.
-      local cleaned_given_server_id=$(trimmed "$given_server_id")
+   # Iterates over the given entries.
+   while read -r entry; do
+      # Extracts the server-ID from the current entry.
+      local server_id=$(echo "$entry" | cut -d : -f 2- | trimmed)
 
       # Prints the given server ID, if it is not contained in the list of valid types.
-      if [ -z "$cleaned_given_server_id" ]; then
+      if [ -z "$server_id" ]; then
          echo ' '
-      elif ! $(string_ "$cleaned_given_server_id" --is-line-in-string "$valid_server_ids"); then
-         echo "$cleaned_given_server_id"
+      elif ! $(string_ "$server_id" --is-line-in-string "$valid_server_ids"); then
+         echo "$server_id"
       fi
-   done <<< "$given_server_ids"
+   done <<< "$1"
 
    return 0
 }
