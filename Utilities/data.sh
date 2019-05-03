@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# This script serves as a library of functions for conveniently accessing this project's index
-# files. It can be "imported" via sourcing.
+# This script serves as a library of functions for conveniently accessing this project's data files
+# (in Catalogue/Data). It can be "imported" via sourcing.
 # It should be noted that this script activates alias expansion.
 
 
@@ -9,67 +9,17 @@
 
 
 # Sets up an include guard.
-[ -z "$INDEX_SH" ] && readonly INDEX_SH=true || return
+[ -z "$DATA_SH" ] && readonly DATA_SH=true || return
 
 # Turns on alias-expansion explicitly as users of this script will probably be non-interactive
 # shells.
 shopt -s expand_aliases
 
 # Gets the directory of this script.
-dot_index=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot_data=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
-. "$dot_index/scripting.sh"
-. "$dot_index/lookup.sh"
-
-
-#-Private-Functions-----------------------------#
-
-
-# Prints the column number of a given attribute in a given index.
-#
-# Arguments:
-# * <attribute identifier> possible values: "server-id", "class-name", "config-file", "file-path"
-# * <in flag> possible values: "--in"
-# * <static-index identifier> possible values: "static-index"
-# or
-# * <attribute identifier> possible values: "instance-id", "server-id", "config-file"
-# * <in flag> possible values: "--in"
-# * <runtime-index identifier> possible values: "runtime-index"
-#
-# Return status:
-# 0: success
-# 1: the given attribute is not a valid attribute in the given index, <index identifier> is invalid
-#    or <in flag> was missing
-function _column_number_for_ {
-   # Makes sure the <in flag> was passed.
-   [ "$2" != '--in' ] && { print_error_for --flag "$2" ; return 1; }
-
-   # Differentiates on the <index identifier>.
-   case "$3" in
-      # Handels static-index attributes.
-      static-index)
-         case "$1" in
-            server-id)   echo 1 ;;
-            class-name)  echo 2 ;;
-            file-path)   echo 3 ;;
-            config-file) echo 4 ;;
-            *) print_error_for --identifier "$1" ; return 1 ;;
-         esac ;;
-
-      # Handels runtime-index attributes.
-      runtime-index)
-         case "$1" in
-            instance-id) echo 1 ;;
-            server-id)   echo 2 ;;
-            config-file) echo 3 ;;
-            *) print_error_for --identifier "$1" ; return 1 ;;
-         esac ;;
-
-      *) print_error_for --identifier "$3" ; return 1 ;;
-   esac
-
-   return 0
-}
+. "$dot_data/scripting.sh"
+. "$dot_data/lookup.sh"
 
 
 #-Functions-------------------------------------#
@@ -92,12 +42,13 @@ function _column_number_for_ {
 # Return status:
 # 0: success
 # 1: a given flag or identifier was invalid
+# TODO: This now collides with lookup.sh::column_for_
 function column_for_ {
    # Prints the target column of the given index file type / entries.
    case "$2" in
       --in)
          # Gets the index file associated with the given index identifier.
-         index_file="$dot_index/../$(path_for_ "$3")" || return 1
+         index_file="$dot_data/../$(path_for_ "$3")" || return 1
          # Binds the target column.
          target_column=$(_column_number_for_ "$1" --in "$3") || return 1
          # Prints the column of the given attribute in the obtained index file.
@@ -145,7 +96,7 @@ function index_entries_for_ {
    [ -z "$line_numbers" ] && return 2
 
    # Gets the index file.
-   local -r index_file="$dot_index/../$(path_for_ "$4")"
+   local -r index_file="$dot_data/../$(path_for_ "$4")"
 
    # Prints the entries in the index at the determined line numbers.
    while read line_number; do

@@ -16,10 +16,10 @@
 shopt -s expand_aliases
 
 # Gets the directory of this script.
-dot_index=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot_types=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
-. "$dot_index/scripting.sh"
-. "$dot_index/lookup.sh"
+. "$dot_types/scripting.sh"
+. "$dot_types/lookup.sh"
 
 
 #-Functions-------------------------------------#

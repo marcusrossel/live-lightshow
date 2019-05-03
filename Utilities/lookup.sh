@@ -43,7 +43,7 @@ function _line_after_unique_ {
    case "$2" in
       --in-string) local -r match=$(egrep -A1 "^$1\$" <<< "$3") ;;
       --in-file)   local -r match=$(egrep -A1 "^$1\$" "$3") ;;
-      *)           print_error_for --identifier "$2"; return 1 ;;
+      *)           print_error_for --flag "$2"; return 1 ;;
    esac
 
    local -r matched_line_count=$(wc -l <<< "$match")
@@ -69,31 +69,39 @@ function _line_after_unique_ {
 #
 # Arguments:
 # * <string>
+# * <in-file flag> possible values: "--in-file"
 # * <file>
-# * <flag> optional, possible values: "--until"
-# * <delimiter> required with <flag>
+# or
+# * <string>
+# * <in-file flag> possible values: "--in-file"
+# * <file>
+# * <until flag> possible values: "--until"
+# * <delimiter>
 #
 # Return status:
 # 0: success
-# 1: <flag> was invalid
-# 2: <delimiter> was invalid (not passed)
+# 1: <in-file flag> or <until flag> was invalid
+# 2: <delimiter> was not passed after <until flag>
 # 3: there were less or more than one line exactly matching <string> in <file>
 # 4: a custom <delimiter> was given, but never reached in <file>
 function _lines_after_unique_ {
+   # Makes sure the <in-file flag> was passed.
+   [ "$2" = '--in-file' ] || { print_error_for --flag "$2"; return 1; }
+
    # If a flag was passed, makes sure it is valid and a delimiter was passed, or prints an error and
    # returns on failure. A flag is also set in the process, indicating whether a <flag> was passed.
-   if [ -n "$3" ]; then
+   if [ -n "$4" ]; then
       # Asserts flag validity.
-      [ "$3" != '--until' ] && { print_error_for --flag "$3"; return 1; }
+      [ "$4" != '--until' ] && { print_error_for --flag "$4"; return 1; }
       # Asserts delimiter validity.
-      [ -z "$4" ] && { print_error_for "Function received no delimiter argument."; return 2; }
+      [ -z "$5" ] && { print_error_for "Function received no delimiter argument."; return 2; }
       local -r custom_delimiter=true
    else
       local -r custom_delimiter=false
    fi
 
    # Gets all of the lines in <file> exactly matching <string>.
-   local -r match_line=$(egrep -n "^$1\$" "$2")
+   local -r match_line=$(egrep -n "^$1\$" "$3")
 
    # Makes sure that there was exactly one match line, or prints an error and returns on failure.
    if [ -z "$match_line" ]; then
@@ -111,9 +119,9 @@ function _lines_after_unique_ {
    # Prints all of the lines in <file> starting from "$list_start", until the delimiter line is
    # reached. If a custom delimiter is read, this is remembered by setting a flag.
    havent_read_custom_delimiter=true
-   tail -n "+$list_start" "$2" | while IFS= read -r line; do
+   tail -n "+$list_start" "$3" | while IFS= read -r line; do
       if $custom_delimiter; then
-         [ "$line" = "$4" ] && { havent_read_custom_delimiter=false; break; } || echo "$line"
+         [ "$line" = "$5" ] && { havent_read_custom_delimiter=false; break; } || echo "$line"
       else
          [ -n "$line" ] && echo "$line" || break
       fi
@@ -208,8 +216,60 @@ function _replace_symbols_of_ {
 #-Public-Functions------------------------------#
 
 
+# Prints the column number of a given attribute in a given data file.
+# All values are derived from a given file defaulting to <lookup file: data layout>.
+# The lookup file should only really be changed for testing purposes.
+#
+# Arguments:
+# * <layout file> passed automatically by the alias
+# * <attribute>
+# * <in flag>, possible values: "--in"
+# * <data file identifier>, possible values: *see below*
+#
+# Return status:
+# 0: success
+# 1: one or more of the given identifiers were invalid
+# 2: <layout file> is malformed
+alias column_for_="_column_for_ '$dot_lookup/../Lookup Files/data-layout' "
+function _column_for_ {
+   # Makes sure the <in flag> was passed.
+   [ "$3" = '--in' ] || { print_error_for --flag "$3"; return 1; }
+
+   # The string used to search the lookup file for attributes.
+   local data_file_identifier
+
+   # Sets the search string according to the given identifier, or prints an error and returns on
+   # failure if an unknown identifier was passed.
+   case "$4" in
+      static-index)   data_file_identifier='Static index:'          ;;
+      static-config)  data_file_identifier='Static configuration:'  ;;
+      runtime-index)  data_file_identifier='Runtime index:'         ;;
+      runtime-config) data_file_identifier='Runtime configuration:' ;;
+      rack-index)     data_file_identifier='Rack index:'            ;;
+      rack-manifest)  data_file_identifier='Rack manifest:'         ;;
+      *)              print_error_for --identifier "$4"; return 1   ;;
+   esac
+
+   # Gets the ordered list of attributes associated with the given data file, or returns on failure
+   # if that operation fails.
+   local data_file_attributes
+   data_file_attributes=$(_lines_after_unique_ "$data_file_identifier" --in-file "$1") || return 2
+
+   # Prints the relative line number, and thereby column number of the given attribute and returns
+   # on success.
+   local -i line_count=1
+   while read -r data_file_attribute; do
+      [ "$data_file_attribute" = "$2" ] && { echo $line_count; return 1; }
+      ((line_count++))
+   done <<< "$data_file_attributes"
+
+   # This point is only reached if the given attribute is not associated with the given data file.
+   print_error_for "Function received invalid attribute '$print_yellow$2$print_normal'."
+   return 2
+}
+
 # Prints the URL associated with a given identifier, adapted to the current operating system.
-# All constants are taken from a given file defaulting to <lookup file: dependency urls>.
+# All URLs are taken from a given file defaulting to <lookup file: dependency urls>.
 # The lookup file should only really be changed for testing purposes.
 #
 # Arguments:
@@ -219,10 +279,10 @@ function _replace_symbols_of_ {
 # Return status:
 # 0: success
 # 1: <identifier> is invalid
-# 2: <item name file> does not contain <identifier>'s identifier-string
+# 2: <url file> does not contain <identifier>'s identifier-string
 alias url_for_="_url_for_ '$dot_lookup/../Lookup Files/dependency-urls' "
 function _url_for_ {
-   # The string used to search the lookup file for a certain pattern.
+   # The string used to search the lookup file for a certain URL.
    local url_identifier
 
    # Sets the search string according to the given identifier, or prints an error and returns on
@@ -276,7 +336,7 @@ function _name_for_ {
 
    # Prints the line following the search string in the lookup file, or returns on failure if that
    # operation fails.
-   _line_after_unique_ "$name_identifier" --in-file "$1" || return 2
+   _line_after_unique_ "$name_identifier" "$1" || return 2
 
    return 0
 }
@@ -328,7 +388,7 @@ function _path_for_ {
 
    # Gets the lines matched in the location-file for the given identifier, or returns on failure if
    # that operation fails.
-   local -r raw_paths=$(_lines_after_unique_ "$path_identifier" "$1") || return 2
+   local -r raw_paths=$(_lines_after_unique_ "$path_identifier" --in-file "$1") || return 2
 
    # Performs explicit tilde expansion and prints the resulting paths.
    while read path; do
@@ -434,8 +494,12 @@ function _text_for_ {
 
    # Gets the lines following the search string in the lookup file upto the line containing only
    # "SEGMENT-END", or returns on failure if that operation fails.
-   if ! local -r text=$(_lines_after_unique_ "$segment_identifier" "$1" --until 'SEGMENT-END')
-   then return 2; fi
+   if ! local -r text=$(
+      _lines_after_unique_ "$segment_identifier" --in-file "$1" --until 'SEGMENT-END'
+   )
+   then
+      return 2
+   fi
 
    # Performs manual line continuation.
    local -r expanded_text=$(_expand_line_continuations "$text")

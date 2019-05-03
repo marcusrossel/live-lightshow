@@ -2,9 +2,9 @@
 # to determine where certain files are, or should be located.
 #
 # Files paths are declared within "path declarations". A path declaration consists of a unique
-# identifier, followed by a file path. Path declarations must be seperated by empty lines.
+# identifier, followed by one or more file paths. Path declarations must be seperated by empty
+# lines.
 # Furthermore, path declarations can be placed in certain groups:
-#
 # * Repository-Relative: These paths are relative to the repository the file lives in.
 # * Absolute: These paths are relative to the file system, and may use ~ for the home directory.
 
