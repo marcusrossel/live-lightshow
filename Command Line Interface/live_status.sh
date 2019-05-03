@@ -8,7 +8,7 @@
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting, lookup and index utilities.
+# Imports.
 . "$dot/../Utilities/scripting.sh"
 . "$dot/../Utilities/lookup.sh"
 . "$dot/../Utilities/index.sh"
@@ -36,7 +36,7 @@ while read -r index_entry; do
       trait_id=$(cut -d : -f 1 <<< "$config_entry")
       trait_value=$(cut -d : -f 2 <<< "$config_entry")
 
-      echo "  ◦ $trait_id: $trait_value"
+      echo "  • $trait_id: $trait_value"
    done < "$config_file"
 done < "$dot/../$(path_for_ runtime-index)"
 

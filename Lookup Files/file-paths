@@ -31,16 +31,22 @@ StandardFirmata program directory:
 Program/StandardFirmata
 
 Static index:
-Configuration/Index/static-index
+Catalogue/Data/Static/index
 
 Runtime index:
-Configuration/Index/runtime-index
+Catalogue/Data/Runtime/index
 
-Static configuration directory:
-Configuration/Static
+Rack index:
+Catalogue/Data/Racks/index
 
-Runtime configuration directory:
-Configuration/Runtime
+Static data directory:
+Catalogue/Data/Static
+
+Runtime data directory:
+Catalogue/Data/Runtime
+
+Rack data directory:
+Catalogue/Data/Racks
 
 Downloads directory:
 Installation/Downloads

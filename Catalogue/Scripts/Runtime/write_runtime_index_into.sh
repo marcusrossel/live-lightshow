@@ -18,10 +18,10 @@
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting, lookup and index utilities.
-. "$dot/../../Utilities/scripting.sh"
-. "$dot/../../Utilities/lookup.sh"
-. "$dot/../../Utilities/index.sh"
+# Imports.
+. "$dot/../../../Utilities/scripting.sh"
+. "$dot/../../../Utilities/lookup.sh"
+. "$dot/../../../Utilities/index.sh"
 
 
 #-Constants-------------------------------------#
@@ -31,7 +31,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 function declare_constants {
    readonly target_file=$1
    readonly user_configuration_file=$(mktemp)
-   readonly runtime_config_directory="$dot/../../$(path_for_ runtime-configuration-directory)"
+   readonly runtime_data_directory=$(realpath "$dot/../../../$(path_for_ runtime-data-directory)")
 
    return 0
 }
@@ -72,15 +72,15 @@ function carry_out_configuration_editing_ {
 
          # Sets an appropriate error message if a recoverable error occurs.
          2)
-         local error_message=$(text_for_ wrii-duplicate-instance-ids)
+         local error_message=$(text_for_ wrii-duplicate-instance-names)
          while read -r duplicate_id; do
-            error_message="$error_message${newline}◦ '$print_yellow$duplicate_id$print_normal'"
+            error_message="$error_message${newline}• '$print_yellow$duplicate_id$print_normal'"
          done <<< "$invalid_items" ;;
 
          3)
-         local error_message=$(text_for_ wrii-invalid-server-ids)
+         local error_message=$(text_for_ wrii-invalid-server-names)
          while read -r invalid_server_id; do
-            error_message="$error_message${newline}◦ '$print_yellow$invalid_server_id$print_normal'"
+            error_message="$error_message${newline}• '$print_yellow$invalid_server_id$print_normal'"
          done <<< "$invalid_items" ;;
 
          # Prints an error message and returns on failure if any other error occured.
@@ -105,11 +105,11 @@ function user_configuration_template {
    echo "$(text_for_ wrii-header)"
 
    # Prints the server-identifiers contained in static index in the form:
-   # # ◦ <server ID 1>
-   # # ◦ <server ID 2>
+   # # • <server ID 1>
+   # # • <server ID 2>
    # ...
    column_for_ server-id --in static-index | while read -r server_id; do
-      echo "# ◦ $server_id"
+      echo "# • $server_id"
    done
 
    # Adds a trailing newline.
@@ -162,7 +162,7 @@ echo -n >"$target_file"
 instance_counter=0
 while read -r configuration_entry; do
    # Completes and writes the entry to the target file, and increments the instance counter.
-   echo "$configuration_entry:$runtime_config_directory/$instance_counter" >>"$target_file"
+   echo "$configuration_entry:$runtime_data_directory/$instance_counter" >>"$target_file"
    ((instance_counter++))
 done <"$user_configuration_file"
 

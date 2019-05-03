@@ -18,10 +18,10 @@
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting, lookup and index utilities.
-. "$dot/../../Utilities/scripting.sh"
-. "$dot/../../Utilities/lookup.sh"
-. "$dot/../../Utilities/index.sh"
+# Imports.
+. "$dot/../../../Utilities/scripting.sh"
+. "$dot/../../../Utilities/lookup.sh"
+. "$dot/../../../Utilities/index.sh"
 
 
 #-Constants-------------------------------------#
@@ -35,8 +35,9 @@ function declare_constants_ {
    # returns on failure if none was found.
    local config_file
    if ! config_file=$(values_for_ config-file --in runtime-index --with instance-id "$1"); then
-      print_error_for "Script received invalid server instance identifier" \
-                      "'$print_yellow$1$print_normal'."
+      # TODO: Figure out a general strategy for hiding this error message.
+      # print_error_for "Script received invalid server instance identifier" \
+      #                 "'$print_yellow$1$print_normal'."
       return 1
    fi
    readonly runtime_config_file="$config_file"
@@ -63,7 +64,7 @@ function header_for_server_id {
    # Prints the header.
    echo "$(text_for_ csi-header)"
    while read valid_trait_id; do
-      echo "# ◦ $valid_trait_id"
+      echo "# • $valid_trait_id"
    done <<< "$valid_trait_ids"
 
    # Adds a trailing newline.
@@ -104,15 +105,15 @@ function carry_out_configuration_editing_ {
 
          # Sets an appropriate error message if a recoverable error occurs.
          2)
-         local error_message=$(text_for_ csi-invalid-trait-ids)
+         local error_message=$(text_for_ csi-invalid-trait-names)
          while read -r invalid_id; do
-            error_message="$error_message${newline}◦ '$print_yellow$invalid_id$print_normal'"
+            error_message="$error_message${newline}• '$print_yellow$invalid_id$print_normal'"
          done <<< "$invalid_items" ;;
 
          3)
-         local error_message=$(text_for_ csi-duplicate-trait-ids)
+         local error_message=$(text_for_ csi-duplicate-trait-names)
          while read -r duplicate_id; do
-            error_message="$error_message${newline}◦ '$print_yellow$duplicate_id$print_normal'"
+            error_message="$error_message${newline}• '$print_yellow$duplicate_id$print_normal'"
          done <<< "$invalid_items" ;;
 
          4)
@@ -120,7 +121,7 @@ function carry_out_configuration_editing_ {
          while read -r type_value_pair; do
             local expected_type=$(pretty_printed_type_ "$(cut -d : -f 1 <<< "$type_value_pair")")
             local value=$(cut -d : -f 2- <<< "$type_value_pair")
-            error_message="$error_message${newline}◦ '$print_yellow$value$print_normal'"
+            error_message="$error_message${newline}• '$print_yellow$value$print_normal'"
             error_message="$error_message expected $print_yellow$expected_type$print_normal"
          done <<< "$invalid_items" ;;
 

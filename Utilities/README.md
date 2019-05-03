@@ -6,7 +6,7 @@ This directory contains _bash_-scripts meant for sourcing in other scripts. Each
 
 **`lookup.sh`** serves as an interface for accessing the content in the project's _Lookup Files_ folder.
 
-**`index.sh`** provides functions for conveniently accessing the project's index files (in _Configuration > Index_).
+**`index.sh`** provides functions for conveniently accessing the project's index files (in _Catalogue > Data_).
 
 **`types.sh`** contains functions to be used when dealing with trait value types.
 

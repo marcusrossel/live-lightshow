@@ -1,0 +1,4 @@
+# This file will contain the static index of the form:
+# <server 1 name>:<server 1 class name>:<server 1 program file>:<server 1 static configuration file>
+# <server 2 name>:<server 2 class name>:<server 2 program file>:<server 2 static configuration file>
+# ...

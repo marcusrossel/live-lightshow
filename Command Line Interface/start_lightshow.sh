@@ -13,7 +13,7 @@
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting, lookup and index utilities.
+# Imports.
 . "$dot/../Utilities/scripting.sh"
 . "$dot/../Utilities/lookup.sh"
 . "$dot/../Utilities/index.sh"
@@ -70,7 +70,7 @@ assert_correct_argument_count_ 0 || exit 1
 declare_constants "$@"
 
 # Sets up the runtime environment, or exits if the user chose to quit.
-"$dot/../Configuration/Scripts/setup_runtime.sh" || exit 2
+"$dot/../Catalogue/Scripts/Runtime/setup_runtime.sh" || exit 2
 
 echo -e "${print_green}Starting light show...$print_normal"
 

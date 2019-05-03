@@ -36,10 +36,10 @@
 
 # Gets the directory of this script and imports utilities.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-. "$dot/../../Utilities/scripting.sh"
-. "$dot/../../Utilities/lookup.sh"
-. "$dot/../../Utilities/index.sh"
-. "$dot/../../Utilities/types.sh"
+. "$dot/../../../Utilities/scripting.sh"
+. "$dot/../../../Utilities/lookup.sh"
+. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/types.sh"
 
 
 #-Constants-------------------------------------#

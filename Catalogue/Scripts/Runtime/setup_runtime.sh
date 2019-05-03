@@ -14,10 +14,10 @@
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting, lookup and index utilities.
-. "$dot/../../Utilities/scripting.sh"
-. "$dot/../../Utilities/lookup.sh"
-. "$dot/../../Utilities/index.sh"
+# Imports.
+. "$dot/../../../Utilities/scripting.sh"
+. "$dot/../../../Utilities/lookup.sh"
+. "$dot/../../../Utilities/index.sh"
 
 
 #-Functions--------------------------------------#
@@ -40,7 +40,7 @@ function setup_runtime_configuration_files {
       # Copies the contents of the static configuration file for current server-ID, to the current
       # runtime configuration file.
       cat "$static_config_file" >"$runtime_config_file"
-   done < "$dot/../../$(path_for_ runtime-index)"
+   done < "$dot/../../../$(path_for_ runtime-index)"
 
    return 0
 }
@@ -52,7 +52,7 @@ function setup_runtime_configuration_files {
 assert_correct_argument_count_ 0 || exit 1
 
 # Writes a new runtime index.
-readonly runtime_index="$dot/../../$(path_for_ runtime-index)"
+readonly runtime_index="$dot/../../../$(path_for_ runtime-index)"
 "$dot/write_runtime_index_into.sh" "$runtime_index" || exit 2
 
 # Updates the runtime configuration directory.

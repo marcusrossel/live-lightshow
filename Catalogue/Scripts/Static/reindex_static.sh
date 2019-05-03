@@ -8,17 +8,20 @@
 # 0: success
 # 1: invalid number of command line arguments
 
+# TODO: There are two steps performed statically: indexing and recording/itemizing.
+# Design utility files accordingly.
+
 
 #-Preliminaries---------------------------------#
 
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting, lookup and index utilities.
-. "$dot/../../Utilities/scripting.sh"
-. "$dot/../../Utilities/lookup.sh"
-. "$dot/../../Utilities/index.sh"
-. "$dot/../../Utilities/types.sh"
+# Imports.
+. "$dot/../../../Utilities/scripting.sh"
+. "$dot/../../../Utilities/lookup.sh"
+. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/types.sh"
 
 
 #-Constants-------------------------------------#
@@ -26,7 +29,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly static_index="$dot/../../$(path_for_ static-index)"
+   readonly static_index="$dot/../../../$(path_for_ static-index)"
 
    return 0
 }

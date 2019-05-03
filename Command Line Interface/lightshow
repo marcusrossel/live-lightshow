@@ -18,7 +18,7 @@
 # APP-DIRECTORY
 readonly app_directory="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")/.."
 
-# Imports lookup utilities.
+# Imports.
 . "$app_directory/Utilities/lookup.sh"
 
 
@@ -88,7 +88,7 @@ function subcommand_live_ {
 
       configure)
          assert_lightshow_ --running || return 1
-         silently- --stderr "$app_directory/Configuration/Scripts/configure_server_instance.sh" "$@"
+         "$app_directory/Catalogue/Scripts/Runtime/configure_server_instance.sh" "$@"
          readonly return_status=$?
          if [ $return_status -eq 1 ]; then
             echo -e "${print_red}This command expects a server-instance as argument.$print_normal"
@@ -119,18 +119,18 @@ case "$subcommand" in
    initialize)
       assert_lightshow_ --not-running || exit 1
       "$app_directory/Command Line Interface/push_program.sh" || exit $?
-      "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
+      "$app_directory/Catalogue/Scripts/Static/reindex_static.sh" ;;
    start)
       assert_lightshow_ --not-running || exit 1
       "$app_directory/Command Line Interface/start_lightshow.sh"
 
-      # start <preset name: optional>
+      # start <rack name: optional>
 
       ;;
    live)
       subcommand_live_ "$@" || exit $?
 
-      # save <new preset name>
+      # save <new rack name>
 
       ;;
    end)
@@ -139,7 +139,7 @@ case "$subcommand" in
       echo "$(realpath "$app_directory")" ;;
    reindex)
       assert_lightshow_ --not-running || exit 1
-      "$app_directory/Configuration/Scripts/reindex_static.sh" ;;
+      "$app_directory/Catalogue/Scripts/Static/reindex_static.sh" ;;
    *)
       echo -e "$(text_for_ lightshow-usage)"
       exit 1 ;;
@@ -150,21 +150,21 @@ case "$subcommand" in
       # > server names of existing servers.
 
       # remove <server name>
-      # > Notify about presets affected by this removal.
+      # > Notify about racks affected by this removal.
 
       # info <server name>
       # > Print the static configuration of the server, or possibly add #info-begin, #info-end tags
       # > for servers to display a custom explaination.
       ;;
-   preset)
+   rack)
       # list
-      # > like _lightshow status_ but for presets
+      # > like _lightshow status_ but for racks
 
-      # configure <preset name>
+      # configure <rack name>
 
-      # make <new preset's name>
+      # make <new rack's name>
 
-      # remove <preset name>
+      # remove <rack name>
       ;;
 esac
 

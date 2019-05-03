@@ -33,5 +33,5 @@ After completing the installation process, the _Live Lightshow_ will be accessib
 _Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use and/or develop for it, check out the [Documentation](Documentation) containing guides like:
 
 * [Getting Started](Documentation/User/3.%20Getting%20Started.md)
-* [Creating Presets](???)
+* [Creating Racks](???)
 * [Developing a Server](Documentation/Developer/1.%20Developing%20A%20Server.md)

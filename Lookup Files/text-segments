@@ -29,27 +29,27 @@ SEGMENT-END
 write_runtime_index_into.sh: Header:
 # Declare which types of servers you want to use for the lightshow.
 # Each declaration should have the form:
-# <instance identifier>: <server type>
+# <instance name>: <server name>
 #
 # Lines starting with # are ignored.
 #
-# Possible <server type>s are:
+# Possible <server name>s are:
 SEGMENT-END
 
 
 
-write_runtime_index_into.sh: Duplicate instance-IDs:
-RED>The specified configuration contains duplicate instance identifiers.NORMAL>
+write_runtime_index_into.sh: Duplicate instance names:
+RED>The specified configuration contains duplicate instance names.NORMAL>
 Each instance must have a unique name.
-The duplicate identifiers are:
+The duplicate name are:
 SEGMENT-END
 
 
 
-write_runtime_index_into.sh: Invalid server-IDs:
-RED>The specified configuration contains invalid server identifiers.NORMAL>
-You may only use identifiers of existing server types.
-The invalid identifiers are:
+write_runtime_index_into.sh: Invalid server names:
+RED>The specified configuration contains invalid server names.NORMAL>
+You may only use names of existing servers.
+The invalid names are:
 SEGMENT-END
 
 
@@ -57,24 +57,24 @@ SEGMENT-END
 configure_server_instance.sh: Header:
 # Declare which of the server instance's traits should have which values.
 # Each declaration should have the form:
-# <trait identifier>: <value>
+# <trait name>: <value>
 #
 # Lines starting with # are ignored.
 #
-# Possible <trait identifier>s for this server instance are:
+# Possible <trait name>s for this server instance are:
 SEGMENT-END
 
 
 
-configure_server_instance.sh: Invalid trait-IDs:
-RED>The specified configuration contains invalid trait identifiers.NORMAL>
-Trait identifiers must be defined for the given server type.
-The invalid identifiers are:
+configure_server_instance.sh: Invalid trait names:
+RED>The specified configuration contains invalid trait names.NORMAL>
+Trait names must be pre-defined for the given server.
+The invalid names are:
 SEGMENT-END
 
 
 
-configure_server_instance.sh: Duplicate trait-IDs:
+configure_server_instance.sh: Duplicate trait names:
 RED>The specified configuration contains duplicate trait declarations.NORMAL>
 A configuration may only declare each trait once.
 The duplicate traits are:
@@ -82,7 +82,7 @@ SEGMENT-END
 
 
 
-configure_server_instance.sh: Invalid trait-values:
+configure_server_instance.sh: Invalid trait values:
 RED>The specified configuration contains invalid trait values.NORMAL>
 A trait value must match its expected type.
 The invalid trait values are:
@@ -94,14 +94,14 @@ lightshow: Usage:
 RED>Invalid argument.NORMAL>
 The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL> \
 and nested subcommands after YELLOW>▸NORMAL>):
-◦ YELLOW>initialize NORMAL>
-◦ YELLOW>start NORMAL>
-◦ YELLOW>end NORMAL>
-◦ YELLOW>live NORMAL>
+• YELLOW>initialize NORMAL>
+• YELLOW>start NORMAL>
+• YELLOW>end NORMAL>
+• YELLOW>live NORMAL>
   YELLOW>▸NORMAL> status
   YELLOW>▸NORMAL> configure YELLOW><NORMAL>server instanceYELLOW>> NORMAL>
-◦ YELLOW>directory NORMAL>
-◦ YELLOW>reindex NORMAL>
+• YELLOW>directory NORMAL>
+• YELLOW>reindex NORMAL>
 SEGMENT-END
 
 
@@ -109,6 +109,6 @@ SEGMENT-END
 lightshow: <live> subcommand usage:
 RED>Invalid argument.NORMAL>
 The YELLOW>liveNORMAL> subcommand supports the following subcommands:
-◦ YELLOW>status NORMAL>
-◦ YELLOW>configure <NORMAL>server instanceYELLOW>> NORMAL>
+• YELLOW>status NORMAL>
+• YELLOW>configure <NORMAL>server instanceYELLOW>> NORMAL>
 SEGMENT-END

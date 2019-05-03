@@ -20,9 +20,9 @@
 
 # Gets the directory of this script.
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
-# Imports scripting and lookup utilities.
-. "$dot/../../Utilities/scripting.sh"
-. "$dot/../../Utilities/lookup.sh"
+# Imports.
+. "$dot/../../../Utilities/scripting.sh"
+. "$dot/../../../Utilities/lookup.sh"
 
 
 #-Constants-------------------------------------#
@@ -30,8 +30,8 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly servers_directory="$dot/../../$(path_for_ servers-directory)"
-   readonly static_configuration_directory="$dot/../../$(path_for_ static-configuration-directory)"
+   readonly servers_directory=$(realpath "$dot/../../../$(path_for_ servers-directory)")
+   readonly static_data_directory=$(realpath "$dot/../../../$(path_for_ static-data-directory)")
 
    return 0
 }
@@ -122,7 +122,7 @@ for file in $(ls "$servers_directory"); do
    # Only prints the entry and increments the server counter if there actually was a server in the
    # file.
    if [ -n "$partial_entry" ]; then
-      entry="$partial_entry:$static_configuration_directory/$server_counter"
+      entry="$partial_entry:$static_data_directory/$server_counter"
       echo "$entry"
       ((server_counter++))
    fi

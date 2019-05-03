@@ -17,7 +17,7 @@ shopt -s expand_aliases
 
 # Gets the directory of this script.
 dot_index=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports scripting and lookup utilities.
+# Imports.
 . "$dot_index/scripting.sh"
 . "$dot_index/lookup.sh"
 

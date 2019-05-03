@@ -17,7 +17,7 @@ shopt -s expand_aliases
 
 # Gets the directory of this script.
 dot_lookup=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports scripting utilities.
+# Imports.
 . "$dot_lookup/scripting.sh"
 
 
@@ -213,7 +213,7 @@ function _replace_symbols_of_ {
 # The lookup file should only really be changed for testing purposes.
 #
 # Arguments:
-# * <item name file> passed automatically by the alias
+# * <url file> passed automatically by the alias
 # * <identifier>, possible values: *see below*
 #
 # Return status:
@@ -303,20 +303,27 @@ function _path_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      delete-with-install)             path_identifier='Delete with installation:'             ;;
-      cli-command-source)              path_identifier='CLI-command source:'                   ;;
-      lightshow-directory)             path_identifier='Lightshow program directory:'          ;;
-      servers-directory)               path_identifier='Servers directory:'                    ;;
-      firmata-directory)               path_identifier='StandardFirmata program directory:'    ;;
-      static-index)                    path_identifier='Static index:'                         ;;
-      runtime-index)                   path_identifier='Runtime index:'                        ;;
-      static-configuration-directory)  path_identifier='Static configuration directory:'       ;;
-      runtime-configuration-directory) path_identifier='Runtime configuration directory:'      ;;
-      cli-command-destination)         path_identifier='CLI-command destination:'              ;;
-      arduino-cli-destination)         path_identifier='Arduino-CLI destination:'              ;;
-      app-directory)                   path_identifier="Application directory $(current_OS_):" ;;
-      downloads-directory)             path_identifier='Downloads directory:'                  ;;
-      *)                               print_error_for --identifier "$2"; return 1             ;;
+      delete-with-install)     path_identifier='Delete with installation:'             ;;
+      cli-command-source)      path_identifier='CLI-command source:'                   ;;
+
+      lightshow-directory)     path_identifier='Lightshow program directory:'          ;;
+      servers-directory)       path_identifier='Servers directory:'                    ;;
+      firmata-directory)       path_identifier='StandardFirmata program directory:'    ;;
+
+      static-index)            path_identifier='Static index:'                         ;;
+      runtime-index)           path_identifier='Runtime index:'                        ;;
+      rack-index)              path_identifier='Rack index:'                           ;;
+
+      static-data-directory)   path_identifier='Static data directory:'                ;;
+      runtime-data-directory)  path_identifier='Runtime data directory:'               ;;
+      rack-data-directory)     path_identifier='Rack data directory:'                  ;;
+
+      cli-command-destination) path_identifier='CLI-command destination:'              ;;
+      arduino-cli-destination) path_identifier='Arduino-CLI destination:'              ;;
+      app-directory)           path_identifier="Application directory $(current_OS_):" ;;
+      downloads-directory)     path_identifier='Downloads directory:'                  ;;
+
+      *)                       print_error_for --identifier "$2"; return 1             ;;
    esac
 
    # Gets the lines matched in the location-file for the given identifier, or returns on failure if
@@ -405,18 +412,18 @@ function _text_for_ {
          segment_identifier='arduino_trait.sh: Multiple Arduinos:' ;;
       wrii-header)
          segment_identifier='write_runtime_index_into.sh: Header:' ;;
-      wrii-duplicate-instance-ids)
-         segment_identifier='write_runtime_index_into.sh: Duplicate instance-IDs:' ;;
-      wrii-invalid-server-ids)
-         segment_identifier='write_runtime_index_into.sh: Invalid server-IDs:' ;;
+      wrii-duplicate-instance-names)
+         segment_identifier='write_runtime_index_into.sh: Duplicate instance names:' ;;
+      wrii-invalid-server-names)
+         segment_identifier='write_runtime_index_into.sh: Invalid server names:' ;;
       csi-header)
          segment_identifier='configure_server_instance.sh: Header:' ;;
-      csi-invalid-trait-ids)
-         segment_identifier='configure_server_instance.sh: Invalid trait-IDs:' ;;
-      csi-duplicate-trait-ids)
-         segment_identifier='configure_server_instance.sh: Duplicate trait-IDs:' ;;
+      csi-invalid-trait-names)
+         segment_identifier='configure_server_instance.sh: Invalid trait names:' ;;
+      csi-duplicate-trait-names)
+         segment_identifier='configure_server_instance.sh: Duplicate trait names:' ;;
       csi-invalid-trait-values)
-         segment_identifier='configure_server_instance.sh: Invalid trait-values:' ;;
+         segment_identifier='configure_server_instance.sh: Invalid trait values:' ;;
       lightshow-usage)
          segment_identifier='lightshow: Usage:' ;;
       subcommand-live-usage)

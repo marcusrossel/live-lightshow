@@ -17,7 +17,7 @@ shopt -s expand_aliases
 
 # Gets the directory of this script.
 dot_testing=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-# Imports scripting utilities.
+# Imports.
 . "$dot_testing/scripting.sh"
 
 
@@ -56,9 +56,9 @@ function _report_if_last_status_was {
 
    # Prints a message depending on whether <last return status> has the expected value or not.
    if [ "$return_status" -eq "$expected_return_status" ]; then
-      echo -e "◦ $ok_color$1\tOK$print_normal"
+      echo -e "• $ok_color$1\tOK$print_normal"
    else
-      echo -ne "◦ $bad_color$1\tNO: Expected return status $expected_return_status, "
+      echo -ne "• $bad_color$1\tNO: Expected return status $expected_return_status, "
       echo -e  "but got $return_status$print_normal"
    fi
 
@@ -93,9 +93,9 @@ function _report_if_output_matches {
 
    # Prints a message depending on whether the output matched or not (as determined above).
    if $output_matches; then
-      echo -e "◦ $print_green$2\tOK$print_normal"
+      echo -e "• $print_green$2\tOK$print_normal"
    else
-      echo -e "◦ $print_red$2\tNO: Expected different output$print_normal"
+      echo -e "• $print_red$2\tNO: Expected different output$print_normal"
    fi
 
    return 0

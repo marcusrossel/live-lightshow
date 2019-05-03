@@ -1,0 +1,5 @@
+# This file will contain the rack's configuration for the manifest's first server instance, of the
+# form:
+# <trait 1 name>:<trait 1 value>:<trait 1 value type>
+# <trait 2 name>:<trait 2 value>:<trait 2 value type>
+# ...
