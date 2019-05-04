@@ -38,7 +38,7 @@
 dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 . "$dot/../../../Utilities/types.sh"
 
 
@@ -47,7 +47,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly static_config_file=$(values_for_ config-file --in static-index --with server-id "$2")
+   readonly static_config_file=$(fields_for_ config-file --with server-name "$2" --in static-index)
    return 0
 }
 
@@ -61,8 +61,8 @@ function declare_constants {
 # * <runtime configuration entries>
 function invalid_trait_identifiers_in {
    # Gets lists of the given trait-IDs and valid trait-IDs.
-   local -r given_trait_ids=$(cut -d : -f 1 <<< "$1")
-   local -r valid_trait_ids=$(cut -d : -f 1 "$static_config_file")
+   local -r given_trait_ids=$(data_for_ trait-name --in runtime-config --entries "$1")
+   local -r valid_trait_ids=$(data_for_ trait-name --in static-config "$static_config_file")
 
    # Iterates over the given trait-IDs.
    while read -r given_trait_id; do
@@ -83,7 +83,8 @@ function invalid_trait_identifiers_in {
 # * <runtime configuration entries>
 function duplicate_trait_identifiers_in {
    # Creates a map of <count>:<trait-ID>.
-   local -r count_id_map=$(cut -d : -f 1 <<< "$1" | sort | uniq -c | sed -e 's/^ *//;s/ /:/')
+   local -r trait_ids=$(data_for_ trait-name --in runtime-config --entries "$1")
+   local -r count_id_map=$(echo "$trait_ids" | sort | uniq -c | sed -e 's/^ *//;s/ /:/')
 
    # Iterates over the <count>:<trait-ID> map.
    while read -r count_id; do
@@ -105,8 +106,9 @@ function malformed_trait_values_in {
    # Iterates over the list of given configuration entries.
    while read entry; do
       # Extracts the parameters from the entry.
-      local trait_id=$(cut -d : -f 1 <<< "$entry")
-      local trait_value=$(cut -d : -f 2 <<< "$entry")
+      local trait_id=$(data_for_ trait-name --in runtime-config --entries "$entry")
+      local trait_value=$(data_for_ trait-value --in runtime-config --entries "$entry")
+      
       local expected_value_type=$(echo "$entry" | rev | cut -d : -f 1 | rev)
 
       # Gets the type of the trait value.

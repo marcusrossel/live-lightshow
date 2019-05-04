@@ -259,7 +259,7 @@ function _column_for_ {
    # on success.
    local -i line_count=1
    while read -r data_file_attribute; do
-      [ "$data_file_attribute" = "$2" ] && { echo $line_count; return 1; }
+      [ "$data_file_attribute" = "$2" ] && { echo $line_count; return 0; }
       ((line_count++))
    done <<< "$data_file_attributes"
 
@@ -336,7 +336,7 @@ function _name_for_ {
 
    # Prints the line following the search string in the lookup file, or returns on failure if that
    # operation fails.
-   _line_after_unique_ "$name_identifier" "$1" || return 2
+   _line_after_unique_ "$name_identifier" --in-file "$1" || return 2
 
    return 0
 }

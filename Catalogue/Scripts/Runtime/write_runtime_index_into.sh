@@ -21,7 +21,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 
 
 #-Constants-------------------------------------#
@@ -108,7 +108,7 @@ function user_configuration_template {
    # # • <server ID 1>
    # # • <server ID 2>
    # ...
-   column_for_ server-id --in static-index | while read -r server_id; do
+   data_for_ server-name --in static-index | while read -r server_id; do
       echo "# • $server_id"
    done
 

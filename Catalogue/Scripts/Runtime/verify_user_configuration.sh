@@ -32,7 +32,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 
 
 #-Functions-------------------------------------#
@@ -63,7 +63,7 @@ function duplicate_instance_identifiers_in {
 # * <user configuration entries>
 function invalid_server_identifiers_in {
    # Gets a list of the valid server IDs.
-   local -r valid_server_ids=$(column_for_ server-id --in static-index)
+   local -r valid_server_ids=$(data_for_ server-name --in static-index)
 
    # Iterates over the given entries.
    while read -r entry; do

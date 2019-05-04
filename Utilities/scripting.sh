@@ -49,9 +49,9 @@ function _print_error_for {
 
    case "$4" in
       --internal)
-         echo -e "Internal error." >&2 ;;
+         echo -e " Internal error." >&2 ;;
       --identifier|--flag)
-         echo -e "> Received invalid ${4:2} '$print_yellow$5$print_normal'." >&2 ;;
+         echo -e " > Received invalid ${4:2} '$print_yellow$5$print_normal'." >&2 ;;
       *)
          shift 3
          echo -e "$@" >&2 ;;

@@ -17,7 +17,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 
 
 #-Functions--------------------------------------#
@@ -29,13 +29,11 @@ function setup_runtime_configuration_files {
    # Iterates over the runtime index' entries.
    while read runtime_entry; do
       # Gets the server-ID and configuration file of the runtime entry.
-      server_id=$(column_for_ server-id --in-entries "$runtime_entry" --of runtime-index)
-      runtime_config_file=$(
-         column_for_ config-file --in-entries "$runtime_entry" --of runtime-index
-      )
+      server_id=$(data_for_ server-name --in runtime-index --entries "$runtime_entry")
+      runtime_config_file=$(data_for_ config-file --in runtime-index --entries "$runtime_entry")
 
       # Gets the static configuration file corresponding to the runtime entry's server-ID.
-      static_config_file=$(values_for_ config-file --in static-index --with server-id "$server_id")
+      static_config_file=$(fields_for_ config-file --with server-name "$server_id" --in static-index)
 
       # Copies the contents of the static configuration file for current server-ID, to the current
       # runtime configuration file.

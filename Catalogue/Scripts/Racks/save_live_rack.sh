@@ -21,7 +21,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 
 
 #-Constants-------------------------------------#

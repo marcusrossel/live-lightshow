@@ -15,7 +15,7 @@ config-file
 Static configuration:
 trait-name
 trait-value
-value-type
+trait-type
 
 Runtime index:
 instance-name
@@ -25,7 +25,7 @@ config-file
 Runtime configuration:
 trait-name
 trait-value
-value-type
+trait-type
 
 Rack index:
 rack-name

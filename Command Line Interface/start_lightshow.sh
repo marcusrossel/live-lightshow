@@ -16,7 +16,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../Utilities/scripting.sh"
 . "$dot/../Utilities/lookup.sh"
-. "$dot/../Utilities/index.sh"
+. "$dot/../Utilities/catalogue.sh"
 
 
 #-Constants-------------------------------------#
@@ -44,15 +44,15 @@ function server_instantiation_map {
    # Iterates over the runtime-index.
    while read runtime_entry; do
       # Gets the server-ID associated with the current runtime entry's server instance.
-      local server_id=$(column_for_ server-id --in-entries "$runtime_entry" --of runtime-index)
+      local server_id=$(data_for_ server-name --in runtime-index --entries "$runtime_entry")
 
       # Gets the components for a server instantiation map entry.
-      local class_name=$(values_for_ class-name --in static-index --with server-id "$server_id")
+      local class_name=$(fields_for_ class-name --with server-name "$server_id" --in static-index)
       local static_config_file=$(
-         values_for_ config-file --in static-index --with server-id "$server_id"
+         fields_for_ config-file --with server-name "$server_id" --in static-index
       )
       local runtime_config_file=$(
-         column_for_ config-file --in-entries "$runtime_entry" --of runtime-index
+         data_for_ config-file --in runtime-index --entries "$runtime_entry"
       )
 
       # Prints the server instantiation map entry.

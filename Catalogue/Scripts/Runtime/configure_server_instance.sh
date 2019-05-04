@@ -21,7 +21,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 
 
 #-Constants-------------------------------------#
@@ -29,19 +29,20 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants_ {
-   readonly server_id=$(values_for_ server-id --in runtime-index --with instance-id "$1")
-
-   # Gets the runtime configuration file associated with the given <server instance identifier>, or
-   # returns on failure if none was found.
-   local config_file
-   if ! config_file=$(values_for_ config-file --in runtime-index --with instance-id "$1"); then
-      # TODO: Figure out a general strategy for hiding this error message.
+   # Gets the server name associated with the given <server instance identifier>, or returns on
+   # failure if none was found.
+   readonly server_id=$(fields_for_ server-name --with instance-name "$1" --in runtime-index)
+   if [ -z "$server_id" ]; then
+      # TODO: Figure out a general strategy for hiding errors messages while showing user-data.
       # print_error_for "Script received invalid server instance identifier" \
       #                 "'$print_yellow$1$print_normal'."
       return 1
    fi
-   readonly runtime_config_file="$config_file"
 
+   # Gets the runtime configuration file associated with the given <server instance identifier>.
+   readonly runtime_config_file=$(
+      fields_for_ config-file --with instance-name "$1" --in runtime-index
+   )
 
    return 0
 }
@@ -57,9 +58,10 @@ function declare_constants_ {
 function header_for_server_id {
    # Gets the list of valid trait IDs.
    local -r static_config_file=$(
-      values_for_ config-file --in static-index --with server-id "$server_id"
+      fields_for_ config-file --with server-name "$server_id" --in static-index
    )
-   local -r valid_trait_ids=$(cut -d : -f 1 "$static_config_file")
+
+   local -r valid_trait_ids=$(data_for_ trait-name --in static-config "$static_config_file")
 
    # Prints the header.
    echo "$(text_for_ csi-header)"
@@ -174,8 +176,7 @@ function pretty_printed_type_ {
 # * <user-edited runtime-configuration file>
 function cleaned_configuration {
    # Gets constants needed in this function.
-   local -r trait_id_column=$(cut -d : -f 1 "$runtime_config_file")
-
+   local -r trait_id_column=$(data_for_ trait-name --in runtime-config "$runtime_config_file")
 
    # Strips all of the empty lines and those starting with #.
    # Then removes all leading and trailing whitespace from the entry's components and appends the
@@ -198,7 +199,7 @@ function cleaned_configuration {
          local trait_type='unknown'
       else
          local trait_entry=$(line_ "$trait_entry_line" --in-file "$runtime_config_file")
-         local trait_type=$(cut -d : -f 3 <<< "$trait_entry")
+         local trait_type=$(data_for_ trait-type --in runtime-config --entries "$trait_entry")
       fi
 
       # Prints the cleaned entry.
@@ -208,8 +209,8 @@ function cleaned_configuration {
 
 #-Main------------------------------------------#
 
-
-assert_correct_argument_count_ 1 '<server instance identifier>' || exit 1
+# TODO: Figure out a general strategy for hiding errors messages while showing user-data.
+assert_correct_argument_count_ 1 '<server instance identifier>' &>/dev/null || exit 1
 declare_constants_ "$@" || exit 2
 
 # Creates a working copy of the runtime configuration file, and makes sure it is removed upon
@@ -220,8 +221,8 @@ trap "silently- rm '$configuration_copy'" EXIT
 # Initializes the copy of the configuration.
 header_for_server_id "$server_id" > "$configuration_copy"
 while read entry; do
-   trait_id=$(cut -d : -f 1 <<< "$entry")
-   trait_value=$(cut -d : -f 2 <<< "$entry")
+   trait_id=$(data_for_ trait-name --in runtime-config --entries "$entry")
+   trait_value=$(data_for_ trait-value --in runtime-config --entries "$entry")
    echo "$trait_id: $trait_value" >> "$configuration_copy"
 done < "$runtime_config_file"
 

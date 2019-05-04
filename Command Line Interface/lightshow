@@ -89,7 +89,7 @@ function subcommand_live_ {
       configure)
          assert_lightshow_ --running || return 1
          "$app_directory/Catalogue/Scripts/Runtime/configure_server_instance.sh" "$@"
-         readonly return_status=$?
+         local -r return_status=$?
          if [ $return_status -eq 1 ]; then
             echo -e "${print_red}This command expects a server-instance as argument.$print_normal"
             return 1

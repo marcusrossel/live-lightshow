@@ -20,7 +20,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/index.sh"
+. "$dot/../../../Utilities/catalogue.sh"
 . "$dot/../../../Utilities/types.sh"
 
 
@@ -77,11 +77,11 @@ function static_configuration_for_file_ {
 function setup_static_configuration_files {
    # Iterates over the static index' entries.
    while read index_entry; do
-      file_path=$(column_for_ file-path --in-entries "$index_entry" --of static-index)
-      config_file=$(column_for_ config-file --in-entries "$index_entry" --of static-index)
+      program_file=$(data_for_ program-file --in static-index --entries "$index_entry")
+      config_file=$(data_for_ config-file --in static-index --entries "$index_entry")
 
       # Creates a new configuration file containing the appropriate static configuration.
-      static_configuration_for_file_ "$file_path" > "$config_file"
+      static_configuration_for_file_ "$program_file" > "$config_file"
    done < "$static_index"
 
    return 0
