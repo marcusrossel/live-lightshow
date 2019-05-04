@@ -126,7 +126,8 @@ function cleaned_configuration {
    # Then removes all leading and trailing whitespace from the entry's components.
    # If an entry does not contain any : character, one is added at the end.
    while read entry; do
-      egrep -q '(^$|^\s*#)' <<< "$entry" && continue
+      # TEMP
+      egrep -q '(^\s*$|^\s*#)' <<< "$entry" && continue
 
       if [ "$(awk -F : '{print NF-1}' <<< "$entry")" -eq 0 ]; then
          entry="$entry:"

@@ -35,7 +35,7 @@ if $(string_ "$rack_name" --is-line-in-string "$(data_for_ rack-name --in rack-i
    exit 2
 fi
 
-# Gets the number one after the largest taken directory name (number) in the rack-index.
+# Gets the number after the largest taken directory name (number) in the rack-index.
 new_id_number=0
 while read -r rack_directory; do
    [ -n "$rack_directory" ] || break

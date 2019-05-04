@@ -490,6 +490,8 @@ function _text_for_ {
          segment_identifier='lightshow: Usage:' ;;
       subcommand-live-usage)
          segment_identifier='lightshow: <live> subcommand usage:' ;;
+      subcommand-rack-usage)
+         segment_identifier='lightshow: <rack> subcommand usage:' ;;
       *)
          print_error_for --identifier "$2"; return 1 ;;
    esac
@@ -506,13 +508,13 @@ function _text_for_ {
    # Performs manual line continuation.
    local -r expanded_text=$(_expand_line_continuations "$text")
 
-   # Substitutes color variables declared in <lookup file: text segments> for actual values and
+   # Substitutes color variables declared in <lookup file: text segments> with actual values and
    # prints the result.
    echo "$expanded_text" | sed \
-      -e 's/RED>/\\033[0;31m/g' \
-      -e 's/GREEN>/\\033[0;32m/g' \
-      -e 's/YELLOW>/\\033[0;33m/g' \
-      -e 's/NORMAL>/\\033[0;m/g'
+      -e 's/!R!/\\033[0;31m/g' \
+      -e 's/!G!/\\033[0;32m/g' \
+      -e 's/!Y!/\\033[0;33m/g' \
+      -e 's/!N!/\\033[0;m/g'
 
    return 0
 }

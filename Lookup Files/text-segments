@@ -8,19 +8,22 @@
 #
 # Line continuation is possible, by placing a \ at the very end of a line.
 # Colorization can be achieved by using the predefined variables:
-# RED>, YELLOW>, GREEN>, NORMAL>
+# * !R! for red
+# * !Y! for yellow
+# * !G! for green
+# * !N! for normal
 
 
 
 arduino_trait.sh: No Arduino:
-RED>No Arduino connected to this computer could be found.NORMAL>
+!R!No Arduino connected to this computer could be found.!N!
 Please try reconnecting the device.
 SEGMENT-END
 
 
 
 arduino_trait.sh: Multiple Arduinos:
-RED>Multiple Arduinos connected to this computer were found.NORMAL>
+!R!Multiple Arduinos connected to this computer were found.!N!
 Please disconnect all but one device.
 SEGMENT-END
 
@@ -39,7 +42,7 @@ SEGMENT-END
 
 
 write_runtime_index_into.sh: Duplicate instance names:
-RED>The specified configuration contains duplicate instance names.NORMAL>
+!R!The specified configuration contains duplicate instance names.!N!
 Each instance must have a unique name.
 The duplicate name are:
 SEGMENT-END
@@ -47,7 +50,7 @@ SEGMENT-END
 
 
 write_runtime_index_into.sh: Invalid server names:
-RED>The specified configuration contains invalid server names.NORMAL>
+!R!The specified configuration contains invalid server names.!N!
 You may only use names of existing servers.
 The invalid names are:
 SEGMENT-END
@@ -67,7 +70,7 @@ SEGMENT-END
 
 
 configure_server_instance.sh: Invalid trait names:
-RED>The specified configuration contains invalid trait names.NORMAL>
+!R!The specified configuration contains invalid trait names.!N!
 Trait names must be pre-defined for the given server.
 The invalid names are:
 SEGMENT-END
@@ -75,7 +78,7 @@ SEGMENT-END
 
 
 configure_server_instance.sh: Duplicate trait names:
-RED>The specified configuration contains duplicate trait declarations.NORMAL>
+!R!The specified configuration contains duplicate trait declarations.!N!
 A configuration may only declare each trait once.
 The duplicate traits are:
 SEGMENT-END
@@ -83,7 +86,7 @@ SEGMENT-END
 
 
 configure_server_instance.sh: Invalid trait values:
-RED>The specified configuration contains invalid trait values.NORMAL>
+!R!The specified configuration contains invalid trait values.!N!
 A trait value must match its expected type.
 The invalid trait values are:
 SEGMENT-END
@@ -91,25 +94,38 @@ SEGMENT-END
 
 
 lightshow: Usage:
-RED>Invalid argument.NORMAL>
-The Live Lightshow CLI supports the following subcommands (with arguments in YELLOW><>NORMAL> \
-and nested subcommands after YELLOW>▸NORMAL>):
-• YELLOW>initialize NORMAL>
-• YELLOW>start NORMAL>
-• YELLOW>end NORMAL>
-• YELLOW>live NORMAL>
-  YELLOW>▸NORMAL> status
-  YELLOW>▸NORMAL> configure YELLOW><NORMAL>server instanceYELLOW>> NORMAL>
-• YELLOW>directory NORMAL>
-• YELLOW>reindex NORMAL>
+!R!Invalid argument.!N!
+The Live Lightshow CLI supports the following subcommands (with arguments in !Y!<>!N!, \
+optional arguments in !Y![]!N! and nested subcommands after !Y!▸!N!):
+• !Y!initialize !N!
+• !Y!start !Y![!N!rack name!Y!]!N!
+• !Y!end!N!
+• !Y!live!N!
+  !Y!▸!N! info
+  !Y!▸!N! configure !Y!<!N!server instance!Y!>!N!
+  !Y!▸!N! save !Y!<!N!rack name!Y!>!N!
+• !Y!rack!N!
+  !Y!▸!N! list
+  !Y!▸!N! info !Y!<!N!rack name!Y!>!N!
+• !Y!directory!N!
+• !Y!reindex!N!
 SEGMENT-END
 
 
 
 lightshow: <live> subcommand usage:
-RED>Invalid argument.NORMAL>
-The YELLOW>liveNORMAL> subcommand supports the following subcommands:
-• YELLOW>info NORMAL>
-• YELLOW>configure <NORMAL>server instanceYELLOW>> NORMAL>
-• YELLOW>save <NORMAL>rack nameYELLOW>> NORMAL>
+!R!Invalid argument.!N!
+The !Y!live!N! subcommand supports the following subcommands:
+• !Y!info!N!
+• !Y!configure <!N!server instance!Y!>!N!
+• !Y!save <!N!rack name!Y!>!N!
+SEGMENT-END
+
+
+
+lightshow: <rack> subcommand usage:
+!R!Invalid argument.!N!
+The !Y!rack!N! subcommand supports the following subcommands:
+• !Y!list!N!
+• !Y!info <!N!rack name!Y!>!N!
 SEGMENT-END

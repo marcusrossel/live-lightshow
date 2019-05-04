@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # This script prints a description of the light show's currently specified server instances.
-
+#
+# Return status:
+# 0: success
+# 1: invalid number of command line arguments
 
 #-Preliminaries---------------------------------#
 
@@ -17,7 +20,8 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 #-Main------------------------------------------#
 
 
-# Prints a description of all of the server instances in the currently running light show.
+assert_correct_argument_count_ 0 || exit 1
+
 echo -e "${print_green}A light show is currently running$print_normal with the following setup:"
 
 # Iterates over the entries in the runtime index.
@@ -27,8 +31,7 @@ while read -r index_entry; do
    config_file=$(data_for_ config-file --in runtime-index --entries "$index_entry")
 
    # Prints a header for the current server instance.
-   echo
-   echo -e "Instance '$print_yellow$instance_id$print_normal' of server type" \
+   echo -e "\nInstance '$print_yellow$instance_id$print_normal' of server type" \
            "'$print_yellow$server_id$print_normal'"
 
    # Iterates over the current server instance's runtime configuration entries.

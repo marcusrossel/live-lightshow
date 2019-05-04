@@ -2,10 +2,14 @@
 
 # This script sets up the environment for and starts the lightshow-program.
 #
+# Arguments:
+# <rack name> optional
+#
 # Return status:
 # 0: success
 # 1: invalid number of command line arguments
 # 2: the user chose to quit
+# 3: the given rack name was invalid
 
 
 #-Preliminaries---------------------------------#
@@ -24,7 +28,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
-   readonly arduino_port=$("$dot/arduino_trait.sh" --port); [ $? -eq 3 ] && exit 1
+   readonly rack_name=$1
    readonly program_directory="$dot/../$(path_for_ lightshow-directory)"
    readonly servers_directory="$dot/../$(path_for_ servers-directory)"
 }
@@ -66,11 +70,21 @@ function server_instantiation_map {
 #-Main------------------------------------------#
 
 
-assert_correct_argument_count_ 0 || exit 1
+assert_correct_argument_count_ 0 1 '<rack name: optional>' || exit 1
 declare_constants "$@"
 
-# Sets up the runtime environment, or exits if the user chose to quit.
-"$dot/../Catalogue/Scripts/Runtime/setup_runtime.sh" || exit 2
+if [ -z "$rack_name" ]; then
+   # Sets up the runtime environment, or exits if the user chose to quit.
+   "$dot/../Catalogue/Scripts/Runtime/setup_runtime.sh" || exit 2
+else
+   # Loads the rack with the given name, or exits if that fails.
+   silently- "$dot/../Catalogue/Scripts/Racks/load_rack.sh" "$rack_name" || exit 3
+fi
+
+echo -e "${print_green}Connecting to Arduino...$print_normal"
+
+# Gets the Arduino's port.
+readonly arduino_port=$("$dot/arduino_trait.sh" --port); [ $? -eq 3 ] && exit 1
 
 echo -e "${print_green}Starting light show...$print_normal"
 

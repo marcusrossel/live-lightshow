@@ -183,7 +183,7 @@ function cleaned_configuration {
    # proper value type at the end.
    # If an entry does not contain any : character, one is added after the raw entry.
    while read entry; do
-      egrep -q '(^$|^\s*#)' <<< "$entry" && continue
+      egrep -q '(^\s*$|^\s*#)' <<< "$entry" && continue
 
       if [ "$(awk -F : '{print NF-1}' <<< "$entry")" -eq 0 ]; then
          entry="$entry:"

@@ -89,22 +89,24 @@ function subcommand_live_ {
       configure)
          assert_lightshow_ --running || return 1
          "$app_directory/Catalogue/Scripts/Runtime/configure_server_instance.sh" "$@"
+
          local -r return_status=$?
          if [ $return_status -eq 1 ]; then
             echo -e "${print_red}This command expects a server instance as argument.$print_normal"
             return 1
          elif [ $return_status -eq 2 ]; then
-            echo -e "${print_red}The given server-instance is not currently defined.$print_normal"
+            echo -e "${print_red}The given server-instance is not defined.$print_normal"
             return 2
          fi ;;
 
       save)
          assert_lightshow_ --running || return 1
          silently- "$app_directory/Catalogue/Scripts/Racks/save_live_rack.sh" "$@"
+
          local -r return_status=$?
          if [ $return_status -eq 1 ]; then
             echo -e "${print_red}This command expects a rack name as argument.$print_normal"
-            return 2
+            return 1
          elif [ $return_status -eq 2 ]; then
             echo -e "${print_red}The given rack name is already taken.$print_normal"
             return 2
@@ -116,6 +118,40 @@ function subcommand_live_ {
    esac
 }
 
+# This function handels the `rack` subcommand.
+#
+# Arguments:
+# * <main's $2, $3, ...>
+#
+# Returns:
+# 1: <$2> was an invalid subcommand
+# otherwise: $? of the given subcommand
+function subcommand_rack_ {
+   # Binds the subcommand to `rack` and realigns the arguments.
+   local -r rack_subcommand="$1"
+   shift
+
+   case "$rack_subcommand" in
+      list)
+         "$app_directory/Catalogue/Scripts/Racks/list_racks.sh" ;;
+
+      info)
+         silently- --stderr "$app_directory/Catalogue/Scripts/Racks/rack_info.sh" "$@"
+
+         local -r return_status=$?
+         if [ $return_status -eq 1 ]; then
+            echo -e "${print_red}This command expects a rack name as argument.$print_normal"
+            return 1
+         elif [ $return_status -eq 2 ]; then
+            echo -e "${print_red}The given rack name is not defined.$print_normal"
+            return 2
+         fi ;;
+
+      *)
+         echo -e "$(text_for_ subcommand-rack-usage)"
+         return 1 ;;
+   esac
+}
 
 #-Main------------------------------------------#
 
@@ -132,26 +168,38 @@ case "$subcommand" in
       assert_lightshow_ --not-running || exit 1
       "$app_directory/Command Line Interface/push_program.sh" || exit $?
       "$app_directory/Catalogue/Scripts/Static/reindex_static.sh" ;;
+
    start)
       assert_lightshow_ --not-running || exit 1
-      "$app_directory/Command Line Interface/start_lightshow.sh"
+      "$app_directory/Command Line Interface/start_lightshow.sh" "$@"
 
-      # start <rack name: optional>
+      if [ $? -eq 3 ]; then
+         echo -e "${print_red}The given rack name is undefined.$print_normal"
+         exit 3
+      fi ;;
 
-      ;;
    live)
-      subcommand_live_ "$@" || exit $?
+      subcommand_live_ "$@" || exit $? ;;
 
-      # save <new rack name>
+   rack)
+      subcommand_rack_ "$@" || exit $? ;;
 
-      ;;
+      # configure <rack name>
+
+      # make <new rack's name>
+
+      # remove <rack name>
+
    end)
       end_lightshow_ || exit 1 ;;
+
    directory)
       echo "$(realpath "$app_directory")" ;;
+
    reindex)
       assert_lightshow_ --not-running || exit 1
       "$app_directory/Catalogue/Scripts/Static/reindex_static.sh" ;;
+
    *)
       echo -e "$(text_for_ lightshow-usage)"
       exit 1 ;;
@@ -167,16 +215,6 @@ case "$subcommand" in
       # info <server name>
       # > Print the static configuration of the server, or possibly add #info-begin, #info-end tags
       # > for servers to display a custom explaination.
-      ;;
-   rack)
-      # list
-      # > like _lightshow status_ but for racks
-
-      # configure <rack name>
-
-      # make <new rack's name>
-
-      # remove <rack name>
       ;;
 esac
 
