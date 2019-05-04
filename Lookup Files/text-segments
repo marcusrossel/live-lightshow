@@ -109,6 +109,7 @@ SEGMENT-END
 lightshow: <live> subcommand usage:
 RED>Invalid argument.NORMAL>
 The YELLOW>liveNORMAL> subcommand supports the following subcommands:
-• YELLOW>status NORMAL>
+• YELLOW>info NORMAL>
 • YELLOW>configure <NORMAL>server instanceYELLOW>> NORMAL>
+• YELLOW>save <NORMAL>rack nameYELLOW>> NORMAL>
 SEGMENT-END

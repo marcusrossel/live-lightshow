@@ -330,6 +330,7 @@ function _name_for_ {
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
+      rack-manifest-file)       name_identifier='Rack manifest file:'                   ;;
       config-read-cycle-trait)  name_identifier='Configuration read cycle trait:'       ;;
       *)                        print_error_for --identifier "$2"; return 1             ;;
    esac
@@ -355,6 +356,7 @@ function _name_for_ {
 # 0: success
 # 1: <identifier> is invalid
 # 2: <file locations file> does not contain <identifier>'s identifier-string
+# TODO: Make relative paths absolute, by adding the repo-path to the lookup file with a tag?
 alias path_for_="_path_for_ '$dot_lookup/../Lookup Files/file-paths' "
 function _path_for_ {
    # The string used to search the lookup file for certain paths.

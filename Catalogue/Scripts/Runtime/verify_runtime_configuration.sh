@@ -39,7 +39,6 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
 . "$dot/../../../Utilities/catalogue.sh"
-. "$dot/../../../Utilities/types.sh"
 
 
 #-Constants-------------------------------------#
@@ -108,7 +107,7 @@ function malformed_trait_values_in {
       # Extracts the parameters from the entry.
       local trait_id=$(data_for_ trait-name --in runtime-config --entries "$entry")
       local trait_value=$(data_for_ trait-value --in runtime-config --entries "$entry")
-      
+
       local expected_value_type=$(echo "$entry" | rev | cut -d : -f 1 | rev)
 
       # Gets the type of the trait value.

@@ -82,19 +82,31 @@ function subcommand_live_ {
    shift
 
    case "$live_subcommand" in
-      status)
+      info)
          assert_lightshow_ --running || return 1
-         "$app_directory/Command Line Interface/live_status.sh" ;;
+         "$app_directory/Command Line Interface/live_info.sh" ;;
 
       configure)
          assert_lightshow_ --running || return 1
          "$app_directory/Catalogue/Scripts/Runtime/configure_server_instance.sh" "$@"
          local -r return_status=$?
          if [ $return_status -eq 1 ]; then
-            echo -e "${print_red}This command expects a server-instance as argument.$print_normal"
+            echo -e "${print_red}This command expects a server instance as argument.$print_normal"
             return 1
          elif [ $return_status -eq 2 ]; then
             echo -e "${print_red}The given server-instance is not currently defined.$print_normal"
+            return 2
+         fi ;;
+
+      save)
+         assert_lightshow_ --running || return 1
+         silently- "$app_directory/Catalogue/Scripts/Racks/save_live_rack.sh" "$@"
+         local -r return_status=$?
+         if [ $return_status -eq 1 ]; then
+            echo -e "${print_red}This command expects a rack name as argument.$print_normal"
+            return 2
+         elif [ $return_status -eq 2 ]; then
+            echo -e "${print_red}The given rack name is already taken.$print_normal"
             return 2
          fi ;;
 

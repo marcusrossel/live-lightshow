@@ -27,5 +27,8 @@ minim
 Arduino-UNO FQBN:
 arduino:avr:uno
 
+Rack manifest file:
+manifest
+
 Configuration read cycle trait:
 Configuration Read Cycle

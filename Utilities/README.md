@@ -8,6 +8,4 @@ This directory contains _bash_-scripts meant for sourcing in other scripts. Each
 
 **`catalogue.sh`** provides functions for conveniently working with the catalogue's data files (in _Catalogue > Data_).
 
-**`types.sh`** contains functions to be used when dealing with trait value types.
-
 **`testing.sh`** contains functions meant to provide a uniform output when writing tests.

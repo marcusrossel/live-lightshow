@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script prints a description of the light show's currently spcified server instances.
+# This script prints a description of the light show's currently specified server instances.
 
 
 #-Preliminaries---------------------------------#
@@ -35,7 +35,7 @@ while read -r index_entry; do
    while read -r config_entry; do
       trait_id=$(data_for_ trait-name --in runtime-config --entries "$config_entry")
       trait_value=$(data_for_ trait-value --in runtime-config --entries "$config_entry")
-      
+
       echo "  • $trait_id: $trait_value"
    done < "$config_file"
 done < "$dot/../$(path_for_ runtime-index)"
