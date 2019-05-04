@@ -331,6 +331,7 @@ function _name_for_ {
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
       arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
       rack-manifest-file)       name_identifier='Rack manifest file:'                   ;;
+      server-info-file-suffix)  name_identifier='Server info file suffix:'              ;;
       config-read-cycle-trait)  name_identifier='Configuration read cycle trait:'       ;;
       *)                        print_error_for --identifier "$2"; return 1             ;;
    esac
@@ -421,18 +422,19 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      server-header)     regex_identifier='Server declaration header:'  ;;
-      server-body)       regex_identifier='Server declaration body:'    ;;
-      trait)             regex_identifier='Trait declaration:'          ;;
-      number)            regex_identifier='Number:'                     ;;
-      app-directory-tag) regex_identifier='Application directory tag:'  ;;
-      int)               regex_identifier='Integer:'                    ;;
-      float)             regex_identifier='Float:'                      ;;
-      bool)              regex_identifier='Boolean:'                    ;;
-      int-list)          regex_identifier='Integer-list:'               ;;
-      float-list)        regex_identifier='Float-list:'                 ;;
-      bool-list)         regex_identifier='Boolean-list:'               ;;
-      *)                 print_error_for --identifier "$2"; return 1    ;;
+      server-header)         regex_identifier='Server declaration header:' ;;
+      server-body)           regex_identifier='Server declaration body:'   ;;
+      trait)                 regex_identifier='Trait declaration:'         ;;
+      server-info-begin-tag) regex_identifier='Server info-begin tag:'     ;;
+      server-info-end-tag)   regex_identifier='Server info-end tag:'       ;;
+      app-directory-tag)     regex_identifier='Application directory tag:' ;;
+      int)                   regex_identifier='Integer:'                   ;;
+      float)                 regex_identifier='Float:'                     ;;
+      bool)                  regex_identifier='Boolean:'                   ;;
+      int-list)              regex_identifier='Integer-list:'              ;;
+      float-list)            regex_identifier='Float-list:'                ;;
+      bool-list)             regex_identifier='Boolean-list:'              ;;
+      *)                     print_error_for --identifier "$2"; return 1   ;;
    esac
 
    # Gets the line following the search string in the lookup file, or returns on failure if that
@@ -492,6 +494,8 @@ function _text_for_ {
          segment_identifier='lightshow: <live> subcommand usage:' ;;
       subcommand-rack-usage)
          segment_identifier='lightshow: <rack> subcommand usage:' ;;
+      subcommand-server-usage)
+         segment_identifier='lightshow: <server> subcommand usage:' ;;
       *)
          print_error_for --identifier "$2"; return 1 ;;
    esac

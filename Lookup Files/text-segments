@@ -96,9 +96,9 @@ SEGMENT-END
 lightshow: Usage:
 !R!Invalid argument.!N!
 The Live Lightshow CLI supports the following subcommands (with arguments in !Y!<>!N!, \
-optional arguments in !Y![]!N! and nested subcommands after !Y!▸!N!):
+optional arguments in !Y!()!N! and nested subcommands after !Y!▸!N!):
 • !Y!initialize !N!
-• !Y!start !Y![!N!rack name!Y!]!N!
+• !Y!start !Y!(!N!rack name!Y!)!N!
 • !Y!end!N!
 • !Y!live!N!
   !Y!▸!N! info
@@ -107,6 +107,9 @@ optional arguments in !Y![]!N! and nested subcommands after !Y!▸!N!):
 • !Y!rack!N!
   !Y!▸!N! list
   !Y!▸!N! info !Y!<!N!rack name!Y!>!N!
+• !Y!server!N!
+  !Y!▸!N! info !Y!<!N!server name!Y!>!N!
+  !Y!▸!N! import !Y!<!N!server file!Y!>!N! !Y!(!N!server name!Y!)!N!
 • !Y!directory!N!
 • !Y!reindex!N!
 SEGMENT-END
@@ -128,4 +131,13 @@ lightshow: <rack> subcommand usage:
 The !Y!rack!N! subcommand supports the following subcommands:
 • !Y!list!N!
 • !Y!info <!N!rack name!Y!>!N!
+SEGMENT-END
+
+
+
+lightshow: <server> subcommand usage:
+!R!Invalid argument.!N!
+The !Y!server!N! subcommand supports the following subcommands:
+• !Y!info <!N!server name!Y!>!N!
+• !Y!import <!N!server file!Y!>!N! !Y!(!N!server name!Y!)!N!
 SEGMENT-END

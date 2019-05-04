@@ -153,6 +153,48 @@ function subcommand_rack_ {
    esac
 }
 
+# This function handels the `server` subcommand.
+#
+# Arguments:
+# * <main's $2, $3, ...>
+#
+# Returns:
+# 1: <$2> was an invalid subcommand
+# otherwise: $? of the given subcommand
+function subcommand_server_ {
+   # Binds the subcommand to `rack` and realigns the arguments.
+   local -r server_subcommand="$1"
+   shift
+
+   case "$server_subcommand" in
+      info)
+         silently- --stderr "$app_directory/Catalogue/Scripts/Static/server_info.sh" "$@"
+
+         local -r return_status=$?
+         if [ $return_status -eq 1 ]; then
+            echo -e "${print_red}This command expects a server name as argument.$print_normal"
+            return 1
+         elif [ $return_status -eq 2 ]; then
+            echo -e "${print_red}The given server name is not defined.$print_normal"
+            return 2
+         elif [ $return_status -eq 3 ]; then
+            echo -e "${print_red}The given server does not have an information page.$print_normal"
+            return 3
+         fi ;;
+
+      import)
+         # import <file-path> <custom-server name: optional>
+         # > Make sure none of the server classes match class names from the Lightshow-directory or
+         # > server names of existing servers.
+         ;;
+
+      *)
+         echo -e "$(text_for_ subcommand-server-usage)"
+         return 1 ;;
+   esac
+}
+
+
 #-Main------------------------------------------#
 
 
@@ -190,6 +232,12 @@ case "$subcommand" in
 
       # remove <rack name>
 
+   server)
+      subcommand_server_ "$@" || exit $? ;;
+
+      # remove <server name>
+      # > Notify about racks affected by this removal.
+
    end)
       end_lightshow_ || exit 1 ;;
 
@@ -203,19 +251,6 @@ case "$subcommand" in
    *)
       echo -e "$(text_for_ lightshow-usage)"
       exit 1 ;;
-
-   server)
-      # import <file-path> <custom-server name: optional>
-      # > Make sure none of the server classes match class names from the Lightshow-directory or
-      # > server names of existing servers.
-
-      # remove <server name>
-      # > Notify about racks affected by this removal.
-
-      # info <server name>
-      # > Print the static configuration of the server, or possibly add #info-begin, #info-end tags
-      # > for servers to display a custom explaination.
-      ;;
 esac
 
 exit 0

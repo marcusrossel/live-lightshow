@@ -24,6 +24,12 @@ Server declaration header:
 Server declaration body:
 ^.*class\s+[a-zA-Z_][a-zA-Z0-9_]*\s+.*$
 
+Server info-begin tag:
+^\s*(/\*|//)?\s*#info-begin\s*$
+
+Server info-end tag:
+^\s*#info-end\s*(\*/|//)?\s*$
+
 Trait declaration:
 ^\s*//\s*#trait\s+"[^:"]+"\s*:!trait value!$
 

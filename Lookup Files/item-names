@@ -30,5 +30,8 @@ arduino:avr:uno
 Rack manifest file:
 manifest
 
+Server info file suffix:
+-info
+
 Configuration read cycle trait:
 Configuration Read Cycle
