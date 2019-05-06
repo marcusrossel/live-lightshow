@@ -6,6 +6,6 @@ This directory contains _bash_-scripts meant for sourcing in other scripts. Each
 
 **`lookup.sh`** serves as an interface for accessing the content in the project's _Lookup Files_ folder.
 
-**`catalogue.sh`** provides functions for conveniently working with the catalogue's data files (in _Catalogue > Data_).
+**`data.sh`** provides functions for conveniently working with the project's data files.
 
 **`testing.sh`** contains functions meant to provide a uniform output when writing tests.

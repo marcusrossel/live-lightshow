@@ -23,7 +23,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/catalogue.sh"
+. "$dot/../../../Utilities/data.sh"
 
 
 #-Constants-------------------------------------#
@@ -94,12 +94,8 @@ function server_info_for_file_ {
       return 2
    fi
 
-   # Gets the print range.
-   local -ir print_begin=$((info_begin_line + 1))
-   local -ir print_end=$((info_end_line - 1))
-
-   # Only prints something, if the print range has non-negative size.
-   [ "$print_begin" -le "$print_end" ] && head -n "$print_end" "$1" | tail -n +"$print_begin"
+   # Prints the lines between the tags.
+   line_ "$((info_begin_line + 1))" --to "$((info_end_line - 1))" --in-file "$1"
 
    return 0
 }

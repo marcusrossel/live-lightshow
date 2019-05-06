@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# This script serves as a library of functions for working with the catalagoue's files
-# (in Catalogue/Data). It can be "imported" via sourcing.
+# This script serves as a library of functions for working with the data files in this project. It
+# can be "imported" via sourcing.
 # It should be noted that this script activates alias expansion.
 
 
@@ -9,17 +9,17 @@
 
 
 # Sets up an include guard.
-[ -z "$CATALOGUE_SH" ] && readonly CATALOGUE_SH=true || return
+[ -z "$DATA_SH" ] && readonly DATA_SH=true || return
 
 # Turns on alias-expansion explicitly as users of this script will probably be non-interactive
 # shells.
 shopt -s expand_aliases
 
 # Gets the directory of this script.
-dot_catalogue=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+dot_data=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
-. "$dot_catalogue/scripting.sh"
-. "$dot_catalogue/lookup.sh"
+. "$dot_data/scripting.sh"
+. "$dot_data/lookup.sh"
 
 
 #-Functions-------------------------------------#
@@ -35,7 +35,8 @@ dot_catalogue=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # or
 # * <attribute>
 # * <in flag> possible values: "--in"
-# * <data file identifier> possible values: "static-config", "runtime-config", "rack-manifest"
+# * <data file identifier> possible values:
+#   "static-config", "runtime-config", "rack-manifest", "token-list", "parse-list"
 # * <data file path>
 # or
 # * <attribute>
@@ -69,7 +70,7 @@ function data_for_ {
          local data_file
          if [ -z "$4" ]; then
             # Gets the file associated with the given data file identifier.
-            data_file="$dot_catalogue/../$(path_for_ "$3")" || return 1
+            data_file="$dot_data/../$(path_for_ "$3")" || return 1
          else
             data_file=$4
          fi
@@ -93,8 +94,17 @@ function data_for_ {
 # * <attribute>
 # * <string value>
 # * <in flag> possible values: "--in"
-# * <data file identifier> possible values: "static-config", "runtime-config", "rack-manifest"
+# * <data file identifier> possible values:
+#   "static-config", "runtime-config", "rack-manifest", "token-list", "parse-list"
 # * <data file>
+# or
+# * <attribute>
+# * <string value>
+# * <in flag> possible values: "--in"
+# * <data file identifier> possible values:
+#   "static-config", "runtime-config", "rack-manifest", "token-list", "parse-list"
+# * <entries flag> possbile values: "--entries"
+# * <entries>
 #
 # Return status:
 # 0: success
@@ -105,7 +115,7 @@ function entries_for_ {
    [ "$3" = '--in' ] || { print_error_for --flag "$3" ; return 1; }
 
    # Gets the column number for the given attribute in the given data file.
-   local attribute_data; attribute_data=$(data_for_ "$1" --in "$4" "$5") || return $?
+   local attribute_data; attribute_data=$(data_for_ "$1" --in "$4" "$5" "$6") || return $?
 
    # Gets the line numbers of the rows matching the <string value> in the attribute's data.
    local -r line_numbers=$(line_numbers_of_string_ "$2" --in-string "$attribute_data")
@@ -113,12 +123,21 @@ function entries_for_ {
    # Returns early if there are no lines matching.
    [ -z "$line_numbers" ] && return 0
 
-   # Gets the data file, if necessary.
-   [ -z "$5" ] && local -r data_file="$dot_catalogue/../$(path_for_ "$4")" || local -r data_file=$5
+   # Determines whether a file or string is being used, and ets the data file if necessary.
+   if [ -z "$5" ]; then
+      local -r search_object_flag='--in-file'
+      local -r data="$dot_data/../$(path_for_ "$4")"
+   elif [ -z "$6" ]; then
+      local -r search_object_flag='--in-file'
+      local -r data=$5
+   else
+      local -r search_object_flag='--in-string'
+      local -r data=$6
+   fi
 
    # Prints the entries in the data file at the determined line numbers.
    while read line_number; do
-      echo "$(line_ "$line_number" --in-file "$data_file")"
+      echo "$(line_ "$line_number" "$search_object_flag" "$data")"
    done <<< "$line_numbers"
 
    return 0
@@ -140,8 +159,19 @@ function entries_for_ {
 # * <source attribute>
 # * <source field>
 # * <in flag> possible values: "--in"
-# * <data file identifier> possible values: "static-config", "runtime-config", "rack-manifest"
+# * <data file identifier> possible values:
+#   "static-config", "runtime-config", "rack-manifest", "token-list", "parse-list"
 # * <data file>
+# or
+# * <target attribute>
+# * <with flag> possible values: "--with"
+# * <source attribute>
+# * <source field>
+# * <in flag> possible values: "--in"
+# * <data file identifier> possible values:
+#   "static-config", "runtime-config", "rack-manifest", "token-list", "parse-list"
+# * <entries flag> possible values: "--entries"
+# * <entries>
 #
 # Return status:
 # 0: success
@@ -150,35 +180,14 @@ function entries_for_ {
 function fields_for_ {
    # Makes sure the <with flag> and <in flag> were passed.
    [ "$2" != '--with' ] && { print_error_for --flag "$2" ; return 1; }
-   [ "$5" != '--in' ]   && { print_error_for --flag "$4" ; return 1; }
+   [ "$5" != '--in' ] && { print_error_for --flag "$4" ; return 1; }
 
-   # Gets the entries in the data file corresponding to where the <source field> is located in its
+   # Gets the entries in the data source corresponding to where the <source field> is located in its
    # attribute column.
-   local entries; entries=$(entries_for_ "$3" "$4" --in "$6" "$7") || return $?
+   local entries; entries=$(entries_for_ "$3" "$4" --in "$6" "$7" "$8") || return $?
 
    # Prints the target attribute's data from the previously obtained entries.
    data_for_ "$1" --in "$6" --entries "$entries"
 
    return 0
-}
-
-# Prints the type of a given value. Possible types are:
-# "int", "float", "bool", "int-list", "float-list", "bool-list"
-#
-# Arguments:
-# * <value>
-#
-# Return status:
-# 0: success
-# 1: <string> has none of the defined types
-function type_for_value_ {
-   egrep -q "$(regex_for_ int)"        <<< "$1" && { echo 'int';        return 0; }
-   egrep -q "$(regex_for_ float)"      <<< "$1" && { echo 'float';      return 0; }
-   egrep -q "$(regex_for_ bool)"       <<< "$1" && { echo 'bool';       return 0; }
-   egrep -q "$(regex_for_ int-list)"   <<< "$1" && { echo 'int-list';   return 0; }
-   egrep -q "$(regex_for_ float-list)" <<< "$1" && { echo 'float-list'; return 0; }
-   egrep -q "$(regex_for_ bool-list)"  <<< "$1" && { echo 'bool-list';  return 0; }
-
-   # If this point was reached no type matched, so a return on failure occurs.
-   return 1
 }

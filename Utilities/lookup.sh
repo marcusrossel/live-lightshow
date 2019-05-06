@@ -247,6 +247,8 @@ function _column_for_ {
       runtime-config) data_file_identifier='Runtime configuration:' ;;
       rack-index)     data_file_identifier='Rack index:'            ;;
       rack-manifest)  data_file_identifier='Rack manifest:'         ;;
+      token-list)     data_file_identifier='Token list:'            ;;
+      parse-list)     data_file_identifier='Parse list:'            ;;
       *)              print_error_for --identifier "$4"; return 1   ;;
    esac
 
@@ -422,9 +424,10 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      server-header)         regex_identifier='Server declaration header:' ;;
-      server-body)           regex_identifier='Server declaration body:'   ;;
+      server-declaration)    regex_identifier='Server declaration:'        ;;
+      class-declaration)     regex_identifier='Class declaration:'         ;;
       trait)                 regex_identifier='Trait declaration:'         ;;
+      trait-value)           regex_identifier='Trait value:'               ;;
       server-info-begin-tag) regex_identifier='Server info-begin tag:'     ;;
       server-info-end-tag)   regex_identifier='Server info-end tag:'       ;;
       app-directory-tag)     regex_identifier='Application directory tag:' ;;

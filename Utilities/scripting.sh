@@ -85,28 +85,59 @@ function current_OS_ {
    return 0
 }
 
-# Prints the line at a given line number in a given string or file.
+# Prints the given range of lines in a given string or file.
 #
 # Arguments:
 # * <line number>
 # * <search object type flag>, possible values: "--in-file", "--in-string"
 # * <string/file>
+# or
+# * <range start>
+# * <to flag>
+# * <range end>
+# * <search object type flag>, possible values: "--in-file", "--in-string"
+# * <string/file>
 #
 # Return status:
 # 0: success
-# 1: received invalid <search object type flag>
+# 1: received invalid <to flag> or <search object type flag>
+# 2: the given range start was greater than the range end
 function line_ {
+   # Handels a different call-signature, based on which flag was passed as second argument.
    case "$2" in
-      --in-file)   tail -n "+$1" "$3"     | head -n 1 ;;
-      --in-string) tail -n "+$1" <<< "$3" | head -n 1 ;;
-      *) print_error_for_ --flag "$2"; return 1 ;;
+      # Call signature 1.
+      --in-file|--in-string)
+         local tail_value=$1
+         local head_value=1
+         local search_object_type=$2
+         local search_object=$3 ;;
+
+      # Call signature 2.
+      --to)
+         # Makes sure that the given range start comes before the range end.
+         [ "$1" -le "$3" ] || return 2
+
+         local tail_value=$1
+         local head_value=$(($3 - $1 + 1))
+         local search_object_type=$4
+         local search_object=$5 ;;
+
+      *)
+         print_error_for --flag "$2"; return 1 ;;
+   esac
+
+   # Prints the previously determined line-range.
+   case "$search_object_type" in
+      --in-file) tail -n "+$tail_value" "$search_object" | head -n "$head_value" ;;
+      --in-string) echo "$search_object" | tail -n "+$tail_value" | head -n "$head_value" ;;
+      *) print_error_for_ --flag "$4"; return 1 ;;
    esac
 
    return 0
 }
 
-# Prints the line numbers of all of the lines in a given list of lines equal to a given string or
-# file. If none is found a return on failure occurs.
+# Returns the literal 'true' of 'false', depending on whether a given string is a line is a given
+# string or file.
 #
 # Arguments:
 # * <string>
@@ -125,7 +156,7 @@ function string_ {
 
    # Prints "true" and returns if a line in $search_space matched <string>.
    while read line; do
-      [ "$line" == "$1" ] && { echo 'true'; return 0; }
+      [ "$line" = "$1" ] && { echo 'true'; return 0; }
    done <<< "$search_space"
 
    # Prints "false" if <string> was not a line in $search_space.

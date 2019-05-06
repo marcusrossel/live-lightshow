@@ -21,7 +21,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
-. "$dot/../../../Utilities/catalogue.sh"
+. "$dot/../../../Utilities/data.sh"
 
 
 #-Constants-------------------------------------#
@@ -126,7 +126,6 @@ function cleaned_configuration {
    # Then removes all leading and trailing whitespace from the entry's components.
    # If an entry does not contain any : character, one is added at the end.
    while read entry; do
-      # TEMP
       egrep -q '(^\s*$|^\s*#)' <<< "$entry" && continue
 
       if [ "$(awk -F : '{print NF-1}' <<< "$entry")" -eq 0 ]; then

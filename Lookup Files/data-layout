@@ -35,3 +35,12 @@ Rack manifest:
 instance-name
 server-name
 config-file
+
+Token list:
+line-number
+token-type
+token-value
+
+Parse list:
+seme-type
+seme-value
