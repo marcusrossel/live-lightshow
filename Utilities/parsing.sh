@@ -293,7 +293,8 @@ function parse_list_for_ {
 # Prints a list of items of a given type given a program file and its parse-list.
 #
 # Arguments:
-# * <item type ID> possible values: "server-name", "server-class", "trait-declarations", "info-text"
+# * <item type ID> possible values:
+#   "server-name", "server-class", "server-configuration", "info-text"
 # * <from flag> possible values: "--from"
 # * <parse list>
 # * <of flag> possible values: "--of"
@@ -315,7 +316,7 @@ function parse_ {
       server-class)
          fields_for_ seme-value --with seme-type class-name --in parse-list --entries "$3" ;;
 
-      trait-declarations)
+      server-configuration)
          # Gets the list of seme-types from the parse-list and the column for seme-values in
          # parse-lists.
          local -r seme_type_list=$(data_for_ seme-type --in parse-list --entries "$3")

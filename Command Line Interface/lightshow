@@ -209,7 +209,7 @@ case "$subcommand" in
    initialize)
       assert_lightshow_ --not-running || exit 1
       "$app_directory/Command Line Interface/push_program.sh" || exit $?
-      "$app_directory/Catalogue/Scripts/Static/reindex_static.sh" ;;
+      "$app_directory/Catalogue/Scripts/Static/rebuild_static_catalogue.sh" ;;
 
    start)
       assert_lightshow_ --not-running || exit 1
@@ -244,9 +244,9 @@ case "$subcommand" in
    directory)
       echo "$(realpath "$app_directory")" ;;
 
-   reindex)
+   static-recatalogue)
       assert_lightshow_ --not-running || exit 1
-      "$app_directory/Catalogue/Scripts/Static/reindex_static.sh" ;;
+      "$app_directory/Catalogue/Scripts/Static/rebuild_static_catalogue.sh" ;;
 
    *)
       echo -e "$(text_for_ lightshow-usage)"

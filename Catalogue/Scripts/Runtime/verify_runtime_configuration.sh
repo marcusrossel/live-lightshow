@@ -39,6 +39,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
 . "$dot/../../../Utilities/data.sh"
+. "$dot/../../../Utilities/parsing.sh"
 
 
 #-Constants-------------------------------------#
