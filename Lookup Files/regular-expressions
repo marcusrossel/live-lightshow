@@ -18,8 +18,11 @@
 #-Public-patterns-------------------------------#
 
 
+Server name:
+^\s*!server-name!\s*$
+
 Server declaration:
-^\s*//\s*#server\s+"[^:"]+"\s*$
+^\s*//\s*#server\s+"!server-name!"\s*$
 
 Class declaration:
 ^.*class\s+[a-zA-Z_][a-zA-Z0-9_]*\s+.*$
@@ -60,6 +63,8 @@ Boolean-list:
 
 #-Private-Symbols-------------------------------#
 
+!server-name!
+([^:"]+)
 
 !int!
 (\s*-?[0-9]+\s*)

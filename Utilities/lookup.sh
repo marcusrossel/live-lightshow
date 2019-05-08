@@ -424,6 +424,7 @@ function _regex_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
+      server-name)           regex_identifier='Server name:'               ;;
       server-declaration)    regex_identifier='Server declaration:'        ;;
       class-declaration)     regex_identifier='Class declaration:'         ;;
       trait)                 regex_identifier='Trait declaration:'         ;;

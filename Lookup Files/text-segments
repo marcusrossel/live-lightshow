@@ -111,7 +111,7 @@ optional arguments in !Y!()!N! and nested subcommands after !Y!▸!N!):
   !Y!▸!N! info !Y!<!N!server name!Y!>!N!
   !Y!▸!N! import !Y!<!N!server file!Y!>!N! !Y!(!N!server name!Y!)!N!
 • !Y!directory!N!
-• !Y!reindex!N!
+• !Y!rebuild-static-catalogue!N!
 SEGMENT-END
 
 

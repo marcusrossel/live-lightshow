@@ -281,13 +281,8 @@ function parse_list_for_ {
               "$((server_name_line + 1)), which is missing." >&2
    fi
 
-   # Creates the parse list.
-   local -ir line_number_column=$(column_for_ line-number --in token-list)
-   # TODO: Make this use the $line_number_column.
-   local -r parse_list=$(cut -d : -f 2- <<< "$clean_token_list")
-
    # Returns on success or failure according to whether or not an error occured.
-   $error_occured && return 1 || { echo "$parse_list" ; return 0; }
+   $error_occured && return 1 || { echo "$clean_token_list" ; return 0; }
 }
 
 # Prints a list of items of a given type given a program file and its parse-list.
@@ -321,8 +316,6 @@ function parse_ {
          # parse-lists.
          local -r seme_type_list=$(data_for_ seme-type --in parse-list --entries "$3")
          local -r seme_value_column=$(column_for_ seme-value --in parse-list)
-         # echo "$seme_type_list" >&2
-         # echo "$seme_value_column" >&2
 
          # Iterates over the line numbers of the parse-list entries containing trait names.
          line_numbers_of_string_ trait-name --in-string "$seme_type_list" | while read -r line; do

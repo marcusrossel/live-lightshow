@@ -183,10 +183,8 @@ function subcommand_server_ {
          fi ;;
 
       import)
-         # import <file-path> <custom-server name: optional>
-         # > Make sure none of the server classes match class names from the Lightshow-directory or
-         # > server names of existing servers.
-         ;;
+         assert_lightshow_ --not-running || exit 1
+         "$app_directory/Command Line Interface/import_server.sh" "$@" ;;
 
       *)
          echo -e "$(text_for_ subcommand-server-usage)"
@@ -208,7 +206,11 @@ shift
 case "$subcommand" in
    initialize)
       assert_lightshow_ --not-running || exit 1
+
+      echo -e "${print_green}Connecting to Arduino...$print_normal" >&2
       "$app_directory/Command Line Interface/push_program.sh" || exit $?
+
+      echo -e "${print_green}Cataloguing server files...$print_normal" >&2
       "$app_directory/Catalogue/Scripts/Static/rebuild_static_catalogue.sh" ;;
 
    start)
@@ -244,7 +246,7 @@ case "$subcommand" in
    directory)
       echo "$(realpath "$app_directory")" ;;
 
-   static-recatalogue)
+   rebuild-static-catalogue)
       assert_lightshow_ --not-running || exit 1
       "$app_directory/Catalogue/Scripts/Static/rebuild_static_catalogue.sh" ;;
 

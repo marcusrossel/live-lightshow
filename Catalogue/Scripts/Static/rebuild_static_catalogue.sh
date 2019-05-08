@@ -79,7 +79,7 @@ for file in $(ls "$servers_directory"); do
    info_buffer="$config_file$info_file_suffix$buffer_file_suffix"
    parse_ info-text --from "$parse_list" --of "$file" > "$info_buffer"
 
-   ((server_count++))
+   ((server_counter++))
 done
 
 # Returns on failure after removing buffer-files and without writing a new static-index, if an error

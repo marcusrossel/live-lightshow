@@ -262,7 +262,7 @@ function _assert_correct_argument_count_ {
    if [ "$3" -eq 0 ]; then
       echo -e "Usage: '$print_yellow$1$print_normal' expects no arguments" >&2
    else
-      echo -e "Usage: $print_yellow$1$print_normal $4" >&2
+      echo -e "Usage: $print_yellow$1$print_normal $usage_pattern" >&2
    fi
    echo "Consult the script's source for further documentation." >&2
 
