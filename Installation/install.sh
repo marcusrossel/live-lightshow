@@ -16,7 +16,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/../Utilities/scripting.sh"
 . "$dot/../Utilities/lookup.sh"
@@ -50,13 +50,19 @@ function install_dependencies_ {
 
    # Moves the Arduino-CLI to a $PATH-directory.
    local -r arduino_cli=$(name_for_ arduino-cli)
+   echo "${print_green}The installer requires your password: $print_normal" >&2
    sudo mv "$dot/../$relative_downloads_directory/$arduino_cli" \
            "$(path_for_ arduino-cli-destination)"
 
    # Installs the Arduino UNO core.
-   local -r uno_fqbn=$(name_for_ arduino-uno-fbqn)
-   # Installs the Arduino-UNO board core.
-   silently- arduino-cli core install "$uno_fqbn"
+   local -r uno_core_name=$(name_for_ arduino-uno-core)
+   arduino-cli core update-index
+   arduino-cli core install "$uno_core_name"
+
+   # Installs the Servo and Firmata libraries using the Arduino CLI.
+   arduino-cli lib update-index
+   arduino-cli lib install Servo
+   arduino-cli lib install Firmata
 
    # Installs Processing by moving it to the top-level repository directory.
    local -r processing=$(name_for_ processing)
@@ -85,8 +91,8 @@ function install_dependencies_ {
 # 0: success
 # 1: the user chose to quit
 function get_sketchbook_path_ {
-   echo "Please provide Processing's Sketchbook directory." >&2
-   echo 'You can find it by opening Processing and navigating to the preferences.' >&2
+   echo "${print_yellow}Please provide Processing's Sketchbook directory." >&2
+   echo "You can find it by opening Processing and navigating to the preferences.$print_normal" >&2
 
    # Makes sure the user wants to continue, or returns on failure.
    echo -e "${print_green}Do you want to continue? [y or n]$print_normal" >&2
@@ -184,17 +190,19 @@ function install_application {
 # 0: success
 # 1: the user chose to quit
 function prompt_for_macOS_tools_ {
-   echo -e "\nPlease install ${print_yellow}processing-java$print_normal, by opening Processing" \
-           "and navigating to the ${print_yellow}Tools$print_normal menu."  >&2
+   cd "$app_directory"
+
+   echo -e "\n${print_yellow}Please install processing-java, from Processing's 'Tools' menu.$print_normal" >&2
 
    # Makes sure the user wants to continue, or returns on failure.
    echo -e "${print_green}Do you want to continue? [y or n]$print_normal"  >&2
    succeed_on_approval_ || return 1
 
-   # Opens Processing and waits for the user to continue.
+   # Opens the instance of Processing that's in the application directory and
+   # waits for the user to continue.
    "$(name_for_ processing)/$(name_for_ processing-executable)" &
    sleep 3 # TODO: Hacky.
-   echo -e "${print_green}Press any button once processing-java is installed.$print_normal"  >&2
+   echo -e "${print_green}Press any button once processing-java is installed.$print_normal" >&2
    read -n 1
 
    # Closes Processing, if it was only open because of this installer.
@@ -221,12 +229,14 @@ install_application
 # Moves to the application directory as specified by <lookup file: file paths>.
 cd "$app_directory"
 
-# Prompts the user to install the processing-javac utility, as this has to be done seperately on
-# macOS. If has to be done after Processing has been moved to its final location.
+# Prompts the user to install the processing-java utility, as this has to be done seperately on
+# macOS. It has to be done after Processing has been moved to its final location.
 if [ "$(current_OS_)" = 'macOS' ]; then
    prompt_for_macOS_tools_ || exit 3
 fi
 
-# TODO: Check ifthe commands are working, make sure the sketchbook path is valid and the tests pass.
+# The $PWD is not the application directory.
+
+# TODO: Check if the commands are working, make sure the sketchbook path is valid and the tests pass.
 
 exit 0

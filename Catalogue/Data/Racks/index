@@ -1,1 +1,4 @@
-default:/Users/marcusrossel/Developer/Open Source/live-lightshow/Catalogue/Data/Racks/0
+# This file will contain the rack index of the form:
+# <rack 1 name>:<rack 1 directory>
+# <rack 2 name>:<rack 2 directory>
+# ...

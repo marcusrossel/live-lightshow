@@ -17,7 +17,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
@@ -31,7 +31,7 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 function declare_constants {
    readonly target_file=$1
    readonly user_configuration_file=$(mktemp)
-   readonly runtime_data_directory=$(realpath "$dot/../../../$(path_for_ runtime-data-directory)")
+   readonly runtime_data_directory="$dot/../../../$(path_for_ runtime-data-directory)"
 
    return 0
 }

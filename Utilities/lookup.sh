@@ -331,7 +331,7 @@ function _name_for_ {
       processing-lib-directory) name_identifier='Processing library directory:'         ;;
       arduino-processing-lib)   name_identifier='Arduino Processing library:'           ;;
       ddfs-minim-lib)           name_identifier="ddf's Minim library:"                  ;;
-      arduino-uno-fbqn)         name_identifier='Arduino-UNO FQBN:'                     ;;
+      arduino-uno-core)         name_identifier="Arduino-UNO Core:"                     ;;
       rack-manifest-file)       name_identifier='Rack manifest file:'                   ;;
       server-info-file-suffix)  name_identifier='Server info file suffix:'              ;;
       config-read-cycle-trait)  name_identifier='Configuration read cycle trait:'       ;;

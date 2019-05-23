@@ -5,7 +5,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/scripting.sh"
 . "$dot/testing.sh"

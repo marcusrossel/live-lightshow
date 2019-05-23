@@ -15,7 +15,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
@@ -53,7 +53,7 @@ while read -r entry; do
    config_file=$(data_for_ config-file --in rack-manifest --entries "$entry")
 
    # Generates the path of the config file in the runtime data catalogue.
-   runtime_config_file="$(realpath "$runtime_data_directory/$config_file")"
+   runtime_config_file="$runtime_data_directory/$config_file"
 
    # Writes the runtime-index entry.
    echo "$instance_name:$server_name:$runtime_config_file" >> "$runtime_index"

@@ -16,7 +16,7 @@
 
 # This will be overwritten upon installation.
 # APP-DIRECTORY
-readonly app_directory="$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")/.."
+readonly app_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/.."
 
 # Imports.
 . "$app_directory/Utilities/lookup.sh"
@@ -244,7 +244,7 @@ case "$subcommand" in
       end_lightshow_ || exit 1 ;;
 
    directory)
-      echo "$(realpath "$app_directory")" ;;
+      echo "$app_directory" ;;
 
    rebuild-static-catalogue)
       assert_lightshow_ --not-running || exit 1

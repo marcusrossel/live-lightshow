@@ -24,8 +24,8 @@ arduino
 ddf's Minim library:
 minim
 
-Arduino-UNO FQBN:
-arduino:avr:uno
+Arduino-UNO Core:
+arduino:avr
 
 Rack manifest file:
 manifest

@@ -5,5 +5,5 @@ The specific command asking for your password is `sudo`. You can search for `sud
 
 ---
 
-| [← 1. Terminal Basics](1.%20Terminal%20Basics.md) | [3. Getting Started →](3.%20Getting%20Started.md) |
+| [← Documentation Overview](..) | [B. Soundflower Installation →](B.%20Soundflower%20Installation.md) |
 | - | - |

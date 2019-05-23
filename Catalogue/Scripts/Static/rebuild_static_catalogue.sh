@@ -12,7 +12,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
@@ -26,8 +26,8 @@ dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
 # The function wrapping all constant-declarations for this script.
 function declare_constants {
    readonly static_index="$dot/../../../$(path_for_ static-index)"
-   readonly servers_directory=$(realpath "$dot/../../../$(path_for_ servers-directory)")
-   readonly static_data_directory=$(realpath "$dot/../../../$(path_for_ static-data-directory)")
+   readonly servers_directory="$dot/../../../$(path_for_ servers-directory)"
+   readonly static_data_directory="$dot/../../../$(path_for_ static-data-directory)"
    readonly info_file_suffix=$(name_for_ server-info-file-suffix)
    readonly buffer_file_suffix='-buffer'
 

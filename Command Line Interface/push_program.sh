@@ -19,7 +19,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/../Utilities/scripting.sh"
 . "$dot/../Utilities/lookup.sh"
@@ -35,7 +35,7 @@ function declare_constants {
    if [ -n "$1" ]; then
       readonly program_folder=${1%/}
    else
-      readonly program_folder="$dot/../../$(path_for_ firmata-directory)"
+      readonly program_folder="$dot/../$(path_for_ firmata-directory)"
    fi
 }
 

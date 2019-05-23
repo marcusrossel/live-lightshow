@@ -16,7 +16,7 @@
 
 
 # Gets the directory of this script.
-dot=$(realpath "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)")
+dot=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # Imports.
 . "$dot/../../../Utilities/scripting.sh"
 . "$dot/../../../Utilities/lookup.sh"
@@ -49,7 +49,7 @@ readonly rack_directory="$dot/../../../$(path_for_ rack-data-directory)/$new_id_
 # Creates the directory for the new rack.
 mkdir "$rack_directory"
 # Adds a rack-index entry for the new rack.
-echo "$rack_name:$(realpath "$rack_directory")" >> "$dot/../../../$(path_for_ rack-index)"
+echo "$rack_name:$rack_directory" >> "$dot/../../../$(path_for_ rack-index)"
 
 # Writes a slightly edited version of the runtime-index into the rack's manifest, while also
 # copying necessary configuration files.
