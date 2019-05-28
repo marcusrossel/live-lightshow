@@ -293,7 +293,7 @@ function _url_for_ {
       arduino-processing-lib) url_identifier='Arduino Processing library:' ;;
       standard-firmata-raw)   url_identifier='StandardFirmata raw:'        ;;
       ddfs-minim-lib)         url_identifier="ddf's Minim library:"        ;;
-      arduino-cli)            url_identifier="Arduino-CLI $(current_OS_):" ;;
+      'arduino-cli')          url_identifier="Arduino-CLI $(current_OS_):" ;;
       processing)             url_identifier="Processing $(current_OS_):"  ;;
       *)                      print_error_for --identifier "$2"; return 1  ;;
    esac
@@ -325,7 +325,7 @@ function _name_for_ {
    # Sets the search string according to the given identifier, or prints an error and returns on
    # failure if an unknown identifier was passed.
    case "$2" in
-      arduino-cli)              name_identifier='Arduino-CLI:'                          ;;
+      'arduino-cli')            name_identifier='Arduino-CLI:'                          ;;
       processing)               name_identifier='Processing:'                           ;;
       processing-executable)    name_identifier="Processing executable $(current_OS_):" ;;
       processing-lib-directory) name_identifier='Processing library directory:'         ;;
@@ -387,6 +387,7 @@ function _path_for_ {
       arduino-cli-destination) path_identifier='Arduino-CLI destination:'              ;;
       app-directory)           path_identifier="Application directory $(current_OS_):" ;;
       downloads-directory)     path_identifier='Downloads directory:'                  ;;
+      'processing-java')         path_identifier='Processing-java:'                   ;;
 
       *)                       print_error_for --identifier "$2"; return 1             ;;
    esac

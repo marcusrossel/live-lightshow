@@ -50,7 +50,7 @@ function install_dependencies_ {
 
    # Moves the Arduino-CLI to a $PATH-directory.
    local -r arduino_cli=$(name_for_ arduino-cli)
-   echo "${print_green}The installer requires your password: $print_normal" >&2
+   echo -e "${print_green}The installer requires your password: $print_normal" >&2
    sudo mv "$dot/../$relative_downloads_directory/$arduino_cli" \
            "$(path_for_ arduino-cli-destination)"
 
@@ -91,8 +91,8 @@ function install_dependencies_ {
 # 0: success
 # 1: the user chose to quit
 function get_sketchbook_path_ {
-   echo "${print_yellow}Please provide Processing's Sketchbook directory." >&2
-   echo "You can find it by opening Processing and navigating to the preferences.$print_normal" >&2
+   echo -e "${print_yellow}Please provide Processing's Sketchbook directory." >&2
+   echo -e "You can find it by opening Processing and navigating to the preferences.$print_normal" >&2
 
    # Makes sure the user wants to continue, or returns on failure.
    echo -e "${print_green}Do you want to continue? [y or n]$print_normal" >&2
@@ -184,14 +184,11 @@ function install_application {
 
 # This script prompts the user to install processing's command line tool (processing-java), if they
 # are on macOS.
-# This should only happen, once Processing has been moved to its final destination.
 #
 # Return status:
 # 0: success
 # 1: the user chose to quit
 function prompt_for_macOS_tools_ {
-   cd "$app_directory"
-
    echo -e "\n${print_yellow}Please install processing-java, from Processing's 'Tools' menu.$print_normal" >&2
 
    # Makes sure the user wants to continue, or returns on failure.
@@ -209,6 +206,36 @@ function prompt_for_macOS_tools_ {
    silently- kill $processing_PID
 
    return 0
+}
+
+# Updates the processing-java script to refer to the new location of the Processing executable.
+# This should be done after Processing has been moved to its final location.
+function update_processing_java {
+   local -r processing_app=$(name_for_ processing)
+   local -r processing_java=$(path_for_ 'processing-java')
+
+   # Gets the path of the Processing app, as currently referred to in the
+   # processing-java script.
+   local -r previous_full_path=$(
+      egrep '^cd' "$processing_java" | cut -d '"' -f 2
+   )
+   local -r partial_previous_path=${previous_full_path%%/$processing_app*}
+   local -r previous_path=$partial_previous_path/$processing_app
+   local -r sed_safe_previous=$(sed_safe_ -s "$previous_path")
+
+   local -r escaped_previous_path=$(sed -e 's/ /\\ /g' <<< "$previous_path")
+   local -r sed_safe_escaped_previous=$(sed_safe_ -s "$escaped_previous_path")
+
+   # Gets the actual final path of the Processing app.
+   local -r new_path="$app_directory/$processing_app"
+   local -r sed_safe_new=$(sed_safe_ -r "$new_path")
+
+   local -r escaped_new_path=$(sed -e 's/ /\\ /g' <<< "$new_path")
+   local -r sed_safe_escaped_new=$(sed_safe_ -r "$escaped_new_path")
+
+   # Replaces all occurrences of the previous path with the new path.
+   sed -i '' -e "s/$sed_safe_previous/$sed_safe_new/g" "$processing_java"
+   sed -i '' -e "s/$sed_safe_escaped_previous/$sed_safe_escaped_new/g" "$processing_java"
 }
 
 
@@ -230,12 +257,14 @@ install_application
 cd "$app_directory"
 
 # Prompts the user to install the processing-java utility, as this has to be done seperately on
-# macOS. It has to be done after Processing has been moved to its final location.
+# macOS.
 if [ "$(current_OS_)" = 'macOS' ]; then
    prompt_for_macOS_tools_ || exit 3
 fi
 
-# The $PWD is not the application directory.
+# Updates the processing-java script to refer to the new location of the Processing executable.
+# This should done after Processing has been moved to its final location.
+update_processing_java
 
 # TODO: Check if the commands are working, make sure the sketchbook path is valid and the tests pass.
 

@@ -1,7 +1,17 @@
 # Live Lightshow
+![Release Version](https://img.shields.io/badge/release-v0.1-red.svg) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows%2010-lightgrey.svg)
 
 _Live Lightshow_ is a utility that allows you to transform your computer's audio input into a corresponding visual output through an _Arduino_.  
 As a user you can easily configure your own custom light show. And as a developer you can create new light show components and make them available to other users.
+
+## Why Use _Live Lightshow_?
+
+_Live Lightshow_ removes all of the overhead required to create your own _Arduino_-based audio-visualizer.  
+As a non-developer it gives you the freedom to setup and perform in-depth configuration of a light show, without writing a single line of code.  
+As a developer it allows you to create a custom audio-visualizer and make it customizable by other users, all within a single code file (cf. [Developing a Server](Documentation/Developer/2.%20Developing%20A%20Server.md)).  
+And as a benefit to both users and developers, _Live Lightshow_ encourages collaboration by design - for example by natively supporting the integration of other peoples' audio-visualizers.
+
+Sofar _Live Lightshow_ has been used successfully at an event of [Sektor Evolution](https://www.facebook.com/events/456772748390695/), and will be used for the [Treibsand Open Air](https://www.facebook.com/Treibsand-Freiland-Open-Air-163226903787990/) later this year.
 
 ## Requirements
 
@@ -32,7 +42,7 @@ After completing the installation process, the _Live Lightshow_ will be accessib
 
 ## Using _Live Lightshow_
 
-_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use and/or develop for it, check out the [Documentation directory](Documentation) containing guides like:
+_Live Lightshow_ requires you to know a couple of simple concepts to get the most out of this utility. To learn about how to use and/or develop for it, check out the [Documentation](Documentation) containing guides like:
 
 * [Getting Started](Documentation/User/2.%20Getting%20Started.md)
 * [Setup Example](Documentation/User/4.%20Setup%20Example.md)
@@ -41,4 +51,4 @@ _Live Lightshow_ requires you to know a couple of simple concepts to get the mos
 
 ---
 
-This project is licensed under the _GPLv3_, so feel free to clone and modify it to your hearts content.
+This project is licensed under the _GPLv3_, so feel free to clone and modify it to your heart's content.

@@ -87,9 +87,8 @@ done
 if $error_occured; then
    data_for_ config-file --in static-index --entries "$new_static_index" |
    while read -r buffered_config_file; do
-      # TODO: Make this rm when safe.
-      rem "$buffered_config_file$buffer_file_suffix"
-      rem "$buffered_config_file$info_file_suffix$buffer_file_suffix"
+      silently- rm "$buffered_config_file$buffer_file_suffix"
+      silently- rm "$buffered_config_file$info_file_suffix$buffer_file_suffix"
    done
 
    exit 1

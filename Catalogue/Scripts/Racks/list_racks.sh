@@ -26,11 +26,11 @@ assert_correct_argument_count_ 0 || exit 1
 readonly rack_index="$dot/../../../$(path_for_ rack-index)"
 
 # Prints a header. If there are no catalogued racks, an early return occurs.
-if [ -s "$rack_index" ]; then
-   echo 'The rack catalogue contains the following racks:'
-else
+if [ -z "$rack_index" ]; then
    echo 'The rack catalogue is empty.'
    exit 0
+else
+   echo 'The rack catalogue contains the following racks:'
 fi
 
 # Iterates over the entries in the rack-index.

@@ -69,3 +69,6 @@ Application directory macOS:
 
 Application directory win10:
 /usr/local/live-lightshow
+
+Processing-java:
+/usr/local/bin/processing-java
