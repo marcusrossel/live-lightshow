@@ -12,7 +12,7 @@ This directory contains user- and developer-oriented guides for using _Live Ligh
 ## Developer Guides
 
 1. [Preface](Developer/1.%20Preface.md)
-2. [Developing A Server](Developer/2.%20Developing%20A%20Server.md)
+2. [Developing A Server](Developer/2.%20Developing%20a%20Server.md)
 3. [Project Overview](Developer/3.%20Project%20Overview.md)
 4. [Program Lifecycle](Developer/4.%20Program%20Lifecycle.md)
 5. [Contributing](Developer/5.%20Contributing.md)

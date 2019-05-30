@@ -8,7 +8,7 @@ As a user you can easily configure your own custom light show. And as a develope
 
 _Live Lightshow_ removes all of the overhead required to create your own _Arduino_-based audio-visualizer.  
 As a non-developer it gives you the freedom to setup and perform in-depth configuration of a light show, without writing a single line of code.  
-As a developer it allows you to create a custom audio-visualizer and make it customizable by other users, all within a single code file (cf. [Developing a Server](Documentation/Developer/2.%20Developing%20A%20Server.md)).  
+As a developer it allows you to create a custom audio-visualizer and make it customizable by other users, all within a single code file (cf. [Developing a Server](Documentation/Developer/2.%20Developing%20a%20Server.md)).  
 And as a benefit to both users and developers, _Live Lightshow_ encourages collaboration by design - for example by natively supporting the integration of other peoples' audio-visualizers.
 
 Sofar _Live Lightshow_ has been used successfully at an event of [Sektor Evolution](https://www.facebook.com/events/456772748390695/), and will be used for the [Treibsand Open Air](https://www.facebook.com/Treibsand-Freiland-Open-Air-163226903787990/) later this year.
@@ -46,7 +46,7 @@ _Live Lightshow_ requires you to know a couple of simple concepts to get the mos
 
 * [Getting Started](Documentation/User/2.%20Getting%20Started.md)
 * [Setup Example](Documentation/User/4.%20Setup%20Example.md)
-* [Developing a Server](Documentation/Developer/2.%20Developing%20A%20Server.md)
+* [Developing a Server](Documentation/Developer/2.%20Developing%20a%20Server.md)
 * [Contributing](Documentation/Developer/5.%20Contributing.md)
 
 ---

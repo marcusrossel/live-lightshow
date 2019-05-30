@@ -223,19 +223,19 @@ function update_processing_java {
    local -r previous_path=$partial_previous_path/$processing_app
    local -r sed_safe_previous=$(sed_safe_ -s "$previous_path")
 
-   local -r escaped_previous_path=$(sed -e 's/ /\\ /g' <<< "$previous_path")
+   local -r escaped_previous_path=$(sed -e 's/ /\\ /' <<< "$previous_path")
    local -r sed_safe_escaped_previous=$(sed_safe_ -s "$escaped_previous_path")
 
    # Gets the actual final path of the Processing app.
    local -r new_path="$app_directory/$processing_app"
    local -r sed_safe_new=$(sed_safe_ -r "$new_path")
 
-   local -r escaped_new_path=$(sed -e 's/ /\\ /g' <<< "$new_path")
+   local -r escaped_new_path=$(sed -e 's/ /\\ /' <<< "$new_path")
    local -r sed_safe_escaped_new=$(sed_safe_ -r "$escaped_new_path")
 
    # Replaces all occurrences of the previous path with the new path.
-   sed -i '' -e "s/$sed_safe_previous/$sed_safe_new/g" "$processing_java"
-   sed -i '' -e "s/$sed_safe_escaped_previous/$sed_safe_escaped_new/g" "$processing_java"
+   silently- sed -i '' -e "0,/$sed_safe_previous/{s/$sed_safe_previous/$sed_safe_new/}" "$processing_java"
+   silently- sed -i '' -e "0,/$sed_safe_escaped_previous/{s/$sed_safe_escaped_previous/$sed_safe_escaped_new/}" "$processing_java"
 }
 
 
