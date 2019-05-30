@@ -168,9 +168,8 @@ function tag_cli_command_ {
 # Installs the Live Lightshow application by copying the repository (minus redundant files) to the
 # application directory, and moving the CLI-command to its destination.
 function install_application {
-   # Removes all of the redundant items from the repository.
-   local -r redundant_items="$(path_for_ delete-with-install)$newline$relative_downloads_directory"
-   while read item; do rm -r "$dot/../$item"; done <<< "$redundant_items"
+   # Removes the downloads directory from the repository.
+   silently- rm -r "$dot/../$relative_downloads_directory"
 
    # Moves the CLI-command to its destination.
    sudo mv "$dot/../$(path_for_ cli-command-source)" "$(path_for_ cli-command-destination)"
@@ -223,14 +222,14 @@ function update_processing_java {
    local -r previous_path=$partial_previous_path/$processing_app
    local -r sed_safe_previous=$(sed_safe_ -s "$previous_path")
 
-   local -r escaped_previous_path=$(sed -e 's/ /\\ /' <<< "$previous_path")
+   local -r escaped_previous_path=$(sed -e 's/ /\\ /g' <<< "$previous_path")
    local -r sed_safe_escaped_previous=$(sed_safe_ -s "$escaped_previous_path")
 
    # Gets the actual final path of the Processing app.
    local -r new_path="$app_directory/$processing_app"
    local -r sed_safe_new=$(sed_safe_ -r "$new_path")
 
-   local -r escaped_new_path=$(sed -e 's/ /\\ /' <<< "$new_path")
+   local -r escaped_new_path=$(sed -e 's/ /\\ /g' <<< "$new_path")
    local -r sed_safe_escaped_new=$(sed_safe_ -r "$escaped_new_path")
 
    # Replaces all occurrences of the previous path with the new path.

@@ -12,12 +12,6 @@
 #-Repository-Relative---------------------------#
 
 
-Delete with installation:
-LICENSE
-README.md
-TODOS.md
-.gitignore
-
 CLI-command source:
 Command Line Interface/lightshow
 
