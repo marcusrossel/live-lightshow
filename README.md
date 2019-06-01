@@ -31,7 +31,7 @@ Following command line utilities are required:
 If you are missing any of these utilities, please install them. Running the following script, will tell you if any are missing:  
 
 ```bash
-for u in curl bash vi; do command -v $u &>/dev/null || echo $u is missing; done
+m=false; for u in curl bash vi; do command -v $u &>/dev/null || { echo $u is missing; m=true; }; done; $m || echo nothing missing
 ```
 
 ## Installation
