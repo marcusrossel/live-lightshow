@@ -35,7 +35,7 @@ for u in curl bash vi; do command -v $u &>/dev/null || echo $u is missing; done
 ```
 
 ## Installation
-To install the _Live Lightshow_ you first need to download and unzip its [newest release](https://github.com/marcusrossel/live-lightshow/releases/tag/v0.1-alpha). Then navigate to the unzipped folder in a terminal and run `Installation/install.sh`.
+To install the _Live Lightshow_ you first need to download and unzip its [newest release](https://github.com/marcusrossel/live-lightshow/releases/tag/v0.1.1-alpha). Then navigate to the unzipped folder in a terminal and run `Installation/install.sh`.
 
 The installer might ask you for your password along the way. Check out [Why My password?](Documentation/User/A.%20Why%20My%20Password%3F.md) for details about this.
 
