@@ -8,7 +8,7 @@
 The 'default' server uses dynamic loudness thresholds to determine when to output HIGH or LOW signals to specified Arduino pins. Passing a HIGH signal is called 'triggering' in the following.
 
 Mechanism:
-A maximum loudness (maxL) is recorded over the lifetime of the server. It is simply the loudness of the loudest audio-sample detected. This value is used to determine a minimal loudness which needs to be passed, before even considering triggering. This also entails a flaw with this server, in which turning down the volume of the audio input can cause the server to scarcely trigger, or not trigger at all. This can currently only be fixed by restarting the light show - thereby resetting the maxL of the server.
+A maximum loudness (maxL) is recorded over the lifetime of the server. It is simply the loudness of the loudest audio-sample detected. This value is used to determine a minimal loudness which needs to be passed, before even considering triggering. This also entails a flaw with this server, in which turning down the volume of the audio input can cause the server to scarcely trigger, or not trigger at all. This can currently only be fixed by restarting the light show - thereby resetting the maxL of the server. The value is reset to 0 though if either of the frequency bounds are changed.
 Another characteristic is the recent average loudness (RAL). This value simply describes the average loudness value out of all of the loudness values of the last x seconds (where x is configurable). It is used to determine when to trigger, by checking whether an audio sample is significantly louder than the RAL. Using a dynamically adjusting average implies that the server can adjust to varying loudness of the audio input.
 
 Traits:
@@ -57,11 +57,26 @@ public final class LiveLightshow_Default implements Server {
   private Boolean didTrigger = false;
   private Boolean didTriggerOnLastChunk = false;
 
-  // The maximum A-weighted loudness of all processed chunk sofar, in the frequency bounds during their time.
+  // The maximum A-weighted loudness of all processed chunk so far, in the frequency bounds during their time. This property is reset when a frequency bound changes.
   private Float totalMaxLoudness = 0f;
   private Float recentAverageLoudness = 0f;
 
+  // A record of the values of the frequency bounds during processing of the last chunk.
+  private Float[] previousFrequencyBounds = new Float[]{0f, 0f};
+
   LiveLightshow_LoudnessHistory loudnessHistory;
+
+  // Resets the total maximum loudness whenever the the frequency bounds have changed.
+  private void resetTotalMaxLoundessIfNecessary() {
+      Float lowerBound = lowerBound();
+      Float upperBound = upperBound();
+
+      if (lowerBound.equals(previousFrequencyBounds[0]) && upperBound.equals(previousFrequencyBounds[1])) { return; }
+
+      totalMaxLoudness = 0f;
+      previousFrequencyBounds[0] = lowerBound;
+      previousFrequencyBounds[1] = upperBound;
+  }
 
   // https://en.wikipedia.org/wiki/A-weighting
   // https://github.com/audiojs/a-weighting
@@ -98,6 +113,8 @@ public final class LiveLightshow_Default implements Server {
     didTriggerOnLastChunk = didTrigger;
     // Updates the loudness history retention duration.
     loudnessHistory.retentionDuration = historyInterval();
+
+    resetTotalMaxLoundessIfNecessary();
 
     // Gets the loudness of the current chunk within the frequency bounds.
     recordedLoudness = bandLoudnessForChunk(fft);
@@ -172,6 +189,8 @@ private final class LiveLightshow_LoudnessHistory {
       }
     }
   }
+
+  // # TODO: Form the average by weighting newer samples more heavily than older ones - to allow longer retention without too much inertia.
 
   // Returns the average of the loudness values that are within the rentention duration.
   Float average() {

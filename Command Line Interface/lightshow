@@ -84,7 +84,12 @@ function subcommand_live_ {
    case "$live_subcommand" in
       info)
          assert_lightshow_ --running || return 1
-         "$app_directory/Command Line Interface/live_info.sh" ;;
+         silently- --stderr "$app_directory/Command Line Interface/live_info.sh" "$@"
+
+         if [ $? -eq 1 ]; then
+            echo -e "${print_red}This command does not expect an argument.$print_normal"
+            return 1
+         fi ;;
 
       configure)
          assert_lightshow_ --running || return 1
@@ -133,7 +138,12 @@ function subcommand_rack_ {
 
    case "$rack_subcommand" in
       list)
-         "$app_directory/Catalogue/Scripts/Racks/list_racks.sh" ;;
+         silently- --stderr "$app_directory/Catalogue/Scripts/Racks/list_racks.sh" "$@"
+
+         if [ $? -eq 1 ]; then
+            echo -e "${print_red}This command does not expect an argument.$print_normal"
+            return 1
+         fi ;;
 
       info)
          silently- --stderr "$app_directory/Catalogue/Scripts/Racks/rack_info.sh" "$@"
@@ -167,6 +177,14 @@ function subcommand_server_ {
    shift
 
    case "$server_subcommand" in
+      list)
+         silently- --stderr "$app_directory/Catalogue/Scripts/Static/list_servers.sh" "$@"
+
+         if [ $? -eq 1 ]; then
+            echo -e "${print_red}This command does not expect an argument.$print_normal"
+            return 1
+         fi ;;
+
       info)
          silently- --stderr "$app_directory/Catalogue/Scripts/Static/server_info.sh" "$@"
 

@@ -1,5 +1,5 @@
 # Live Lightshow
-![Release Version](https://img.shields.io/badge/release-v0.1-red.svg) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows%2010-lightgrey.svg)
+![Release Version](https://img.shields.io/badge/release-v0.1.1-red.svg) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![Platforms](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows%2010-lightgrey.svg)
 
 _Live Lightshow_ is a utility that allows you to transform your computer's audio input into a corresponding visual output through an _Arduino_.  
 As a user you can easily configure your own custom light show. And as a developer you can create new light show components and make them available to other users.
@@ -9,9 +9,11 @@ As a user you can easily configure your own custom light show. And as a develope
 _Live Lightshow_ removes all of the overhead required to create your own _Arduino_-based audio-visualizer.  
 As a non-developer it gives you the freedom to setup and perform in-depth configuration of a light show, without writing a single line of code.  
 As a developer it allows you to create a custom audio-visualizer and make it customizable by other users, all within a single code file (cf. [Developing a Server](Documentation/Developer/2.%20Developing%20a%20Server.md)).  
-And as a benefit to both users and developers, _Live Lightshow_ encourages collaboration by design - for example by natively supporting the integration of other peoples' audio-visualizers.
+And as a benefit to both users and developers, _Live Lightshow_ encourages collaboration by design - e.g. by natively supporting the integration of other peoples' audio-visualizers.
 
-Sofar _Live Lightshow_ has been used successfully at an event of [Sektor Evolution](https://www.facebook.com/events/456772748390695/), and will be used for the [Treibsand Open Air](https://www.facebook.com/Treibsand-Freiland-Open-Air-163226903787990/) later this year.
+_Live Lightshow_ is also cheap but expandable. It requires nothing more than a $20 _Arduino_ to get started, but allows you to expand your project as much as you like. And even if you are just looking for a modular on-screen audio visualizer, _Live Lightshow_ might become an option for you (this feature will be coming with the first full release).
+
+So far _Live Lightshow_ has been used successfully at an event of [Sektor Evolution](https://www.facebook.com/events/456772748390695/), and will be used for the [Treibsand Open Air](https://www.facebook.com/Treibsand-Freiland-Open-Air-163226903787990/) later this year.
 
 ## Requirements
 
@@ -35,7 +37,7 @@ for u in curl bash vi; do command -v $u &>/dev/null || echo $u is missing; done
 ## Installation
 To install the _Live Lightshow_ you first need to download and unzip its [newest release](https://github.com/marcusrossel/live-lightshow/releases/tag/v0.1-alpha). Then navigate to the unzipped folder in a terminal and run `Installation/install.sh`.
 
-The installer might ask you for your password along the way. Check out [Why my password?](Documentation/User/2.%20Why%20My%20Password%3F.md) for details about this.
+The installer might ask you for your password along the way. Check out [Why My password?](Documentation/User/A.%20Why%20My%20Password%3F.md) for details about this.
 
 After completing the installation process, the _Live Lightshow_ will be accessible using the `lightshow` command - so you can delete the downloaded folder if you like.
 

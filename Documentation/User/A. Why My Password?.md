@@ -5,5 +5,5 @@ The specific command asking for your password is `sudo`. You can search for `sud
 
 ---
 
-| [← Documentation Overview](..) | [B. Soundflower Installation →](B.%20Soundflower%20Installation.md) |
+| [← Documentation Overview](..) | [B. Capturing System Audio on macOS →](B.%20Capturing%20System%20Audio%20on%20macOS.md) |
 | - | - |

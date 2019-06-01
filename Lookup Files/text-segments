@@ -108,6 +108,7 @@ optional arguments in !Y!()!N! and nested subcommands after !Y!▸!N!):
   !Y!▸!N! list
   !Y!▸!N! info !Y!<!N!rack name!Y!>!N!
 • !Y!server!N!
+  !Y!▸!N! list
   !Y!▸!N! info !Y!<!N!server name!Y!>!N!
   !Y!▸!N! import !Y!<!N!server file!Y!>!N! !Y!(!N!server name!Y!)!N!
 • !Y!directory!N!
@@ -138,6 +139,7 @@ SEGMENT-END
 lightshow: <server> subcommand usage:
 !R!Invalid argument.!N!
 The !Y!server!N! subcommand supports the following subcommands:
+• !Y!list!N!
 • !Y!info <!N!server name!Y!>!N!
 • !Y!import <!N!server file!Y!>!N! !Y!(!N!server name!Y!)!N!
 SEGMENT-END

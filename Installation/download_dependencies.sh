@@ -63,6 +63,8 @@ function download_single_item_archive_ {
    local -r item_url=$(url_for_ "$url_identifier")
    local -r item_folder='single_item_folder'
 
+   echo "> $item_url"
+
    # Downloads the item.
    if ! curl -Lk --progress-bar -o "$item_folder.zip" "$item_url"; then
       print_error_for "Download from '$print_yellow$item_url$print_normal' failed."

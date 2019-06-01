@@ -58,8 +58,7 @@ while true; do
    fi
 
    # Prints an error message and prompts the user to un-/replug the Arduino or exit.
-   clear >&2
-   echo -e "$error_message" >&2
+   echo -e "\n$error_message" >&2
    echo -e "\n${print_green}Do you want to try again? [y or n]$print_normal" >&2
    succeed_on_approval_ || exit 3
 done

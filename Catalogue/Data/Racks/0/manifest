@@ -1,0 +1,5 @@
+# This file will contain the first rack's manifest of the form:
+# <server instance 1 name>:<server instance 1 type>:<server instance 1 configuration file>
+# <server instance 2 name>:<server instance 2 type>:<server instance 2 configuration file>
+# ...
+
