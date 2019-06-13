@@ -54,3 +54,5 @@ _Live Lightshow_ requires you to know a couple of simple concepts to get the mos
 ---
 
 This project is licensed under the _GPLv3_, so feel free to clone and modify it to your heart's content.
+
+Also, this project is currently undergoing a rewrite in _Rust_ on the `rust` branch.
