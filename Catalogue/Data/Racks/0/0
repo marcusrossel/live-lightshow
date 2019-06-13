@@ -1,5 +1,0 @@
-# This file will contain the configuration for the first server instance in the rack's manifest,
-# of the form:
-# <trait 1 name>:<trait 1 value>:<trait 1 value type>
-# <trait 2 name>:<trait 2 value>:<trait 2 value type>
-# ...
